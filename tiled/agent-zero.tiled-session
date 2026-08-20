@@ -1,0 +1,39 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "tilesets"
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 1589.3333333333333,
+                "y": 1090.3333333333333
+            }
+        },
+        "tilesets/Outdoors.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        }
+    },
+    "last.imagePath": "C:/Users/Paul/Documents/GitHub/agent-zero/tiled/tilesets",
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
+        "tilesets/Outdoors.tsx"
+    ],
+    "project": "agent-zero.tiled-project",
+    "recentFiles": [
+        "tilesets/Outdoors.tsx",
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
