@@ -1,10 +1,9 @@
 import pygame
 import pyscroll
 import pytmx
-import settings
 
 class TileMap:
-    def __init__(self, filename):
+    def __init__(self, filename, zoom_level=1.0):
         tmx_data = pytmx.util_pygame.load_pygame(filename)
         self.tmx_data = tmx_data
         self.width = tmx_data.width * tmx_data.tilewidth
@@ -15,12 +14,38 @@ class TileMap:
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
             map_data,
-            (settings.DISPLAY_SIZE[0], settings.DISPLAY_SIZE[1])
+            pygame.display.get_desktop_sizes()[0]
         )
-        self.map_layer.zoom = 2.0
+        self.map_layer.zoom = zoom_level
+        
+    def zoom_to(self, zoom_level):
+        self.map_layer.zoom = zoom_level
+        
+    def get_object(self, layer_name, object_name)-> pytmx.TiledObject | None:
+        try:
+            layer = self.tmx_data.get_layer_by_name(layer_name)
+        except ValueError:
+            return None
+
+        if not isinstance(layer, pytmx.TiledObjectGroup):
+            return None
+
+        for obj in layer:
+            if obj.name == object_name:
+                return obj
+
+        return None
+    
+    def get_layer_index(self, layer_name):
+        for i, layer in enumerate(self.tmx_data.visible_layers):
+            if layer.name == layer_name:
+                return i
+        return None
 
     def _load_collisions(self):
         rects = []
+
+        # individual tiles hitboxes
         for layer in self.tmx_data.visible_layers:
             if not isinstance(layer, pytmx.TiledTileLayer):
                 continue
@@ -39,6 +64,19 @@ class TileMap:
                         collider.width,
                         collider.height
                     ))
+
+        # object layer called collisions
+        try:
+            collision_layer = self.tmx_data.get_layer_by_name("Collisions")
+        except ValueError:
+            collision_layer = None
+
+        if isinstance(collision_layer, pytmx.TiledObjectGroup):
+            for obj in collision_layer:
+                rects.append(pygame.Rect(
+                    obj.x, obj.y, obj.width, obj.height
+                ))
+
         return rects
 
     def _load_decorations(self):
