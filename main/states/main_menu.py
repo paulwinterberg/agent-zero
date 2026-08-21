@@ -5,10 +5,10 @@ from states.state import State
 
 class MainMenu(State):
     def __init__(self):
-        self.title_image = pygame.image.load("assets\\ui\\title_screen.png")
+        self.title_image = pygame.image.load("assets/ui/title_screen.png")
         self.screen_size = pygame.display.get_desktop_sizes()[0]
         
-        self.playFont = pygame.font.Font("assets\\fonts\\PixelifySans-Medium.ttf", 35)
+        self.playFont = pygame.font.Font("assets/fonts/PixelifySans-Medium.ttf", 35)
         self.playText = self.playFont.render("PRESS [F]", True, (255, 255, 255))
         self.playTextRect = self.playText.get_rect(center=(self.screen_size[0]/2, self.screen_size[1] - 100))
         
@@ -21,15 +21,15 @@ class MainMenu(State):
         self.accumulated = 0
         self.loaded_music = False
         
-        pygame.mixer.music.load("assets\\music\\intro_music.mp3")
-        pygame.mixer.music.set_volume(1.0)
+        #pygame.mixer.music.load("assets\\music\\intro_music.mp3")
+        #pygame.mixer.music.set_volume(1.0)
     
     def update(self, dt, events):
         self.accumulated += dt
         if self.accumulated < 3: return
         
         if not self.loaded_music:
-            pygame.mixer.music.play(loops=-1)
+            #pygame.mixer.music.play(loops=-1)
             self.loaded_music = True
             
         if self.accumulated < 3.5: return
