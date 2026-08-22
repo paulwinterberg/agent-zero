@@ -4,7 +4,7 @@ import pygame
 
 class State:   
     @abstractmethod
-    def draw(self, screen: pygame.Surface, dt):
+    def draw(self, screen: pygame.Surface, dt: float):
         pass
     
     @abstractmethod
