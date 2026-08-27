@@ -21,7 +21,10 @@ def init():
 def start_loop(tickFunc):
     global running
     while running:
-        dt = clock.tick(60) / 1000
+        try:
+            dt = clock.tick(60) / 1000
+        except:
+            exit()
         
         events = pygame.event.get()
         
