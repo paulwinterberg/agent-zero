@@ -1,7 +1,7 @@
 import pygame
 
 from entities.player import Player
-from core import renderer
+from core import renderer, audio
 from core.state_manager import StateManager
 from states.gameplay import Gameplay
 from world.tilemap import TileMap
@@ -11,6 +11,7 @@ state_manager = StateManager()
 
 def start():
     renderer.init()
+    audio.init_audio()
     
     state_manager.push(MainMenu())
     
