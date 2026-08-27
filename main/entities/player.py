@@ -10,11 +10,17 @@ class Player(pygame.sprite.Sprite):
         self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect(center=pos)
         
+        # Hitbox setup: full width (32), reduced height (16), aligned to bottom
+        hitbox_height = 16
+        self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
+        self.hitbox.midbottom = self.rect.midbottom
+        
         self.walkspeed = 100
         self.runspeed = 150
         
-    def goto(self, pos=(0,0)):
-        self.rect.x, self.rect.y = pos
+    def goto(self, pos=(0, 0)):
+        self.rect.topleft = pos
+        self.hitbox.midbottom = self.rect.midbottom
 
     def update(self, dt, tilemap: TileMap):
         keys = pygame.key.get_pressed()
@@ -23,14 +29,19 @@ class Player(pygame.sprite.Sprite):
         dx = (keys[settings.RIGHT] - keys[settings.LEFT]) * speed
         dy = (keys[settings.BACKWARD] - keys[settings.FORWARD]) * speed
 
-        self.rect.x += dx
+        # Horizontal movement & collisions
+        self.hitbox.x += dx
         for r in tilemap.collision_rects:
-            if self.rect.colliderect(r):
-                if dx > 0: self.rect.right = r.left
-                if dx < 0: self.rect.left = r.right
+            if self.hitbox.colliderect(r):
+                if dx > 0: self.hitbox.right = r.left
+                if dx < 0: self.hitbox.left = r.right
 
-        self.rect.y += dy
+        # Vertical movement & collisions
+        self.hitbox.y += dy
         for r in tilemap.collision_rects:
-            if self.rect.colliderect(r):
-                if dy > 0: self.rect.bottom = r.top
-                if dy < 0: self.rect.top = r.bottom
+            if self.hitbox.colliderect(r):
+                if dy > 0: self.hitbox.bottom = r.top
+                if dy < 0: self.hitbox.top = r.bottom
+
+        # Keep sprite image aligned with the hitbox
+        self.rect.midbottom = self.hitbox.midbottom

@@ -5,8 +5,8 @@
     },
     "activeFile": "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
     "expandedProjectPaths": [
-        ".",
-        "tilesets"
+        "tilesets",
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -14,11 +14,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 1.5,
-            "selectedLayer": 3,
+            "scale": 2,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 240.66666666666669,
-                "y": 330.6666666666667
+                "x": 175,
+                "y": 466.5
             }
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {

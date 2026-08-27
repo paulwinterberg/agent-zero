@@ -12,7 +12,7 @@ class Gameplay(State):
         
         self.tilemap.zoom_to(4)
         
-        spawnPoint = self.tilemap.get_object("Player", "PlayerStart")
+        spawnPoint = self.tilemap.get_object("Spawns", "PlayerSpawn")
         self.player.goto((spawnPoint.x, spawnPoint.y))
     
     def update(self, dt, events):
