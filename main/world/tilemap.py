@@ -82,13 +82,14 @@ class TileMap:
     def _load_decorations(self):
         decorations = []
         layer = self.tmx_data.get_layer_by_name("Decorations")
+        layer_index = self.get_layer_index("Decorations")
         for x, y, gid in layer:
             if gid == 0:
                 continue
             image = self.tmx_data.get_tile_image_by_gid(gid)
             if image:
                 pos = (x * self.tmx_data.tilewidth, y * self.tmx_data.tileheight)
-                decorations.append(Decoration(image, pos))
+                decorations.append(Decoration(image, pos, layer_index))
         return decorations
     
     def render(self, surface):
@@ -104,9 +105,8 @@ class TileMap:
                         
                         
 class Decoration(pygame.sprite.Sprite):
-    def __init__(self, image, pos):
+    def __init__(self, image, pos, layer=0):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect(topleft=pos)
-        # sort key: bottom of sprite = its "feet" position
-        self._layer = self.rect.bottom
+        self._layer = layer

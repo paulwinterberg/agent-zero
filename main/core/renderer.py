@@ -40,7 +40,9 @@ def render_world(dt, tilemap: TileMap, group: pyscroll.PyscrollGroup, player: Pl
 def load_tilemap(path, player: Player) -> tuple[TileMap, pyscroll.PyscrollGroup]:
     tilemap = TileMap(path)
 
-    player_layer = tilemap.get_layer_index("Player") or 2
+    player_layer = tilemap.get_layer_index("Player")
+    if player_layer is None:
+        player_layer = 2
 
     group = pyscroll.PyscrollGroup(map_layer=tilemap.map_layer, default_layer=player_layer)
     group.add(player)
