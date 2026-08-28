@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         
         self.walkspeed = 100
         self.runspeed = 200
-        self.slidespeed = 300
+        self.slidespeed = 4100
         self.slidetime = 0
         self.slidecooldown = 0
         self.elapsed = 0
@@ -28,14 +28,17 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, dt, tilemap: TileMap):
         self.elapsed += dt
+        self.slidecooldown / 0.01
         keys = pygame.key.get_pressed()
         speed = self.runspeed if keys[settings.SPRINT] else self.walkspeed
         if keys[settings.SPRINT] and keys[settings.SLIDE] and self.slidecooldown == 0:
             self.slidetime = self.elapsed
+            self.slidecooldown += dt
             speed = self.slidespeed
             if self.elapsed - self.slidetime == [settings.SLIDETIME]:
-                self.slidecooldown = 2
-
+                self.slidecooldown = 3
+        print(self.slidecooldown)
+        
         speed *= dt
         
         dx = (keys[settings.RIGHT] - keys[settings.LEFT]) * speed
