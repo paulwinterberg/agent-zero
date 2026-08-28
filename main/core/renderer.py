@@ -34,16 +34,20 @@ def start_loop(tickFunc):
                 running = False
     
 def render_world(dt, tilemap: TileMap, group: pyscroll.PyscrollGroup, player: Player):
+    group.change_layer(player, tilemap.y_sort_layer(player.rect.bottom))
     group.center(player.rect.center)
     group.draw(screen)
+
     
 def load_tilemap(path, player: Player) -> tuple[TileMap, pyscroll.PyscrollGroup]:
     tilemap = TileMap(path)
 
-    player_layer = tilemap.get_layer_index("Player") or 2
-
-    group = pyscroll.PyscrollGroup(map_layer=tilemap.map_layer, default_layer=player_layer)
-    group.add(player)
+    group = pyscroll.PyscrollGroup(
+        map_layer=tilemap.map_layer,
+        default_layer=tilemap.sort_base_layer
+    )
+    group.add(player, layer=tilemap.y_sort_layer(player.rect.bottom))
     group.add(*tilemap.decorations)
+    group.add(*tilemap.walls)
 
     return tilemap, group

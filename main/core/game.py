@@ -12,7 +12,6 @@ def start():
     state_manager.push(Gameplay())
     
     renderer.start_loop(tick)
-    
 
 def tick(dt, events):
     state_manager.update(dt, events)

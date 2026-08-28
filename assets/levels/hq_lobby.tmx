@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="12" height="19" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="22">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="12" height="19" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="23">
  <tileset firstgid="1" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
  <tileset firstgid="225" name="StoneGround" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Tileset Stone Ground.png" width="256" height="256"/>
@@ -10,8 +10,9 @@
  <tileset firstgid="545" name="Structs" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Struct.png" width="512" height="512"/>
  </tileset>
- <layer id="1" name="Tile Layer 1" width="12" height="19">
-  <data encoding="csv">
+ <group id="10" name="Floor">
+  <layer id="1" name="Floor" width="12" height="19">
+   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,54,54,54,0,0,0,0,0,
@@ -32,14 +33,15 @@
 0,54,54,54,54,31,54,54,54,54,54,0,
 0,54,54,54,54,31,54,54,54,54,54,0
 </data>
- </layer>
- <layer id="2" name="Overlay" width="12" height="19">
-  <data encoding="csv">
+  </layer>
+  <layer id="2" name="FloorDecorations" width="12" height="19">
+   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,30,31,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
+0,0,0,89,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
@@ -51,11 +53,11 @@
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
-0,0,0,0,30,0,32,0,0,0,0,0,
-0,0,0,0,339,339,339,0,0,0,0,0,
-0,0,0,0,402,402,402,0,0,0,0,0
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
 </data>
- </layer>
+  </layer>
+ </group>
  <layer id="4" name="Decorations" width="12" height="19">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,
@@ -79,35 +81,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="9" name="Player">
-  <object id="21" name="PlayerStart" x="176" y="492.667">
-   <point/>
-  </object>
- </objectgroup>
- <layer id="3" name="Walls" width="12" height="19">
-  <data encoding="csv">
-0,0,0,0,0,0,374,0,0,0,0,0,
-0,0,0,557,558,558,559,560,0,0,0,0,
-309,311,311,311,574,307,575,311,311,311,311,313,
-325,327,327,327,590,0,591,327,327,327,327,329,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,105,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-357,311,311,311,318,318,318,311,311,311,311,361,
-0,402,402,402,0,0,0,402,402,402,402,0
-</data>
- </layer>
- <layer id="5" name="Decorations 2" width="12" height="19">
+ <layer id="5" name="Decorations2" width="12" height="19">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,
@@ -126,8 +100,31 @@
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,58,0,0,0,0,0,58,0,58,0,
-0,0,74,0,0,0,0,0,74,0,74,0
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="Walls" width="12" height="19">
+  <data encoding="csv">
+0,0,0,0,0,0,374,0,0,0,0,0,
+0,0,0,557,558,558,559,560,0,0,0,0,
+309,311,311,311,574,307,575,311,311,311,311,313,
+325,327,327,327,590,0,591,327,327,327,327,329,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+325,0,0,0,0,0,0,0,0,0,0,345,
+357,311,311,311,339,339,339,311,311,311,311,361,
+0,402,402,402,355,355,355,402,402,402,402,0
 </data>
  </layer>
  <objectgroup id="6" name="Collisions">
@@ -147,6 +144,11 @@
  </objectgroup>
  <objectgroup id="7" name="Interactions">
   <object id="18" name="EnterElevator" x="178.364" y="86.7273">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="11" name="Spawns">
+  <object id="22" name="PlayerSpawn" x="175" y="466.5">
    <point/>
   </object>
  </objectgroup>
