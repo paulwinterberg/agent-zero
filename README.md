@@ -9,7 +9,7 @@ https://trello.com/b/JXelqW3A/game #Projektideen
 https://www.pixilart.com/draw #Assets erstellen
 
 
-#To merge main branch into current branch:
+# To merge main branch into current branch:
 git checkout <branchname>
 git fetch origin
 git merge origin/main
