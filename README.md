@@ -7,3 +7,9 @@ In diesem Projekt wollen wir ein Spiel erstellen, indem ein Geheimagent Agent 00
 
 https://trello.com/b/JXelqW3A/game #Projektideen
 https://www.pixilart.com/draw #Assets erstellen
+
+
+#To merge main branch into current branch:
+git checkout <branchname>
+git fetch origin
+git merge origin/main
