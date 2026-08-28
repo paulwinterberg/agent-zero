@@ -18,7 +18,8 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, dt, tilemap: TileMap):
         keys = pygame.key.get_pressed()
-        speed = self.walkspeed * dt
+        speed = self.runspeed if keys[settings.SPRINT] else self.walkspeed
+        speed *= dt
 
         dx = (keys[settings.RIGHT] - keys[settings.LEFT]) * speed
         dy = (keys[settings.BACKWARD] - keys[settings.FORWARD]) * speed
