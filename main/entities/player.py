@@ -16,19 +16,32 @@ class Player(pygame.sprite.Sprite):
         self.hitbox.midbottom = self.rect.midbottom
         
         self.walkspeed = 100
-        self.runspeed = 150
+        self.runspeed = 200
+        self.slidespeed = 300
+        self.slidetime = 0
+        self.slidecooldown = 0
+        self.elapsed = 0
         
     def goto(self, pos=(0, 0)):
         self.rect.topleft = pos
         self.hitbox.midbottom = self.rect.midbottom
 
     def update(self, dt, tilemap: TileMap):
+        self.elapsed += dt
         keys = pygame.key.get_pressed()
         speed = self.runspeed if keys[settings.SPRINT] else self.walkspeed
-        speed *= dt
+        if keys[settings.SPRINT] and keys[settings.SLIDE] and self.slidecooldown == 0:
+            self.slidetime = self.elapsed
+            speed = self.slidespeed
+            if self.elapsed - self.slidetime == [settings.SLIDETIME]:
+                self.slidecooldown = 2
 
+        speed *= dt
+        
         dx = (keys[settings.RIGHT] - keys[settings.LEFT]) * speed
         dy = (keys[settings.BACKWARD] - keys[settings.FORWARD]) * speed
+
+        
 
         # Horizontal movement & collisions
         self.hitbox.x += dx
