@@ -8,6 +8,11 @@ BACKWARD = pygame.K_s
 LEFT = pygame.K_a
 RIGHT = pygame.K_d
 SPRINT = pygame.K_LSHIFT
+SLIDE = pygame.K_c
+
+#sliding
+SLIDETIME = .5
+SLIDECOOLDOWN = 3
 
 #paths
 SFX_PATH = "assets/sfx"
