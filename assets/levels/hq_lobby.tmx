@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="12" height="19" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="23">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="12" height="19" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="50">
  <tileset firstgid="1" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
  <tileset firstgid="225" name="StoneGround" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Tileset Stone Ground.png" width="256" height="256"/>
@@ -41,7 +41,7 @@
 0,0,0,0,30,31,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
-0,0,0,89,30,0,32,0,0,0,0,0,
+0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
 0,0,0,0,30,0,32,0,0,0,0,0,
@@ -58,89 +58,32 @@
 </data>
   </layer>
  </group>
- <layer id="4" name="Decorations" width="12" height="19">
-  <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,114,0,0,0,0,0,0,0,0,0,
-0,87,130,87,0,0,0,0,0,0,0,0,
-0,103,103,103,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,208,0,0,
-0,0,0,0,0,0,0,0,0,224,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0
-</data>
- </layer>
- <layer id="5" name="Decorations2" width="12" height="19">
-  <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,174,175,0,0,0,
-0,0,87,83,0,0,0,190,191,208,0,0,
-0,90,0,0,0,0,0,61,63,224,0,0,
-0,106,0,0,0,0,0,93,95,0,0,0,
-0,0,0,0,0,0,0,0,0,96,0,0,
-0,0,0,0,0,0,0,0,0,112,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0
-</data>
- </layer>
- <layer id="3" name="Walls" width="12" height="19">
-  <data encoding="csv">
-0,0,0,0,0,0,374,0,0,0,0,0,
-0,0,0,557,558,558,559,560,0,0,0,0,
-309,311,311,311,574,307,575,311,311,311,311,313,
-325,327,327,327,590,0,591,327,327,327,327,329,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-325,0,0,0,0,0,0,0,0,0,0,345,
-357,311,311,311,339,339,339,311,311,311,311,361,
-0,402,402,402,355,355,355,402,402,402,402,0
-</data>
- </layer>
+ <objectgroup id="13" name="Objects">
+  <object id="24" name="Couch1" gid="224" x="288" y="320" width="32" height="32"/>
+  <object id="25" name="Couch1" gid="208" x="288" y="288" width="32" height="32"/>
+  <object id="28" name="Wall1" gid="355" x="32" y="128" width="32" height="32"/>
+  <object id="29" name="Wall1" gid="355" x="64" y="128" width="32" height="32"/>
+  <object id="30" name="Wall1" gid="355" x="96" y="128" width="32" height="32"/>
+  <object id="31" name="Wall1" gid="355" x="224" y="128" width="32" height="32"/>
+  <object id="32" name="Wall1" gid="355" x="256" y="128" width="32" height="32"/>
+  <object id="33" name="Wall1" gid="355" x="288" y="128" width="32" height="32"/>
+  <object id="34" name="Wall1" gid="355" x="320" y="128" width="32" height="32"/>
+  <object id="35" name="Wall1" gid="339" x="320" y="96" width="32" height="32"/>
+  <object id="36" name="Wall1" gid="339" x="288" y="96" width="32" height="32"/>
+  <object id="37" name="Wall1" gid="339" x="256" y="96" width="32" height="32"/>
+  <object id="38" name="Wall1" gid="339" x="224" y="96" width="32" height="32"/>
+  <object id="39" name="Wall1" gid="339" x="96" y="96" width="32" height="32"/>
+  <object id="40" name="Wall1" gid="339" x="64" y="96" width="32" height="32"/>
+  <object id="41" name="Wall1" gid="339" x="32" y="96" width="32" height="32"/>
+  <object id="42" name="Wall1" gid="545" x="-259.946" y="-89.4709" width="32" height="32"/>
+ </objectgroup>
  <objectgroup id="6" name="Collisions">
-  <object id="2" x="41.6364" y="224" width="12.1818" height="6.90909"/>
-  <object id="3" x="32.1818" y="128.727" width="95.8182" height="78"/>
-  <object id="5" x="31.6667" y="65" width="96.3333" height="61.6667"/>
+  <object id="5" x="31.6667" y="118.812" width="96.3333" height="7.85504"/>
   <object id="6" x="24.3333" y="65" width="7.33333" height="486.333"/>
   <object id="7" x="32.6667" y="563.667" width="318.333" height="43.3333"/>
   <object id="8" x="351.5" y="66" width="9" height="484"/>
-  <object id="9" x="224.5" y="66" width="126" height="61.5"/>
-  <object id="10" x="209" y="60" width="15.5" height="61.5"/>
-  <object id="11" x="129" y="59.5" width="15.5" height="62.5"/>
-  <object id="13" x="226.667" y="217" width="58.6667" height="21.3333"/>
-  <object id="14" x="289.667" y="225.667" width="29.6667" height="72"/>
-  <object id="15" x="289.333" y="159.667" width="29" height="63.3333"/>
-  <object id="16" x="227" y="161.333" width="58.3333" height="28.6667"/>
+  <object id="9" x="224.5" y="116.942" width="126" height="10.5583"/>
+  <object id="27" x="289.865" y="269.776" width="28.6996" height="48.0717"/>
  </objectgroup>
  <objectgroup id="7" name="Interactions">
   <object id="18" name="EnterElevator" x="178.364" y="86.7273">
