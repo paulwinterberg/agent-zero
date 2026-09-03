@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         
         # Hitbox setup: full width (32), reduced height (16), aligned to bottom
-        hitbox_height = 16
+        hitbox_height = 8
         self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
         self.hitbox.midbottom = self.rect.midbottom
         

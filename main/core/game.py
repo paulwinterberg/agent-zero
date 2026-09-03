@@ -10,8 +10,11 @@ def start():
     audio.init_audio()
     
     state_manager.push(Gameplay())
-    
-    renderer.start_loop(tick)
+
+    try:
+        renderer.start_loop(tick)
+    except:
+        exit()
 
 def tick(dt, events):
     state_manager.update(dt, events)
