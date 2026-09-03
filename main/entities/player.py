@@ -15,30 +15,36 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
         self.hitbox.midbottom = self.rect.midbottom
         
-        self.walkspeed = 100
-        self.runspeed = 200
-        self.slidespeed = 4100
+        self.walkspeed = 50
+        self.runspeed = 60
+        self.fastrunspeed = 100
+        self.slidespeed = 250
         self.slidetime = 0
         self.slidecooldown = 0
-        self.elapsed = 0
+        self.steminacooldown = 0
         
     def goto(self, pos=(0, 0)):
         self.rect.topleft = pos
         self.hitbox.midbottom = self.rect.midbottom
 
     def update(self, dt, tilemap: TileMap):
-        self.elapsed += dt
-        self.slidecooldown / 0.01
+        self.slidetime = max(0, self.slidetime - dt)
+        self.slidecooldown = max(0, self.slidecooldown - dt)
+        self.steminacooldown = max(0, self.steminacooldown - dt)
         keys = pygame.key.get_pressed()
-        speed = self.runspeed if keys[settings.SPRINT] else self.walkspeed
+        speed = self.walkspeed
         if keys[settings.SPRINT] and keys[settings.SLIDE] and self.slidecooldown == 0:
-            self.slidetime = self.elapsed
-            self.slidecooldown += dt
+            self.slidetime = settings.SLIDETIME
+            self.slidecooldown = settings.SLIDECOOLDOWN
+        if self.slidetime > 0:
             speed = self.slidespeed
-            if self.elapsed - self.slidetime == [settings.SLIDETIME]:
-                self.slidecooldown = 3
-        print(self.slidecooldown)
-        
+        elif keys[settings.SPRINT] and self.steminacooldown < 5:
+            speed = self.runspeed
+            self.runspeed = min(self.fastrunspeed, self.runspeed + dt * 100)
+            self.steminacooldown += dt*2
+        else:
+            speed = self.walkspeed
+            self.runspeed = max(self.walkspeed, self.runspeed - dt * 80)
         speed *= dt
         
         dx = (keys[settings.RIGHT] - keys[settings.LEFT]) * speed
