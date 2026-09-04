@@ -92,8 +92,8 @@
   <object id="59" name="Gate1" gid="558" x="128" y="64" width="32" height="32"/>
   <object id="60" name="Gate1" gid="557" x="96" y="64" width="32" height="32"/>
   <object id="61" name="Gate1" gid="307" x="160" y="96" width="32" height="32"/>
-  <object id="67" name="Curtains1" type="Interactible" gid="60" x="96" y="192" width="32" height="32"/>
-  <object id="68" name="Curtains1" gid="76" x="96" y="224" width="32" height="32"/>
+  <object id="67" name="Curtains1" gid="60" x="96" y="192" width="32" height="32"/>
+  <object id="68" name="Curtains1" type="Interactible" gid="76" x="96" y="224" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="6" name="Collisions">
   <object id="5" x="31.6667" y="118.812" width="96.3333" height="7.85504"/>

@@ -39,11 +39,11 @@
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx": {
-            "scale": 1.3937499999999998,
-            "selectedLayer": 4,
+            "scale": 4,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 304.2152466367713,
-                "y": 294.17040358744396
+                "x": 112,
+                "y": 240
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {
