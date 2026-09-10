@@ -1114,11 +1114,7 @@
     <property name="InteractibleClass" value="Door"/>
    </properties>
   </object>
-  <object id="284" name="Door1" type="Interactible" gid="70" x="8256" y="8800" width="32" height="32">
-   <properties>
-    <property name="InteractibleClass" value="Door"/>
-   </properties>
-  </object>
+  <object id="284" name="Door1" gid="70" x="8256" y="8800" width="32" height="32"/>
   <object id="290" gid="52" x="8217.27" y="8879.09" width="32" height="32"/>
   <object id="291" gid="52" x="8218.73" y="8913.27" width="32" height="32"/>
   <object id="292" gid="52" x="8218.36" y="8943.45" width="32" height="32"/>
