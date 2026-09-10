@@ -11,6 +11,7 @@ LEFT = pygame.K_a
 RIGHT = pygame.K_d
 SPRINT = pygame.K_LSHIFT
 SLIDE = pygame.K_c
+INTERACT = pygame.K_f
 
 #sliding
 SLIDETIME = .5

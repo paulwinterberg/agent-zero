@@ -32,8 +32,6 @@ class TileMap:
         )
         self.map_layer.zoom = zoom_level
 
-        print(self.get_interactible_objects())
-
     def y_sort_layer(self, pixel_y):
         """Fractional pyscroll layer, monotonic in pixel_y, always
         above every flat tile layer. Used for the player and for
@@ -75,20 +73,33 @@ class TileMap:
         return None
 
     def get_interactible_objects(self):
-        """Return each object-layer group whose bottom-most tile-object
-        is tagged with the 'Interactible' class in Tiled, reusing the
-        Object sprites already built by _load_y_sorted_objects rather
-        than re-parsing the layer."""
+        """Return each interactible object group, including its Tiled properties."""
         interactibles = []
+    
         for key, group in self._object_groups.items():
-            if group["bottom_member"].type != "Interactible":
+            bottom_member = group["bottom_member"]
+    
+            if bottom_member.type != "Interactible":
                 continue
+            
             interactibles.append({
-                "name": key if isinstance(key, str) else group["bottom_member"].name,
+                "name": key if isinstance(key, str) else bottom_member.name,
                 "rect": group["bounds"],
                 "sprites": group["sprites"],
+                "properties": dict(bottom_member.properties),
             })
+    
         return interactibles
+
+
+    def get_interactible_object(self, object_name):
+        """Return a named interactible object, or None if it doesn't exist."""
+        for obj in self.get_interactible_objects():
+            if obj["name"] == object_name:
+                return obj
+
+        return None
+
     
     def _load_collisions(self):
         rects = []
