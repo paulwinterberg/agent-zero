@@ -1,14 +1,15 @@
 import pygame
+import pygame_gui
 
 from entities.player import Player
 from states.state import State
-from core.renderer import load_tilemap, render_world
+from core.renderer import load_tilemap, render_world, get_ui_manager
 
 
 class Gameplay(State):
     def __init__(self):
         self.player = Player()
-        self.tilemap, self.group = load_tilemap("assets/levels/hq_lobby.tmx", self.player)
+        self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
         
         self.tilemap.zoom_to(4)
         
@@ -20,3 +21,5 @@ class Gameplay(State):
     
     def draw(self, screen, dt):
         render_world(dt, self.tilemap, self.group, self.player)
+
+        
