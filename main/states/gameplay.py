@@ -15,6 +15,11 @@ class Gameplay(State):
         
         spawnPoint = self.tilemap.get_object("Spawns", "PlayerSpawn")
         self.player.goto((spawnPoint.x, spawnPoint.y))
+
+        self.stamina_bar = pygame_gui.elements.UIProgressBar(
+            relative_rect=pygame.Rect((20, 20), (200, 25)),
+            manager=get_ui_manager()
+        )
     
     def update(self, dt, events):
         self.player.update(dt, self.tilemap)
