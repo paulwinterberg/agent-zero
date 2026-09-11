@@ -12,6 +12,7 @@ class Gameplay(State):
     def __init__(self):
         self.player = Player()
         self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
+        self.interaction_manager = InteractionManager()
         
         self.tilemap.zoom_to(4)
         
