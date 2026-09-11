@@ -103,7 +103,7 @@ class TileMap:
     
     def _load_collisions(self):
         rects = []
-
+    
         # Tile-property colliders (e.g. a wall tile flagged with a
         # "colliders" property in the tileset).
         for layer in self.tmx_data.layers:
@@ -124,17 +124,43 @@ class TileMap:
                         collider.width,
                         collider.height
                     ))
-
+    
+        # Tile-property colliders on tile-objects placed in the
+        # 'objects' layer (e.g. a tree or rock whose collision shape
+        # was drawn in the tileset editor, not as a box in the
+        # Collisions layer). obj.x/obj.y are already top-left — see
+        # _load_y_sorted_objects — so the collider offsets from the
+        # tileset apply directly, no grid-cell math needed.
+        try:
+            objects_layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
+        except ValueError:
+            objects_layer = None
+    
+        if isinstance(objects_layer, pytmx.TiledObjectGroup):
+            for obj in objects_layer:
+                if not obj.gid:
+                    continue
+                props = self.tmx_data.get_tile_properties_by_gid(obj.gid)
+                if not props or not props.get("colliders"):
+                    continue
+                for collider in props["colliders"]:
+                    rects.append(pygame.Rect(
+                        obj.x + collider.x,
+                        obj.y + collider.y,
+                        collider.width,
+                        collider.height
+                    ))
+    
         # Explicit collision rectangles drawn in Tiled.
         try:
             collision_layer = self.tmx_data.get_layer_by_name("Collisions")
         except ValueError:
             collision_layer = None
-
+    
         if isinstance(collision_layer, pytmx.TiledObjectGroup):
             for obj in collision_layer:
                 rects.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-
+    
         return rects
 
     def _load_y_sorted_objects(self):

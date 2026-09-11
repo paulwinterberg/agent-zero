@@ -1,4 +1,5 @@
 import pygame
+import core.renderer as renderer
 
 from states.state import State
 
@@ -18,5 +19,6 @@ class StateManager:
     def draw(self, screen, dt):
         for state in self.stack:
             state.draw(screen, dt)
-            
+
+        renderer.render_ui()
         pygame.display.flip()

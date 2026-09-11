@@ -1,11 +1,11 @@
 import pygame
 import settings
+import pygame_gui
 
 from entities.player import Player
 from states.state import State
-from core.renderer import load_tilemap, render_world
+from core.renderer import load_tilemap, render_world, get_ui_manager
 from core.interactions import InteractionManager
-
 
 class Gameplay(State):
     def __init__(self):
@@ -30,3 +30,5 @@ class Gameplay(State):
     
     def draw(self, screen, dt):
         render_world(dt, self.tilemap, self.group, self.player)
+
+        

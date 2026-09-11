@@ -10,9 +10,12 @@ class InteractionManager:
         self.interaction_range = 50  # Pixels
         self.interaction_cooldown = 0
         self.interaction_cooldown_time = 0.3  # Sekunden
+        self.interactible_instances = {}  # Cache für Interactible-Instanzen
+        self.tilemap = None
     
     def update(self, dt, player, tilemap):
         """Aktualisiert Interaktionsstatus und prüft auf neue Interaktionen."""
+        self.tilemap = tilemap  # Speichere tilemap für Interactibles
         self.interaction_cooldown = max(0, self.interaction_cooldown - dt)
         
         # Finde alle interaktiven Objekte in Reichweite
@@ -86,8 +89,17 @@ class InteractionManager:
             module = __import__(f"world.interactibles.{module_name}", fromlist=[class_name])
             interactible_class = getattr(module, class_name)
             
-            # Instantiiere und rufe on_interact() auf
-            instance = interactible_class()
+            # Verwende gecachte Instanz oder erstelle eine neue
+            if obj_name not in self.interactible_instances:
+                instance = interactible_class()
+                if "sprites" in interaction_obj:
+                    instance.set_sprites(interaction_obj["sprites"], interaction_obj.get("properties"))
+                # Übergebe tilemap falls vorhanden (für Kollisionsbearbeitung)
+                if hasattr(instance, 'set_tilemap') and hasattr(self, 'tilemap'):
+                    instance.set_tilemap(self.tilemap)
+                self.interactible_instances[obj_name] = instance
+            
+            instance = self.interactible_instances[obj_name]
             instance.on_interact()
             
         except (ImportError, AttributeError) as e:

@@ -13,3 +13,8 @@ https://www.pixilart.com/draw #Assets erstellen
 git checkout <branchname>
 git fetch origin
 git merge origin/main
+
+# To run the code
+open new codespace in browser
+type "pip install -r requirements.txt" into terminal
+run code
