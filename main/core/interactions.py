@@ -51,61 +51,46 @@ class InteractionManager:
             return False
         
         closest = self.active_interactions[0]
-        
-        # Setze Cooldown
         self.interaction_cooldown = self.interaction_cooldown_time
         self.last_interaction_target = closest
         
-        # Lade und rufe die richtige Interactible-Klasse auf
-        self._execute_interaction(closest)
+        # Lade Interactible und rufe on_interact auf
+        interactible = self._load_interactible(closest)
+        if interactible:
+            interactible.on_interact()
         
         return True
     
-    def _execute_interaction(self, interaction_obj):
-        """Führt die passende Interaktion automatisch aus basierend auf InteractibleClass.
-        
-        Erwartet ein 'InteractibleClass' Custom Property in Tiled.
-        
-        Beispiele in Tiled Custom Properties:
-        - InteractibleClass: "Curtains" -> lädt world.interactibles.curtains.Curtains
-        - InteractibleClass: "Door" -> lädt world.interactibles.door.Door
-        - InteractibleClass: "Chest" -> lädt world.interactibles.chest.Chest
-        """
-        print(interaction_obj)
+    def _load_interactible(self, interaction_obj):
+        """Lädt oder cached eine Interactible-Instanz basierend auf 'InteractibleClass' Property."""
         obj_name = interaction_obj.get("name", "Unknown")
-        print(f"[INTERACTION] Interagiert mit: {obj_name}")
+        
+        if obj_name in self.interactible_instances:
+            return self.interactible_instances[obj_name]
         
         try:
-            # Hole die Klassennamen aus dem Custom Property
             class_name = interaction_obj["properties"].get("InteractibleClass")
-            
             if not class_name:
-                print(f"❌ Fehler: '{obj_name}' hat kein 'InteractibleClass' Custom Property")
-                return
+                return None
             
+            # Dynamischer Import: world.interactibles.{classname_lowercase}.{ClassName}
             module_name = class_name.lower()
-            
-            # Importiere dynamisch: from world.interactibles.{module_name} import {class_name}
             module = __import__(f"world.interactibles.{module_name}", fromlist=[class_name])
             interactible_class = getattr(module, class_name)
             
-            # Verwende gecachte Instanz oder erstelle eine neue
-            if obj_name not in self.interactible_instances:
-                instance = interactible_class()
-                if "sprites" in interaction_obj:
-                    instance.set_sprites(interaction_obj["sprites"], interaction_obj.get("properties"))
-                # Übergebe tilemap falls vorhanden (für Kollisionsbearbeitung)
-                if hasattr(instance, 'set_tilemap') and hasattr(self, 'tilemap'):
-                    instance.set_tilemap(self.tilemap)
-                self.interactible_instances[obj_name] = instance
+            # Instanz erstellen und konfigurieren
+            instance = interactible_class()
+            if "sprites" in interaction_obj:
+                instance.set_sprites(interaction_obj["sprites"], interaction_obj.get("properties"))
+            if hasattr(instance, 'set_tilemap'):
+                instance.set_tilemap(self.tilemap)
             
-            instance = self.interactible_instances[obj_name]
-            instance.on_interact()
+            self.interactible_instances[obj_name] = instance
+            return instance
             
         except (ImportError, AttributeError) as e:
-            print(f"❌ Fehler: Konnte '{obj_name}' nicht laden - {e}")
-        except Exception as e:
-            print(f"❌ Fehler bei Interaktion mit '{obj_name}': {e}")
+            print(f"Fehler beim Laden von '{obj_name}': {e}")
+            return None
 
     
     def get_nearest_interaction(self):
