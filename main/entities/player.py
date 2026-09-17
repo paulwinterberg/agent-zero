@@ -3,7 +3,7 @@ import settings
 
 from world.tilemap import TileMap
 
-from settings import SPRINT_STAMINA_PERCENT_THRESHOLD
+from settings import SPRINT_STAMINA_PERCENT_THRESHOLD, PLAYER_HITBOX_HEIGHT
 
 
 class Player(pygame.sprite.Sprite):
@@ -13,8 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect(center=pos)
 
-        hitbox_height = 8
-        self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
+        self.hitbox = pygame.Rect(0, 0, 32, PLAYER_HITBOX_HEIGHT)
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
 
@@ -89,7 +88,7 @@ class Player(pygame.sprite.Sprite):
             can_continue = self.stamina > 0
         else:
             # Not sprinting yet: need to clear the threshold to start.
-            can_continue = self.get_stamina_percent() > settings.SPRINT_STAMINA_PERCENT_THRESHOLD
+            can_continue = self.get_stamina_percent() > SPRINT_STAMINA_PERCENT_THRESHOLD
 
         self.is_sprinting = wants_sprint and can_continue
 

@@ -4,11 +4,11 @@ import settings
 import pygame_gui
 
 from entities.player import Player
-from states.state import State
+from states.game_state import GameState
 from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
 from core.interactions import InteractionManager
 
-class Gameplay(State):
+class Gameplay(GameState):
     def __init__(self):
         self.player = Player()
         self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)

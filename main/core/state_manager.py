@@ -1,11 +1,11 @@
 import pygame
 import core.renderer as renderer
 
-from states.state import State
+from states.game_state import GameState
 
 class StateManager:
     def __init__(self):
-        self.stack: list[State] = []
+        self.stack: list[GameState] = []
 
     def push(self, state):
         self.stack.append(state)

@@ -15,6 +15,14 @@ SPRINT = pygame.K_LSHIFT
 SLIDE = pygame.K_c
 INTERACT = pygame.K_f
 
+#enemies
+ENEMY_PLAYER_SPOT_TIME = 3.0
+ENEMY_PLAYER_LOST_TIMEOUT = 5.0
+
+#hitboxes
+PLAYER_HITBOX_HEIGHT = 8
+ENEMY_HITBOX_HEIGHT = 8
+
 #sliding & sprinting
 SLIDETIME = .5
 SLIDECOOLDOWN = 3

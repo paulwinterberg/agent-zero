@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 import pygame
 
-class State:   
+class GameState:   
     @abstractmethod
     def draw(self, screen: pygame.Surface, dt: float):
         pass
