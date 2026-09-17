@@ -21,14 +21,15 @@ class Gameplay(State):
 
         self.stamina_bar = pygame_gui.elements.UIProgressBar(
             relative_rect=pygame.Rect((20, 20), (200, 25)),
-            manager=get_ui_manager()
+            manager=get_ui_manager(),
         )
     
     def update(self, dt, events):
         self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)
+
+        self.stamina_bar.set_current_progress(self.player.get_stamina_percent() * 100.0)
         
-        # Prüfe auf F-Taste Druck für Interaktion
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == settings.INTERACT:
