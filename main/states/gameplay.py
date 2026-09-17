@@ -11,7 +11,7 @@ from core.interactions import InteractionManager
 class Gameplay(State):
     def __init__(self):
         self.player = Player()
-        self.tilemap, self.group = load_tilemap("assets/levels/hq_lobby.tmx", self.player)
+        self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
         self.interaction_manager = InteractionManager()
         
         self.tilemap.zoom_to(4)
