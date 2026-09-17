@@ -11,10 +11,7 @@ def start():
     
     state_manager.push(Gameplay())
 
-    try:
-        renderer.start_loop(tick)
-    except:
-        exit()
+    renderer.start_loop(tick)
 
 def tick(dt, events):
     state_manager.update(dt, events)

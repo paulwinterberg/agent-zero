@@ -23,7 +23,7 @@ class TileMap:
         self.sort_base_layer = len(list(tmx_data.visible_layers))
 
         self.collision_rects = self._load_collisions()
-        self.objects, self.tall_objects = self._load_y_sorted_objects()
+        self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
@@ -72,6 +72,35 @@ class TileMap:
                 return i
         return None
 
+    def get_interactible_objects(self):
+        """Return each interactible object group, including its Tiled properties."""
+        interactibles = []
+    
+        for key, group in self._object_groups.items():
+            bottom_member = group["bottom_member"]
+    
+            if bottom_member.type != "Interactible":
+                continue
+            
+            interactibles.append({
+                "name": key if isinstance(key, str) else bottom_member.name,
+                "rect": group["bounds"],
+                "sprites": group["sprites"],
+                "properties": dict(bottom_member.properties),
+            })
+    
+        return interactibles
+
+
+    def get_interactible_object(self, object_name):
+        """Return a named interactible object, or None if it doesn't exist."""
+        for obj in self.get_interactible_objects():
+            if obj["name"] == object_name:
+                return obj
+
+        return None
+
+    
     def _load_collisions(self):
         rects = []
     
@@ -163,60 +192,61 @@ class TileMap:
         try:
             layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
         except ValueError:
-            return [], []
-    
+            return [], [], {}
+
         if not isinstance(layer, pytmx.TiledObjectGroup):
-            return [], []
-    
+            return [], [], {}
+
         groups = {}
         for obj in layer:
             if not obj.gid:
-                # Only tile-objects (objects with an image) are
-                # rendered as sprites here; plain rectangles/points
-                # in this layer, if any, are skipped.
                 continue
             image = self.tmx_data.get_tile_image_by_gid(obj.gid)
             if not image:
                 continue
             key = obj.name if obj.name else id(obj)
             groups.setdefault(key, []).append((obj, image))
-    
+
         flat_sprites = []
         tall_objects = []
-    
-        for members in groups.values():
+        object_groups = {}
+
+        for key, members in groups.items():
             member_rects = [pygame.Rect(obj.x, obj.y, obj.width, obj.height) for obj, _ in members]
             bounds = member_rects[0].unionall(member_rects[1:])
-    
-            # Look for a BottomOffset override on any member (there
-            # should be at most one per group — it belongs to whichever
-            # tile-object is the group's visual base).
+
             bottom_offset = 0
             for obj, _ in members:
                 offset = obj.properties.get("BottomOffset")
                 if offset is not None:
                     bottom_offset = offset
                     break
-                
+
             sort_y = bounds.bottom - bottom_offset
             sort_layer = self.y_sort_layer(sort_y)
-    
+
             is_tall = bounds.height > self.tmx_data.tileheight * TILED_TALL_OBJECT_TILE_THRESHOLD
-    
+
             group_sprites = []
             for obj, image in members:
-                # Tall objects get their own copy of the tile image
-                # so fading one for occlusion doesn't bleed into
-                # every other object sharing the same source gid.
                 sprite_image = image.copy() if is_tall else image
                 group_sprites.append(Object(sprite_image, (obj.x, obj.y), sort_layer))
-    
+
             flat_sprites.extend(group_sprites)
-    
+
             if is_tall:
                 tall_objects.append(YSortedObject(group_sprites, bounds, sort_layer))
-    
-        return flat_sprites, tall_objects
+
+            # "Bottom tile" = the member anchored lowest to the ground —
+            # its Tiled class is what get_interactible_objects checks.
+            bottom_member = max((obj for obj, _ in members), key=lambda o: o.y + o.height)
+            object_groups[key] = {
+                "sprites": group_sprites,
+                "bounds": bounds,
+                "bottom_member": bottom_member,
+            }
+
+        return flat_sprites, tall_objects, object_groups
 
 
 class Object(pygame.sprite.Sprite):
