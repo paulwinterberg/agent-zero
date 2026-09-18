@@ -2,7 +2,7 @@ import pygame
 import pyscroll
 import pytmx
 
-from settings import TILED_OBJECTS_LAYER_NAME, TILED_OBJECT_OCCLUSION_ALPHA, TILED_OCCLUSION_FADE_SPEED, TILED_TALL_OBJECT_TILE_THRESHOLD
+from settings import TILED_OBJECTS_LAYER_NAME, TILED_OBJECT_OCCLUSION_ALPHA, TILED_OCCLUSION_FADE_SPEED, TILED_TALL_OBJECT_TILE_THRESHOLD, TILED_SPAWNS_LAYER_NAME
 
 
 class TileMap:
@@ -91,6 +91,31 @@ class TileMap:
     
         return interactibles
 
+    def get_layer_objects(self, layer_name):
+        try:
+            layer = self.tmx_data.get_layer_by_name(layer_name)
+        except ValueError:
+            return []
+    
+        if not isinstance(layer, pytmx.TiledObjectGroup):
+            return []
+
+        infos = []
+        for obj in layer:
+            infos.append({
+                "name": obj.name,
+                "type": obj.type,  # pytmx's `type` is Tiled's "Class" field
+                "properties": dict(obj.properties),
+                "rect": pygame.Rect(obj.x, obj.y, obj.width, obj.height),
+            })
+    
+        return infos
+
+    def get_spawns(self):
+        return self.get_layer_objects(TILED_SPAWNS_LAYER_NAME)
+
+    def get_objects(self):
+        return self.get_layer_objects(TILED_OBJECTS_LAYER_NAME)
 
     def get_interactible_object(self, object_name):
         """Return a named interactible object, or None if it doesn't exist."""
@@ -258,7 +283,7 @@ class Object(pygame.sprite.Sprite):
 
 
 class YSortedObject:
-    """A named group of Decoration sprites from the 'objects' layer,
+    """A named group of object sprites from the 'objects' layer,
     tracked as a unit so it can fade in/out as a whole when it's
     tall enough to hide the player behind it."""
 

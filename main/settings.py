@@ -5,6 +5,7 @@ DISPLAY_CAPTION = "Agent Zero"
 
 #tiled
 TILED_OBJECTS_LAYER_NAME = "Objects"
+TILED_SPAWNS_LAYER_NAME = "Spawns"
 
 #keybinds
 FORWARD = pygame.K_w
