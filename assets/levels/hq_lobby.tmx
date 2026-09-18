@@ -75,7 +75,6 @@
   <object id="39" name="Wall1" gid="339" x="96" y="96" width="32" height="32"/>
   <object id="40" name="Wall1" gid="339" x="64" y="96" width="32" height="32"/>
   <object id="41" name="Wall1" gid="339" x="32" y="96" width="32" height="32"/>
-  <object id="42" name="Wall1" gid="545" x="-259.946" y="-89.4709" width="32" height="32"/>
   <object id="50" name="Plant1" gid="90" x="288" y="320" width="32" height="32"/>
   <object id="51" name="Plant1" gid="106" x="288" y="352" width="32" height="32">
    <properties>

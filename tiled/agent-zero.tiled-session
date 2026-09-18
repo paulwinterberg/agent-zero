@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
+    "activeFile": "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
     "expandedProjectPaths": [
         ".",
         "tilesets"
@@ -39,11 +39,11 @@
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx": {
-            "scale": 4,
+            "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 192.125,
-                "y": 303.875
+                "x": 112,
+                "y": 240
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {
@@ -59,8 +59,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 721.3333333333333,
-                "y": 787.3333333333333
+                "x": 800.3333333333333,
+                "y": 799.6666666666666
             }
         },
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx#TX Tileset Wall": {
@@ -82,7 +82,8 @@
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx"
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
+        "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx"
     ],
     "project": "agent-zero.tiled-project",
     "property.type": "bool",
