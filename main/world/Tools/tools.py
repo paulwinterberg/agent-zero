@@ -20,7 +20,6 @@ class Tools:
         self.equipped = True
         self.state = "equipped"
         self.sprite.kill()
-        print(f"Mission-Tool aufgehoben: {self.name}")
         return True
 
     def drop(self, position):
@@ -128,11 +127,11 @@ class MissionToolManager:
 
     def add_held_visual(self, tool, player):
         held_sprite = tool.create_held_sprite()
-        self.update_held_visual(player)
         self.sprite_group.add(
             held_sprite,
-            layer=self.tilemap.y_sort_layer(player.rect.bottom + 1),
+            layer=self.tilemap.y_sort_layer(player.rect.bottom) + 1,
         )
+        self.update_held_visual(player)
 
     def update_held_visual(self, player):
         if self.inventory and self.inventory[0].held_sprite:
@@ -147,6 +146,10 @@ class MissionToolManager:
             orbit_position = pygame.Vector2(player.rect.center) + direction * 18
             center = round(orbit_position.x), round(orbit_position.y)
             held_sprite.rect = held_sprite.image.get_rect(center=center)
+            self.sprite_group.change_layer(
+                held_sprite,
+                self.tilemap.y_sort_layer(player.rect.bottom) + 1,
+            )
 
     def use_primary(self, player, target):
         """Verwendet das aktuell ausgerüstete Tool mit Linksklick."""
@@ -156,7 +159,7 @@ class MissionToolManager:
         projectile = self.inventory[0].fire(
             player.rect.center,
             target,
-            self.tilemap.collision_rects,
+            self.tilemap,
         )
         self.sprite_group.add(
             projectile.sprite,

@@ -46,5 +46,5 @@ class Taser(Tools):
         pygame.draw.rect(self.sprite.image, (255, 220, 220), self.sprite.image.get_rect(), 2)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
-    def fire(self, position, target, collision_rects):
+    def fire(self, position, target, tilemap):
         return TaserSpark(position, target)

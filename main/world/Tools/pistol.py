@@ -50,5 +50,5 @@ class Pistol(Tools):
         pygame.draw.rect(self.sprite.image, (0, 0, 0), self.sprite.image.get_rect(), 3)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
-    def fire(self, position, target, collision_rects):
-        return Bullet(position, target, collision_rects)
+    def fire(self, position, target, tilemap):
+        return Bullet(position, target, tilemap.collision_rects)
