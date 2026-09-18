@@ -3,8 +3,10 @@ import pygame
 #settings
 DISPLAY_CAPTION = "Agent Zero"
 
+#tiled
 TILED_OBJECTS_LAYER_NAME = "Objects"
 
+#keybinds
 FORWARD = pygame.K_w
 BACKWARD = pygame.K_s
 LEFT = pygame.K_a
@@ -14,9 +16,10 @@ SLIDE = pygame.K_c
 INTERACT = pygame.K_f
 TOOL_PICKUP = pygame.K_r
 
-#sliding
+#sliding & sprinting
 SLIDETIME = .5
 SLIDECOOLDOWN = 3
+SPRINT_STAMINA_PERCENT_THRESHOLD = 0.3
 
 #paths
 SFX_PATH = "assets/sfx"
