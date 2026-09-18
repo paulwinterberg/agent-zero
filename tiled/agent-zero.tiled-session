@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
+    "activeFile": "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
     "expandedProjectPaths": [
         ".",
         "tilesets"
@@ -42,8 +42,8 @@
             "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 112,
-                "y": 240
+                "x": 192.125,
+                "y": 303.875
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {
@@ -55,6 +55,20 @@
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#Walls": {
             "scaleInDock": 1
         },
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 721.3333333333333,
+                "y": 787.3333333333333
+            }
+        },
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx#TX Tileset Wall": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx#parkinglot": {
+            "scaleInDock": 1
+        },
         "tilesets/InteriorTutorial.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 2
@@ -64,14 +78,16 @@
             "scaleInEditor": 3
         }
     },
-    "last.imagePath": "C:/Users/Paul/Documents/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
+    "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx"
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx"
     ],
     "project": "agent-zero.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
