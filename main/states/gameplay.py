@@ -7,12 +7,14 @@ from entities.player import Player
 from states.game_state import GameState
 from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
 from core.interactions import InteractionManager
+from enemies.enemy_manager import EnemyManager
 
 class Gameplay(GameState):
     def __init__(self):
         self.player = Player()
         self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
         self.interaction_manager = InteractionManager()
+        self.enemy_manager = EnemyManager(self.tilemap, self.group)
         
         self.tilemap.zoom_to(4)
         
@@ -25,6 +27,7 @@ class Gameplay(GameState):
         )
     
     def update(self, dt, events):
+        self.enemy_manager.update(dt)
         self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)
 

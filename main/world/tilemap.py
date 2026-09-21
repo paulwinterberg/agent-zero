@@ -104,7 +104,7 @@ class TileMap:
         for obj in layer:
             infos.append({
                 "name": obj.name,
-                "type": obj.type,  # pytmx's `type` is Tiled's "Class" field
+                "type": obj.type,
                 "properties": dict(obj.properties),
                 "rect": pygame.Rect(obj.x, obj.y, obj.width, obj.height),
             })

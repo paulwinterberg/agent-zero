@@ -9,7 +9,7 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
 
         self.image = pygame.Surface((32, 32))
-        self.image.fill((255, 0, 0))
+        self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect(center=pos)
 
         self.hitbox = pygame.Rect(0, 0, 32, settings.ENEMY_HITBOX_HEIGHT)
