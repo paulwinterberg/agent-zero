@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="423">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="423">
  <tileset firstgid="1" name="parkinglot" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="../../tiled/tilesets/parkinglot.png" width="640" height="640"/>
   <tile id="27">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="6.75657" y="16.4229" width="22.5877" height="9.41974">
-     <capsule/>
-    </object>
+    <object id="2" x="6.75657" y="16.4229" width="22.5877" height="9.41974"/>
     <object id="3" x="2.6726" y="12.8454" width="16.4461" height="6.31271" rotation="35.4775">
      <ellipse/>
     </object>
@@ -14,9 +12,7 @@
   </tile>
   <tile id="51">
    <objectgroup draworder="index" id="2">
-    <object id="1" x="7.9402" y="24.5111" width="14.894" height="6.36203">
-     <capsule/>
-    </object>
+    <object id="1" x="7.9402" y="24.5111" width="14.894" height="6.36203"/>
    </objectgroup>
   </tile>
   <tile id="71">
