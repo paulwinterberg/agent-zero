@@ -6,7 +6,8 @@ class Interactible:
     
     def __init__(self):
         self.sprites = []
-        self.state = None  # "closed", "open", etc. - wird in Subklassen definiert
+        self.properties = {}
+        self.state = None
         self.tilemap = None
         self.closed_images = []
         self.open_images = []
@@ -21,6 +22,7 @@ class Interactible:
             properties: Dict mit Custom Properties aus Tiled
         """
         self.sprites = sprites
+        self.properties = properties or {}
         if sprites:
             self.closed_images = [sprite.image.copy() for sprite in sprites]
             

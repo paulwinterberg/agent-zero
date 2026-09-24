@@ -4,11 +4,13 @@ from world.interactibles.interactible import Interactible
 class Door(Interactible):
     def __init__(self):
         super().__init__()
-        self.state = "closed"  # "closed" oder "open"
+        self.state = "closed"
+        self.locked = False
 
     def set_sprites(self, sprites, properties=None):
         """Speichert Sprites und erstellt open_images Variante."""
         super().set_sprites(sprites, properties)
+        self.locked = self.properties.get("locked", False)
         
         # Erstelle die "open" Variante (heller)
         if self.closed_images:
@@ -16,6 +18,9 @@ class Door(Interactible):
 
     def on_interact(self):
         """Toggle Tür-State zwischen offen und zu."""
+        if self.locked:
+            return False
+
         self.state = "open" if self.state == "closed" else "closed"
         
         # Aktualisiere Sprites
@@ -34,3 +39,5 @@ class Door(Interactible):
                 for rect in self.collision_rects:
                     if rect not in self.tilemap.collision_rects:
                         self.tilemap.collision_rects.append(rect)
+
+        return True
