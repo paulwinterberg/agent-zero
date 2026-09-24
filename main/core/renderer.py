@@ -3,6 +3,7 @@ import pyscroll
 import settings
 import pygame_gui
 
+from globals import globs
 from entities.player import Player
 from world.tilemap import TileMap
 import core.screen as screen_module
@@ -62,6 +63,8 @@ def load_tilemap(path, player: Player) -> tuple[TileMap, pyscroll.PyscrollGroup]
     group.add(player, layer=tilemap.y_sort_layer(player.rect.bottom))
     group.add(*tilemap.objects)
 
+    globs["tilemap"] = tilemap
+    
     return tilemap, group
 
 def get_ui_manager():

@@ -7,7 +7,7 @@ from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos=(0,0), path: list = None, player = None):
+    def __init__(self, pos=(0,0), path: list = None):
         super().__init__()
 
         self.image = pygame.Surface((32, 32))
@@ -20,7 +20,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.path = path
 
-        self.perception = Perception(self, player)
+        self.perception = Perception(self)
 
         self.state: EntityState = None
         self.change_state(PatrolState() if self.path else IdleState())
@@ -53,5 +53,8 @@ class Enemy(pygame.sprite.Sprite):
         return reached
 
     def update(self, dt):
-        print(self.perception.can_see_player())
+        if self.perception.can_see_player():
+            self.image.fill((255, 255, 255))
+        else:
+            self.image.fill((0, 0, 0))
         self.state.update(self, dt)
