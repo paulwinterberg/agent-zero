@@ -15,6 +15,7 @@ SPRINT = pygame.K_LSHIFT
 SLIDE = pygame.K_c
 INTERACT = pygame.K_f
 TOOL_PICKUP = pygame.K_r
+TOOL_DROP = pygame.K_q
 
 #sliding & sprinting
 SLIDETIME = .5

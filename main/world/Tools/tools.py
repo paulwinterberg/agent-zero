@@ -7,19 +7,42 @@ class Tools:
 
     def __init__(self):
         self.name = None
+        self.anzahl = 1
+        self.consumable = False
+        self.keep_when_empty = False
         self.state = None
         self.collected = False
         self.equipped = False
         self.held_sprite = None
 
     def on_interact(self):
-        if self.collected:
+        if self.collected or (self.anzahl <= 0 and not self.keep_when_empty):
             return False
 
         self.collected = True
         self.equipped = True
         self.state = "equipped"
         self.sprite.kill()
+        return True
+
+    def consume(self):
+        """Verbraucht eine Ladung und entfernt das Tool bei Anzahl null."""
+        if self.anzahl <= 0:
+            return False
+
+        self.anzahl -= 1
+        if self.anzahl == 0:
+            if self.keep_when_empty:
+                self.state = "empty"
+                return True
+
+            self.state = "consumed"
+            self.collected = False
+            self.equipped = False
+            if self.held_sprite:
+                self.held_sprite.kill()
+                self.held_sprite = None
+            self.sprite.kill()
         return True
 
     def drop(self, position):
@@ -67,11 +90,19 @@ class MissionToolManager:
         from world.Tools.pistol import Pistol
         from world.Tools.red_block import RedBlock
         from world.Tools.taser import Taser
+        from world.Tools.key import Key
+        from world.Tools.smoke_bomb import SmokeBomb
+        from world.Tools.munition import Munition
+        from world.Tools.energie import Energie
 
         tools = (
             Taser((player.rect.centerx + 40, player.rect.centery)),
             RedBlock((player.rect.centerx + 80, player.rect.centery)),
             Pistol((player.rect.centerx + 120, player.rect.centery)),
+            Key((player.rect.centerx + 160, player.rect.centery)),
+            SmokeBomb((player.rect.centerx + 200, player.rect.centery)),
+            Munition((player.rect.centerx + 240, player.rect.centery)),
+            Energie((player.rect.centerx + 280, player.rect.centery)),
         )
         tools[1].name = "Blue Block"
         tools[1].sprite.image.fill((40, 100, 255))
@@ -93,6 +124,8 @@ class MissionToolManager:
         )
 
     def handle_event(self, event, player):
+        if event.type == pygame.KEYDOWN and event.key == settings.TOOL_DROP:
+            return self.drop_current_tool(player)
         if event.type == pygame.KEYDOWN and event.key == settings.TOOL_PICKUP:
             return self.try_interact(player)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -103,7 +136,28 @@ class MissionToolManager:
             mouse_delta = (pygame.Vector2(event.pos) - screen_center) / zoom
             target = pygame.Vector2(player.rect.center) + mouse_delta
             return self.use_primary(player, target)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            map_layer = getattr(self.sprite_group, "_map_layer", None)
+            screen = pygame.display.get_surface()
+            screen_center = pygame.Vector2(screen.get_rect().center) if screen else pygame.Vector2()
+            zoom = map_layer.zoom if map_layer else 1
+            mouse_delta = (pygame.Vector2(event.pos) - screen_center) / zoom
+            target = pygame.Vector2(player.rect.center) + mouse_delta
+            return self.use_secondary(player, target)
         return False
+
+    def drop_current_tool(self, player):
+        """Legt das aktuell gehaltene Tool an der Spielerposition ab."""
+        if not self.inventory:
+            return False
+
+        tool = self.inventory.pop(0)
+        tool.drop(player.rect.center)
+        self.sprite_group.add(
+            tool.sprite,
+            layer=self.tilemap.y_sort_layer(tool.sprite.rect.bottom),
+        )
+        return True
 
     def try_interact(self, player):
         if not self.nearby_tools or self.interaction_cooldown > 0:
@@ -111,6 +165,9 @@ class MissionToolManager:
 
         self.interaction_cooldown = self.interaction_cooldown_time
         tool = self.nearby_tools[0]
+        if getattr(tool, "refill_tool_name", None):
+            return self.collect_refill(tool)
+
         if tool.on_interact():
             if self.inventory:
                 previous_tool = self.inventory[0]
@@ -125,11 +182,23 @@ class MissionToolManager:
             return True
         return False
 
+    def collect_refill(self, refill):
+        """Nimmt ein Munitions- oder Energie-Pickup auf."""
+        target = self.inventory[0] if self.inventory else None
+        if not target or target.name != refill.refill_tool_name:
+            return False
+
+        if not target or not refill.on_interact():
+            return False
+
+        target.anzahl += refill.refill_amount
+        return True
+
     def add_held_visual(self, tool, player):
         held_sprite = tool.create_held_sprite()
         self.sprite_group.add(
             held_sprite,
-            layer=self.tilemap.y_sort_layer(player.rect.bottom) + 1,
+            layer=self.tilemap.y_sort_layer(player.rect.bottom),
         )
         self.update_held_visual(player)
 
@@ -148,15 +217,20 @@ class MissionToolManager:
             held_sprite.rect = held_sprite.image.get_rect(center=center)
             self.sprite_group.change_layer(
                 held_sprite,
-                self.tilemap.y_sort_layer(player.rect.bottom) + 1,
+                self.tilemap.y_sort_layer(player.rect.bottom),
             )
 
     def use_primary(self, player, target):
         """Verwendet das aktuell ausgerüstete Tool mit Linksklick."""
-        if not self.inventory or not hasattr(self.inventory[0], "fire"):
+        if (
+            not self.inventory
+            or not hasattr(self.inventory[0], "fire")
+            or self.inventory[0].anzahl <= 0
+        ):
             return False
 
-        projectile = self.inventory[0].fire(
+        tool = self.inventory[0]
+        projectile = tool.fire(
             player.rect.center,
             target,
             self.tilemap,
@@ -165,6 +239,31 @@ class MissionToolManager:
             projectile.sprite,
             layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
         )
+        if tool.consumable:
+            tool.consume()
+        if tool.anzahl <= 0 and not tool.keep_when_empty:
+            self.inventory.pop(0)
+        return True
+
+    def use_secondary(self, player, target):
+        """Verwendet ein Tool mit Rechtsklick."""
+        if (
+            not self.inventory
+            or not getattr(self.inventory[0], "secondary_use", False)
+            or self.inventory[0].anzahl <= 0
+        ):
+            return False
+
+        tool = self.inventory[0]
+        projectile = tool.fire(player.rect.center, target, self.tilemap)
+        self.sprite_group.add(
+            projectile.sprite,
+            layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
+        )
+        if tool.consumable:
+            tool.consume()
+        if tool.anzahl <= 0 and not tool.keep_when_empty:
+            self.inventory.pop(0)
         return True
 
     def update_projectiles(self, dt):
@@ -172,4 +271,10 @@ class MissionToolManager:
         for sprite in list(self.sprite_group.sprites()):
             projectile = getattr(sprite, "projectile", None)
             if projectile and not projectile.update(dt):
+                effect = getattr(projectile, "on_expire", lambda: None)()
                 sprite.kill()
+                if effect:
+                    self.sprite_group.add(
+                        effect.sprite,
+                        layer=self.tilemap.y_sort_layer(effect.sprite.rect.bottom),
+                    )

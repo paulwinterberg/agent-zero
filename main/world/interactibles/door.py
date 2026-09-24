@@ -10,15 +10,17 @@ class Door(Interactible):
     def set_sprites(self, sprites, properties=None):
         """Speichert Sprites und erstellt open_images Variante."""
         super().set_sprites(sprites, properties)
-        self.locked = self.properties.get("locked", False)
+        self.locked = self.properties.get(
+            "locked", self.properties.get("Locked", False)
+        )
         
         # Erstelle die "open" Variante (heller)
         if self.closed_images:
             self.open_images = [self.create_light_version(img) for img in self.closed_images]
 
-    def on_interact(self):
+    def on_interact(self, held_tool=None):
         """Toggle Tür-State zwischen offen und zu."""
-        if self.locked:
+        if self.locked and not getattr(held_tool, "can_unlock", False):
             return False
 
         self.state = "open" if self.state == "closed" else "closed"

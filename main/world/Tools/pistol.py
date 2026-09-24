@@ -15,7 +15,7 @@ class Bullet:
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
         direction = pygame.Vector2(target) - self.position
-        self.velocity = direction.normalize() * 300 if direction.length() else pygame.Vector2()
+        self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
         self.collision_rects = collision_rects
         self.remaining_time = 2.0
 
@@ -43,6 +43,9 @@ class Pistol(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Pistol"
+        self.anzahl = 50
+        self.consumable = True
+        self.keep_when_empty = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((32, 20))

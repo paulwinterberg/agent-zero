@@ -16,7 +16,7 @@ class Curtains(Interactible):
         if self.closed_images:
             self.open_images = [self.create_light_version(img) for img in self.closed_images]
 
-    def on_interact(self):
+    def on_interact(self, held_tool=None):
         """Toggle Vorhang-State zwischen offen und zu."""
         self.state = "open" if self.state == "closed" else "closed"
         

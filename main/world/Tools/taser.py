@@ -39,6 +39,9 @@ class Taser(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Taser"
+        self.anzahl = 10
+        self.consumable = True
+        self.keep_when_empty = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((32, 24))
