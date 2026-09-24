@@ -1,11 +1,13 @@
 import pygame
 import settings
+import core.state_manager as state_manager
 
+from settings import ENEMY_DEFAULT_SPEED #pixels/sec
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos=(0,0)):
+    def __init__(self, pos=(0,0), path: list = None, player = None):
         super().__init__()
 
         self.image = pygame.Surface((32, 32))
@@ -16,14 +18,40 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
 
-        self.perception = Perception(self)
+        self.path = path
 
-        self.state: EntityState = IdleState()
+        self.perception = Perception(self, player)
+
+        self.state: EntityState = None
+        self.change_state(PatrolState() if self.path else IdleState())
 
     def change_state(self, new_state):
-        self.state.exit(self)
+        if self.state:
+            self.state.exit(self)
         self.state = new_state
         self.state.enter(self)
 
+    def goto(self, pos: pygame.math.Vector2 | tuple[float, float]):
+        self.pos = pygame.math.Vector2(pos)
+
+    def move_towards(self, target: pygame.math.Vector2 | tuple[float, float], dt) -> bool:
+        target = pygame.math.Vector2(target)
+        offset = target - self.pos
+        distance = offset.length()
+
+        reached = False
+
+        if distance <= ENEMY_DEFAULT_SPEED * dt:
+            self.pos = target
+            reached = True
+        elif distance > 0:
+            self.pos += offset.normalize() * ENEMY_DEFAULT_SPEED * dt
+
+        self.hitbox.midbottom = (round(self.pos.x), round(self.pos.y))
+        self.rect.midbottom = self.hitbox.midbottom
+
+        return reached
+
     def update(self, dt):
+        print(self.perception.can_see_player())
         self.state.update(self, dt)

@@ -1,4 +1,5 @@
 import settings
+import pygame
 
 from typing import TYPE_CHECKING
 
@@ -13,9 +14,15 @@ class IdleState(EntityState):
         pass
 
 class PatrolState(EntityState):
+    def enter(self, enemy):
+        self.path = enemy.path
+        self.path_index = 0
+
     def update(self, enemy, dt):
-        #entity.move_along_current_path(dt)
-        pass
+        marker = self.path[self.path_index]
+        reached = enemy.move_towards(pygame.math.Vector2(marker.x, marker.y) , dt)
+        if reached:
+            self.path_index = self.path_index + 1 if self.path_index + 1 < len(self.path) else 0
 
 class ChaseState(EntityState):
     def enter(self, enemy):

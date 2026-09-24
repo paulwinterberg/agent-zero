@@ -23,7 +23,7 @@ def init():
     clock = pygame.time.Clock()
 
     screen_size = screen_module.get_screen_size()
-    print(screen_size)
+
     ui_manager = pygame_gui.UIManager((screen_size.x, screen_size.y))
 
 def start_loop(tickFunc):

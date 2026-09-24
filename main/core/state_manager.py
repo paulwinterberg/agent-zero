@@ -3,22 +3,22 @@ import core.renderer as renderer
 
 from states.game_state import GameState
 
-class StateManager:
-    def __init__(self):
-        self.stack: list[GameState] = []
+stack: list[GameState] = []
 
-    def push(self, state):
-        self.stack.append(state)
+def push(state):
+    stack.append(state)
 
-    def pop(self):
-        self.stack.pop()
+def pop():
+    stack.pop()
 
-    def update(self, dt, events):
-        self.stack[-1].update(dt, events)
+def update(dt, events):
+    stack[-1].update(dt, events)
 
-    def draw(self, screen, dt):
-        for state in self.stack:
-            state.draw(screen, dt)
+def get_state():
+    return stack[-1]
 
-        renderer.render_ui()
-        pygame.display.flip()
+def draw(screen, dt):
+    for state in stack:
+        state.draw(screen, dt)
+    renderer.render_ui()
+    pygame.display.flip()

@@ -2,9 +2,10 @@ from world.tilemap import TileMap
 from entities.enemy import Enemy
 
 class EnemyManager:
-    def __init__(self, tilemap: TileMap, group=None):
+    def __init__(self, tilemap: TileMap, group=None, player = None):
         self.tilemap = tilemap
         self.group = group
+        self.player = player
         self.enemy_spawns = []
         self.enemies = []
         
@@ -18,11 +19,29 @@ class EnemyManager:
                 
     def _load_enemies(self):
         for spawn in self.enemy_spawns:
-            enemy = Enemy((spawn["rect"].left, spawn["rect"].top))
+            path = self.get_enemy_path(spawn["name"])
+
+
+            enemy = Enemy((spawn["rect"].left, spawn["rect"].top), path, self.player)
             self.enemies.append(enemy)
 
             if self.group is not None:
                 self.group.add(enemy, layer=self.tilemap.y_sort_layer(enemy.rect.bottom))
+
+    def get_enemy_path(self, enemy_name):
+        prefix = enemy_name + "_"
+        path_index = 1
+        path_markers = []
+
+        while True:
+            marker = self.tilemap.get_object("Paths", prefix+str(path_index))
+            if not marker:
+                break
+
+            path_markers.append(marker)
+            path_index += 1
+
+        return path_markers if len(path_markers) > 0 else None
     
     def update(self, dt):
         for enemy in self.enemies:
