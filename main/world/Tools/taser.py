@@ -39,7 +39,9 @@ class Taser(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Taser"
-        self.anzahl = 10
+        self.anzahl = 20
+        self.max_anzahl = 20
+        self.reload_item_name = "Energie"
         self.consumable = True
         self.keep_when_empty = True
         self.state = "ready"

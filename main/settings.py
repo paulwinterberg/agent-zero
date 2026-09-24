@@ -14,8 +14,13 @@ RIGHT = pygame.K_d
 SPRINT = pygame.K_LSHIFT
 SLIDE = pygame.K_c
 INTERACT = pygame.K_f
-TOOL_PICKUP = pygame.K_r
+TOOL_PICKUP = pygame.K_e
+TOOL_RELOAD = pygame.K_r
 TOOL_DROP = pygame.K_q
+WEAPON_WHEEL_TOGGLE = pygame.K_TAB
+
+#tool
+WEAPON_WHEEL_SLOTS = 5
 
 #sliding & sprinting
 SLIDETIME = .5

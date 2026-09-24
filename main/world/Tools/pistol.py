@@ -44,6 +44,8 @@ class Pistol(Tools):
         super().__init__()
         self.name = "Pistol"
         self.anzahl = 50
+        self.max_anzahl = 50
+        self.reload_item_name = "Munition"
         self.consumable = True
         self.keep_when_empty = True
         self.state = "ready"

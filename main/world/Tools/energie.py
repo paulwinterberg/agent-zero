@@ -10,7 +10,7 @@ class Energie(Tools):
         super().__init__()
         self.name = "Energie"
         self.refill_tool_name = "Taser"
-        self.refill_amount = 5
+        self.refill_amount = 20
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((28, 28), pygame.SRCALPHA)
