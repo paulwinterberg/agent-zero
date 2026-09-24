@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="423">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="424">
  <tileset firstgid="1" name="parkinglot" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="../../tiled/tilesets/parkinglot.png" width="640" height="640"/>
   <tile id="27">
@@ -225,6 +225,7 @@
   <object id="283" name="Door1" type="Interactible" gid="90" x="576" y="480" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Door"/>
+    <property name="Locked" type="bool" value="true"/>
    </properties>
   </object>
   <object id="284" name="Door1" gid="70" x="576" y="448" width="32" height="32"/>
