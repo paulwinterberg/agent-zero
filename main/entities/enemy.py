@@ -10,7 +10,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos=(0,0), path: list = None):
         super().__init__()
 
-        self.image = pygame.Surface((32, 32))
+        self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect(center=pos)
 
@@ -51,10 +51,17 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.midbottom = self.hitbox.midbottom
 
         return reached
+    
+    def _draw_exclamation_mark(self):
+        marker = pygame.Surface((10, 50), pygame.SRCALPHA)
+        pygame.draw.line(marker, (255, 0, 0), (5, 2), (5, 12), 3)
+        pygame.draw.circle(marker, (255, 0, 0), (5, 15), 2)
+        self.image.blit(marker, (11, 0))
 
     def update(self, dt):
         if self.perception.can_see_player():
-            self.image.fill((255, 255, 255))
+            self._draw_exclamation_mark()
         else:
             self.image.fill((0, 0, 0))
+
         self.state.update(self, dt)
