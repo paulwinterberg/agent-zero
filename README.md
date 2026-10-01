@@ -17,4 +17,4 @@ git merge origin/main
 # To run the code
 open new codespace in browser
 type "pip install -r requirements.txt" into terminal
-run code
+run code by inputting "python main/main.py" into terminal
