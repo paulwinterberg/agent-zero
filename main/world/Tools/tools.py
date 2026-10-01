@@ -437,9 +437,20 @@ class MissionToolManager:
 
     def update_projectiles(self, dt):
         """Bewegt Kugeln und entfernt abgelaufene Sprites."""
+        enemies = [
+            sprite
+            for sprite in self.sprite_group.sprites()
+            if callable(getattr(sprite, "take_damage", None))
+        ]
         for sprite in list(self.sprite_group.sprites()):
             projectile = getattr(sprite, "projectile", None)
-            if projectile and not projectile.update(dt):
+            if not projectile:
+                continue
+            if getattr(projectile, "damage", None) is not None:
+                active = projectile.update(dt, enemies)
+            else:
+                active = projectile.update(dt)
+            if not active:
                 effect = getattr(projectile, "on_expire", lambda: None)()
                 sprite.kill()
                 if effect:
