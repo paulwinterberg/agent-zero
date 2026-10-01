@@ -3,7 +3,7 @@ import pyscroll
 import settings
 import pygame_gui
 
-from entities.player import Player
+from entities.player.player import Player
 from world.tilemap import TileMap
 import core.screen as screen_module
 

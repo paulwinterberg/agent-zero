@@ -45,7 +45,7 @@ class InteractionManager:
         dy = player_center[1] - obj_center[1]
         return (dx**2 + dy**2) ** 0.5
     
-    def try_interact(self):
+    def try_interact(self, held_tool=None):
         """Versucht mit dem nächsten Objekt in Reichweite zu interagieren."""
         if not self.active_interactions or self.interaction_cooldown > 0:
             return False
@@ -57,7 +57,7 @@ class InteractionManager:
         # Lade Interactible und rufe on_interact auf
         interactible = self._load_interactible(closest)
         if interactible:
-            interactible.on_interact()
+            interactible.on_interact(held_tool)
         
         return True
     
