@@ -204,7 +204,8 @@ class TileMap:
             image = self.tmx_data.get_tile_image_by_gid(obj.gid)
             if not image:
                 continue
-            key = obj.name if obj.name else id(obj)
+            is_seethrough = bool(obj.properties.get("Seethrough"))
+            key = id(obj) if is_seethrough or not obj.name else obj.name
             groups.setdefault(key, []).append((obj, image))
 
         flat_sprites = []
@@ -225,7 +226,14 @@ class TileMap:
             sort_y = bounds.bottom - bottom_offset
             sort_layer = self.y_sort_layer(sort_y)
 
-            is_tall = bounds.height > self.tmx_data.tileheight * TILED_TALL_OBJECT_TILE_THRESHOLD
+            is_seethrough = any(
+                obj.properties.get("Seethrough") for obj, _ in members
+            )
+            is_tall = (
+                is_seethrough
+                or bounds.height
+                > self.tmx_data.tileheight * TILED_TALL_OBJECT_TILE_THRESHOLD
+            )
 
             group_sprites = []
             for obj, image in members:

@@ -13,7 +13,7 @@ from world.Tools.tools import MissionToolManager
 class Gameplay(State):
     def __init__(self):
         self.player = Player()
-        self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
+        self.tilemap, self.group = load_tilemap("assets/levels/containership.tmx", self.player)
         self.interaction_manager = InteractionManager()
         self.tool_manager = MissionToolManager(self.group, self.tilemap)
         
