@@ -24,6 +24,8 @@ class TileMap:
 
         self.collision_rects = self._load_collisions()
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
+        self.door_collision_rects = self._load_door_collisions()
+        self.collision_rects.extend(self.door_collision_rects)
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
@@ -54,17 +56,51 @@ class TileMap:
             overlapping = obj.rect.colliderect(player.rect)
             obj.update(dt, drawn_in_front and overlapping)
 
+    def _get_object_layer(self, preferred_names):
+        names = [preferred_names] if isinstance(preferred_names, str) else preferred_names
+        for name in names:
+            if not name:
+                continue
+            try:
+                layer = self.tmx_data.get_layer_by_name(name)
+            except ValueError:
+                continue
+            if isinstance(layer, pytmx.TiledObjectGroup):
+                return layer
+        return None
+
     def get_object(self, layer_name, object_name) -> pytmx.TiledObject | None:
-        try:
-            layer = self.tmx_data.get_layer_by_name(layer_name)
-        except ValueError:
-            return None
-        if not isinstance(layer, pytmx.TiledObjectGroup):
+        layer = self._get_object_layer([layer_name])
+        if layer is None:
             return None
         for obj in layer:
             if obj.name == object_name:
                 return obj
         return None
+
+    def get_tool_spawns(self):
+        """Return named tool spawn points from the Toolspawn object layer."""
+        layer = self._get_object_layer("Toolspawn")
+        if layer is None:
+            return []
+        return [
+            {"name": obj.name, "position": (obj.x, obj.y)}
+            for obj in layer
+            if obj.name
+        ]
+
+    def _load_door_collisions(self):
+        """Create closed-door colliders for doors in the Objects layer."""
+        door_collisions = []
+        for group in self._object_groups.values():
+            bottom_member = group["bottom_member"]
+            if (
+                bottom_member.type == "Interactible"
+                and bottom_member.properties.get("InteractibleClass")
+                in ("Door", "ContainerDoor")
+            ):
+                door_collisions.append(group["bounds"].copy())
+        return door_collisions
 
     def get_layer_index(self, layer_name):
         for i, layer in enumerate(self.tmx_data.visible_layers):
@@ -77,6 +113,9 @@ class TileMap:
         interactibles = []
     
         for key, group in self._object_groups.items():
+            if not any(sprite.alive() for sprite in group["sprites"]):
+                continue
+
             bottom_member = group["bottom_member"]
     
             if bottom_member.type != "Interactible":
@@ -131,11 +170,8 @@ class TileMap:
         # Collisions layer). obj.x/obj.y are already top-left — see
         # _load_y_sorted_objects — so the collider offsets from the
         # tileset apply directly, no grid-cell math needed.
-        try:
-            objects_layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
-        except ValueError:
-            objects_layer = None
-    
+        objects_layer = self._get_object_layer([TILED_OBJECTS_LAYER_NAME, "Objektebene", "Objects", "objects"])
+
         if isinstance(objects_layer, pytmx.TiledObjectGroup):
             for obj in objects_layer:
                 if not obj.gid:
@@ -189,12 +225,8 @@ class TileMap:
         obj.y is already a top-left coordinate and obj.y + obj.height
         is the bottom edge — no manual adjustment needed here.
         """
-        try:
-            layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
-        except ValueError:
-            return [], [], {}
-
-        if not isinstance(layer, pytmx.TiledObjectGroup):
+        layer = self._get_object_layer([TILED_OBJECTS_LAYER_NAME, "Objektebene", "Objects", "objects"])
+        if layer is None:
             return [], [], {}
 
         groups = {}

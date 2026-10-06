@@ -96,8 +96,8 @@ class MissionToolManager:
             layer=self.tilemap.y_sort_layer(tool.sprite.rect.bottom),
         )
 
-    def add_demo_tools(self, player):
-        """Platziert die aktuell verfügbaren Mission-Tools im Testlevel."""
+    def spawn_tools_from_map(self):
+        """Create mission tools at the named Toolspawn points from Tiled."""
         from world.Tools.pistol import Pistol
         from world.Tools.red_block import RedBlock
         from world.Tools.taser import Taser
@@ -106,18 +106,28 @@ class MissionToolManager:
         from world.Tools.munition import Munition
         from world.Tools.energie import Energie
 
-        tools = (
-            Taser((player.rect.centerx + 40, player.rect.centery)),
-            RedBlock((player.rect.centerx + 80, player.rect.centery)),
-            Pistol((player.rect.centerx + 120, player.rect.centery)),
-            Key((player.rect.centerx + 160, player.rect.centery)),
-            SmokeBomb((player.rect.centerx + 200, player.rect.centery)),
-            Munition((player.rect.centerx + 240, player.rect.centery)),
-            Energie((player.rect.centerx + 280, player.rect.centery)),
-        )
-        tools[1].name = "Blue Block"
-        tools[1].sprite.image.fill((40, 100, 255))
-        for tool in tools:
+        tool_types = {
+            "pistol": Pistol,
+            "taser": Taser,
+            "redblock": RedBlock,
+            "blueblock": RedBlock,
+            "key": Key,
+            "schlüssel": Key,
+            "smokebomb": SmokeBomb,
+            "munition": Munition,
+            "energie": Energie,
+        }
+        for spawn in self.tilemap.get_tool_spawns():
+            tool_name = spawn["name"].strip().casefold()
+            normalized_name = tool_name.replace(" ", "").replace("_", "").replace("-", "")
+            tool_type = tool_types.get(tool_name, tool_types.get(normalized_name))
+            if tool_type is None:
+                raise ValueError(f"Unknown tool spawn name in Tiled: {spawn['name']!r}")
+
+            tool = tool_type(spawn["position"])
+            if normalized_name == "blueblock":
+                tool.name = "Blue Block"
+                tool.sprite.image.fill((40, 100, 255))
             self.add_tool(tool)
 
     def update(self, dt, player):

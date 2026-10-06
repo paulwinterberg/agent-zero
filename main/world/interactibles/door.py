@@ -7,6 +7,14 @@ class Door(Interactible):
         self.state = "closed"
         self.locked = False
 
+    def set_tilemap(self, tilemap):
+        self.tilemap = tilemap
+        if self.bounds:
+            self.collision_rects = [
+                rect for rect in tilemap.door_collision_rects
+                if rect == self.bounds
+            ]
+
     def set_sprites(self, sprites, properties=None):
         """Speichert Sprites und erstellt open_images Variante."""
         super().set_sprites(sprites, properties)
@@ -32,14 +40,18 @@ class Door(Interactible):
         # Aktualisiere Kollisionen
         if self.tilemap:
             if self.state == "open":
-                # Entferne Collision-Rects
                 for rect in self.collision_rects:
-                    if rect in self.tilemap.collision_rects:
-                        self.tilemap.collision_rects.remove(rect)
+                    self.tilemap.collision_rects[:] = [
+                        collision
+                        for collision in self.tilemap.collision_rects
+                        if collision is not rect
+                    ]
             else:
-                # Füge Collision-Rects wieder hinzu
                 for rect in self.collision_rects:
-                    if rect not in self.tilemap.collision_rects:
+                    if not any(
+                        collision is rect
+                        for collision in self.tilemap.collision_rects
+                    ):
                         self.tilemap.collision_rects.append(rect)
 
         return True
