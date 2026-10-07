@@ -249,6 +249,21 @@
   <object id="112" name="Schlüssel" x="704.5" y="391.5">
    <point/>
   </object>
+  <object id="113" name="Kokain" x="575" y="386.25">
+   <point/>
+  </object>
+  <object id="114" name="Kokain" x="744" y="391.5">
+   <point/>
+  </object>
+  <object id="115" name="Kokain" x="575.5" y="161">
+   <point/>
+  </object>
+  <object id="116" name="Kokain" x="1179" y="166">
+   <point/>
+  </object>
+  <object id="117" name="Kokain" x="744" y="161">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="5" name="Objects">
   <object id="2" name="Wall1" gid="506" x="512" y="256" width="32" height="32">

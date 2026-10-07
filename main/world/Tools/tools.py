@@ -9,6 +9,7 @@ class Tools:
     def __init__(self):
         self.name = None
         self.anzahl = 1
+        self.stackable = False
         self.consumable = False
         self.keep_when_empty = False
         self.state = None
@@ -105,6 +106,7 @@ class MissionToolManager:
         from world.Tools.smoke_bomb import SmokeBomb
         from world.Tools.munition import Munition
         from world.Tools.energie import Energie
+        from world.Tools.cocaine import Cocaine
 
         tool_types = {
             "pistol": Pistol,
@@ -116,6 +118,8 @@ class MissionToolManager:
             "smokebomb": SmokeBomb,
             "munition": Munition,
             "energie": Energie,
+            "kokain": Cocaine,
+            "cocaine": Cocaine,
         }
         for spawn in self.tilemap.get_tool_spawns():
             tool_name = spawn["name"].strip().casefold()
@@ -216,6 +220,20 @@ class MissionToolManager:
             if tool.name in ("Munition", "Energie"):
                 return self.collect_reload_pickup(tool)
             return self.collect_refill(tool)
+        if tool.stackable:
+            stack = next(
+                (
+                    item for item in self.inventory
+                    if item.stackable and item.name == tool.name
+                ),
+                None,
+            )
+            if stack:
+                room = stack.max_anzahl - stack.anzahl
+                if room <= 0 or not tool.on_interact():
+                    return False
+                stack.anzahl += min(room, tool.anzahl)
+                return True
         if len(self.inventory) >= self.max_inventory_slots:
             return False
 
@@ -432,11 +450,16 @@ class MissionToolManager:
             return False
 
         tool = self.current_tool
-        projectile = tool.fire(player.rect.center, target, self.tilemap)
-        self.sprite_group.add(
-            projectile.sprite,
-            layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
-        )
+        action = getattr(tool, "secondary_action", None)
+        if action:
+            if not action(player):
+                return False
+        else:
+            projectile = tool.fire(player.rect.center, target, self.tilemap)
+            self.sprite_group.add(
+                projectile.sprite,
+                layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
+            )
         if tool.consumable:
             tool.consume()
         if tool.anzahl <= 0 and not tool.keep_when_empty:

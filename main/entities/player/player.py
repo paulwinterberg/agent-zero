@@ -37,12 +37,18 @@ class Player(pygame.sprite.Sprite):
         self.stamina_drain_rate = 1.0   # per second while sprinting
         self.stamina_regen_rate = .5   # per second while not sprinting
         self.is_sprinting = False
+        self.speed_boost_timer = 0.0
+        self.speed_boost_speed = 0
 
         # last facing direction, used so sliding has something to lock onto
         self.facing = pygame.math.Vector2(0, 1)
 
     def get_stamina_percent(self):
         return self.stamina / self.stamina_max
+
+    def activate_speed_boost(self, duration, speed):
+        self.speed_boost_timer = max(self.speed_boost_timer, duration)
+        self.speed_boost_speed = max(self.speed_boost_speed, speed)
 
     def goto(self, pos=(0, 0)):
         self.rect.topleft = pos
@@ -60,6 +66,9 @@ class Player(pygame.sprite.Sprite):
     def _update_timers(self, dt):
         self.slidetime = max(0.0, self.slidetime - dt)
         self.slidecooldown = max(0.0, self.slidecooldown - dt)
+        self.speed_boost_timer = max(0.0, self.speed_boost_timer - dt)
+        if self.speed_boost_timer == 0:
+            self.speed_boost_speed = 0
 
     def _try_start_slide(self, keys, move_dir):
         can_slide = (
@@ -81,6 +90,12 @@ class Player(pygame.sprite.Sprite):
             self.stamina = min(self.stamina_max, self.stamina + self.stamina_regen_rate * dt)
             self.is_sprinting = False
             return self.slidespeed
+
+        if self.speed_boost_timer > 0:
+            self.stamina = min(self.stamina_max, self.stamina + self.stamina_regen_rate * dt)
+            self.is_sprinting = False
+            self.runspeed = max(self.runspeed_base, self.runspeed - self.runspeed_decel * dt)
+            return self.speed_boost_speed
 
         wants_sprint = keys[settings.SPRINT]
 
