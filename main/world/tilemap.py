@@ -86,20 +86,20 @@ class TileMap:
         return [
             {"name": obj.name, "position": (obj.x, obj.y)}
             for obj in layer
-            if obj.name
+            if obj.name and not obj.gid
         ]
 
     def _load_door_collisions(self):
         """Create closed-door colliders for doors in the Objects layer."""
         door_collisions = []
         for group in self._object_groups.values():
-            bottom_member = group["bottom_member"]
+            interaction_member = group["interaction_member"]
             if (
-                bottom_member.type == "Interactible"
-                and bottom_member.properties.get("InteractibleClass")
+                interaction_member is not None
+                and interaction_member.properties.get("InteractibleClass")
                 in ("Door", "ContainerDoor")
             ):
-                door_collisions.append(group["bounds"].copy())
+                door_collisions.append(group["interaction_bounds"].copy())
         return door_collisions
 
     def get_layer_index(self, layer_name):
@@ -111,23 +111,22 @@ class TileMap:
     def get_interactible_objects(self):
         """Return each interactible object group, including its Tiled properties."""
         interactibles = []
-    
-        for key, group in self._object_groups.items():
+
+        for group in self._object_groups.values():
             if not any(sprite.alive() for sprite in group["sprites"]):
                 continue
 
-            bottom_member = group["bottom_member"]
-    
-            if bottom_member.type != "Interactible":
+            interaction_member = group["interaction_member"]
+            if interaction_member is None:
                 continue
-            
+
             interactibles.append({
-                "name": key if isinstance(key, str) else bottom_member.name,
-                "rect": group["bounds"],
+                "name": group["interaction_name"],
+                "rect": group["interaction_bounds"],
                 "sprites": group["sprites"],
-                "properties": dict(bottom_member.properties),
+                "properties": dict(interaction_member.properties),
             })
-    
+
         return interactibles
 
 
@@ -139,7 +138,7 @@ class TileMap:
 
         return None
 
-    
+
     def _load_collisions(self):
         rects = []
     
@@ -240,6 +239,48 @@ class TileMap:
             key = id(obj) if is_seethrough or not obj.name else obj.name
             groups.setdefault(key, []).append((obj, image))
 
+        for name, members in list(groups.items()):
+            if (
+                not isinstance(name, str)
+                or not any(obj.properties.get("InteractibleClass") for obj, _ in members)
+            ):
+                continue
+
+            remaining = set(range(len(members)))
+            components = []
+            while remaining:
+                pending = [remaining.pop()]
+                component = []
+                while pending:
+                    index = pending.pop()
+                    component.append(members[index])
+                    rect = pygame.Rect(
+                        members[index][0].x,
+                        members[index][0].y,
+                        members[index][0].width,
+                        members[index][0].height,
+                    ).inflate(2, 2)
+                    neighbors = [
+                        other_index
+                        for other_index in remaining
+                        if rect.colliderect(pygame.Rect(
+                            members[other_index][0].x,
+                            members[other_index][0].y,
+                            members[other_index][0].width,
+                            members[other_index][0].height,
+                        ))
+                    ]
+                    for neighbor in neighbors:
+                        remaining.remove(neighbor)
+                    pending.extend(neighbors)
+                components.append(component)
+
+            if len(components) > 1:
+                del groups[name]
+                for component in components:
+                    component_id = min(obj.id for obj, _ in component)
+                    groups[f"{name}_{component_id}"] = component
+
         flat_sprites = []
         tall_objects = []
         object_groups = {}
@@ -277,13 +318,34 @@ class TileMap:
             if is_tall:
                 tall_objects.append(YSortedObject(group_sprites, bounds, sort_layer))
 
-            # "Bottom tile" = the member anchored lowest to the ground —
-            # its Tiled class is what get_interactible_objects checks.
+            # Use the lowest member for sorting, while interaction metadata
+            # comes only from members explicitly marked as interactibles.
             bottom_member = max((obj for obj, _ in members), key=lambda o: o.y + o.height)
+            interaction_members = [
+                obj for obj, _ in members
+                if obj.properties.get("InteractibleClass")
+            ]
+            interaction_member = (
+                max(interaction_members, key=lambda obj: obj.y + obj.height)
+                if interaction_members else None
+            )
+            interaction_rects = [
+                pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                for obj in interaction_members
+            ]
+            interaction_bounds = (
+                interaction_rects[0].unionall(interaction_rects[1:])
+                if len(interaction_rects) > 1
+                else interaction_rects[0] if interaction_rects
+                else None
+            )
             object_groups[key] = {
                 "sprites": group_sprites,
                 "bounds": bounds,
                 "bottom_member": bottom_member,
+                "interaction_name": key if isinstance(key, str) else bottom_member.name,
+                "interaction_member": interaction_member,
+                "interaction_bounds": interaction_bounds,
             }
 
         return flat_sprites, tall_objects, object_groups

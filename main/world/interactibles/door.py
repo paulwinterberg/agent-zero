@@ -12,7 +12,7 @@ class Door(Interactible):
         if self.bounds:
             self.collision_rects = [
                 rect for rect in tilemap.door_collision_rects
-                if rect == self.bounds
+                if self.bounds.colliderect(rect)
             ]
 
     def set_sprites(self, sprites, properties=None):
@@ -28,15 +28,42 @@ class Door(Interactible):
 
     def on_interact(self, held_tool=None):
         """Toggle Tür-State zwischen offen und zu."""
-        if self.locked and not getattr(held_tool, "can_unlock", False):
+        if self.object_name in ("IronDoor2", "IronDoor3"):
+            return False
+        if (
+            self.state == "closed"
+            and self.locked
+            and not getattr(held_tool, "can_unlock", False)
+        ):
             return False
 
-        self.state = "open" if self.state == "closed" else "closed"
-        
+        if self.state == "closed":
+            self.open()
+        else:
+            self.close()
+        return True
+
+    def open(self):
+        """Open the door, bypassing key checks for puzzle-controlled doors."""
+        if self.state == "open":
+            return True
+
+        self.state = "open"
         # Aktualisiere Sprites
-        images = self.open_images if self.state == "open" else self.closed_images
-        self.update_sprites(images)
-        
+        self.update_sprites(self.open_images)
+        self._update_collisions()
+        return True
+
+    def close(self):
+        if self.state == "closed":
+            return True
+
+        self.state = "closed"
+        self.update_sprites(self.closed_images)
+        self._update_collisions()
+        return True
+
+    def _update_collisions(self):
         # Aktualisiere Kollisionen
         if self.tilemap:
             if self.state == "open":
@@ -53,5 +80,3 @@ class Door(Interactible):
                         for collision in self.tilemap.collision_rects
                     ):
                         self.tilemap.collision_rects.append(rect)
-
-        return True

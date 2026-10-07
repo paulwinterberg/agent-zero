@@ -80,10 +80,14 @@ class InteractionManager:
             
             # Instanz erstellen und konfigurieren
             instance = interactible_class()
+            if hasattr(instance, "set_object_name"):
+                instance.set_object_name(obj_name)
             if "sprites" in interaction_obj:
                 instance.set_sprites(interaction_obj["sprites"], interaction_obj.get("properties"))
             if hasattr(instance, 'set_tilemap'):
                 instance.set_tilemap(self.tilemap)
+            if hasattr(instance, "set_interaction_manager"):
+                instance.set_interaction_manager(self)
             
             self.interactible_instances[obj_name] = instance
             return instance
@@ -97,3 +101,12 @@ class InteractionManager:
         """Gibt das nächste interaktive Objekt zurück oder None."""
         return self.active_interactions[0] if self.active_interactions else None
 
+    def get_interactible_instance(self, object_name):
+        """Return the cached instance for a named interactible object."""
+        if not self.tilemap:
+            return None
+
+        interaction_obj = self.tilemap.get_interactible_object(object_name)
+        if interaction_obj is None:
+            return None
+        return self._load_interactible(interaction_obj)

@@ -101,6 +101,23 @@ Um dem Spieler zu zeigen, welche Objekte interaktiv sind:
 2. Ein UI-Element "Press F to interact" rendern
 3. Eine Highlight-Box um interaktive Objekte zeichnen
 
+## IronDoor-Schalterrätsel
+
+Für das Schalterrätsel in `containership.tmx`:
+
+- Weise jedem Schalter die Klasse `Interactible` und die Property
+  `InteractibleClass` mit dem Wert `Button` zu.
+- Benenne die drei Schalter exakt `Button1`, `Button2` und `Button3`.
+- Lege bei jedem Schalter die boolesche Property `Pushed` mit dem Startwert
+  `false` an. Das Spiel setzt sie nach dem ersten Drücken auf `true`; weitere
+  F-Interaktionen mit demselben Schalter bewirken nichts.
+- Weise den Türen `IronDoor2` und `IronDoor3` die Klasse `Interactible` und
+  `InteractibleClass` mit dem Wert `Door` zu.
+
+`Button1` öffnet `IronDoor2`. `IronDoor3` öffnet sich, sobald sowohl `Button2`
+als auch `Button3` gedrückt wurden; die Reihenfolge ist beliebig. Diese beiden
+Türen lassen sich nicht direkt oder mit dem Schlüssel öffnen.
+
 ## Troubleshooting
 
 ### Objekt wird nicht als Interactible erkannt
@@ -118,4 +135,3 @@ Objekte mit dem **gleichen Namen** werden als ein Objekt behandelt - perfekt fü
 - Türen mit mehreren Teilen
 - Mehrteiliges Inventar-System
 - Zusammenhängende Objekte
-

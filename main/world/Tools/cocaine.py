@@ -34,11 +34,8 @@ class Cocaine(Tools):
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
     def secondary_action(self, player):
-        if self.anzahl <= 1:
+        if self.anzahl <= 0:
             return False
 
-        player.activate_speed_boost(
-            settings.COCAINE_SPEED_BOOST_DURATION,
-            settings.COCAINE_SPEED_BOOST_SPEED,
-        )
+        player.activate_cocaine_speed_boost(settings.COCAINE_SPEED_BOOST_DURATION)
         return True
