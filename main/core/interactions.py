@@ -1,4 +1,6 @@
 import pygame
+from world.interactibles.button import Button
+from world.interactibles.door import Door
 
 
 class InteractionManager:
@@ -12,6 +14,7 @@ class InteractionManager:
         self.interaction_cooldown_time = 0.3  # Sekunden
         self.interactible_instances = {}  # Cache für Interactible-Instanzen
         self.tilemap = None
+        self.feedback_message = None
     
     def update(self, dt, player, tilemap):
         """Aktualisiert Interaktionsstatus und prüft auf neue Interaktionen."""
@@ -47,6 +50,7 @@ class InteractionManager:
     
     def try_interact(self, held_tool=None):
         """Versucht mit dem nächsten Objekt in Reichweite zu interagieren."""
+        self.feedback_message = None
         if not self.active_interactions or self.interaction_cooldown > 0:
             return False
         
@@ -57,7 +61,20 @@ class InteractionManager:
         # Lade Interactible und rufe on_interact auf
         interactible = self._load_interactible(closest)
         if interactible:
-            interactible.on_interact(held_tool)
+            interacted = interactible.on_interact(held_tool)
+            if isinstance(interactible, Door):
+                if (
+                    interactible.state == "closed"
+                    and interactible.locked
+                    and not getattr(held_tool, "can_unlock", False)
+                ):
+                    self.feedback_message = "Tür ist verschlossen."
+                elif interacted and interactible.state == "open":
+                    self.feedback_message = "Tür geöffnet."
+            elif isinstance(interactible, Button) and interacted:
+                door = self.get_interactible_instance(interactible.opens_door)
+                if isinstance(door, Door) and door.state == "open":
+                    self.feedback_message = "Tür geöffnet."
         
         return True
     

@@ -152,6 +152,8 @@ class MissionToolManager:
         )
 
     def _has_line_of_sight(self, start, end):
+        start = pygame.Vector2(start)
+        end = pygame.Vector2(end)
         start_point = (round(start.x), round(start.y))
         end_point = (round(end.x), round(end.y))
         return not any(

@@ -34,8 +34,16 @@ class Gameplay(State):
             manager=get_ui_manager(),
         )
         self.ammo_label.hide()
+        self.interaction_feedback = ""
+        self.interaction_feedback_timer = 0
+        self.interaction_feedback_font = pygame.font.Font(
+            "assets/fonts/PixelifySans-Medium.ttf", 22
+        )
     
     def update(self, dt, events):
+        self.interaction_feedback_timer = max(
+            0, self.interaction_feedback_timer - dt
+        )
         self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)
 
@@ -49,11 +57,38 @@ class Gameplay(State):
             if event.type == pygame.KEYDOWN and event.key == settings.INTERACT:
                 held_tool = self.tool_manager.current_tool
                 self.interaction_manager.try_interact(held_tool)
+                if self.interaction_manager.feedback_message:
+                    self.interaction_feedback = (
+                        self.interaction_manager.feedback_message
+                    )
+                    self.interaction_feedback_timer = 2
     
     def draw(self, screen, dt):
         render_world(dt, self.tilemap, self.group, self.player)
         if self.tool_manager.weapon_wheel_open:
             self._draw_weapon_wheel(screen)
+        if self.interaction_feedback_timer > 0:
+            self._draw_interaction_feedback(screen)
+
+    def _draw_interaction_feedback(self, screen):
+        text = self.interaction_feedback_font.render(
+            self.interaction_feedback, True, (255, 255, 255)
+        )
+        padding = 18
+        panel = pygame.Surface(
+            (text.get_width() + padding * 2, text.get_height() + 16),
+            pygame.SRCALPHA,
+        )
+        pygame.draw.rect(
+            panel, (20, 25, 29, 225), panel.get_rect(), border_radius=5
+        )
+        accent = (240, 180, 75) if "verschlossen" in self.interaction_feedback else (95, 205, 145)
+        pygame.draw.rect(panel, accent, panel.get_rect(), 2, border_radius=5)
+        panel_rect = panel.get_rect(
+            midbottom=(screen.get_width() // 2, screen.get_height() - 32)
+        )
+        screen.blit(panel, panel_rect)
+        screen.blit(text, text.get_rect(center=panel_rect.center))
 
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
