@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pygame
 import settings
 
@@ -9,9 +11,16 @@ from settings import SPRINT_STAMINA_PERCENT_THRESHOLD
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos=(0, 0)):
         super().__init__()
-        self.image = pygame.Surface((32, 32))
-        self.image.fill((255, 0, 0))
-        self.rect = self.image.get_rect(center=pos)
+        sprite_sheet_path = (
+            Path(__file__).resolve().parents[3]
+            / "assets"
+            / "character"
+            / "running.png"
+        )
+        sprite_sheet = pygame.image.load(str(sprite_sheet_path))
+        self.animation = PlayerAnimationManager(sprite_sheet)
+        self.image = self.animation.frames[1]
+        self.rect = self.image.get_rect(midbottom=pos)
 
         hitbox_height = 8
         self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
@@ -48,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.topleft = pos
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
+        self.rect.midbottom = self.hitbox.midbottom
 
     def _get_input_dir(self, keys):
         dx = keys[settings.RIGHT] - keys[settings.LEFT]
@@ -139,9 +149,75 @@ class Player(pygame.sprite.Sprite):
         direction = self.slide_dir if self.slidetime > 0 else move_dir
         motion = direction * speed * dt
 
+        previous_pos = self.pos.copy()
         self._move_and_collide(motion, tilemap)
+        if self.pos != previous_pos:
+            self.image = self.animation.running(dt, direction)
+        else:
+            self.image = self.animation.idle(self.facing)
 
         # Keep pos, hitbox and rect all in sync (midbottom of hitbox)
         self.hitbox.midbottom = (round(self.pos.x), round(self.pos.y))
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
         self.rect.midbottom = self.hitbox.midbottom
+
+###################################################################
+class PlayerAnimationManager:
+    def __init__(self, png):
+        self.png = png
+        self.frames = self.strip_from_sheet((0, 0), (32, 64), 5, 5)
+        self.frame_index = 1
+        self.animation_speed = 0.12
+        self.animation_timer = 0.0
+        self.current_direction = None
+
+        # Frame numbers in the sheet are one-based.
+        self.idle_frames = {
+            "front": 1,
+            "right": 2,
+            "back": 3,
+            "left": 4,
+        }
+        self.run_frames = {
+            "left": (5, 6, 7, 8),
+            "right": (11, 12, 13, 14),
+            "front": (16, 17, 18, 19),
+            "back": (21, 22, 23, 24),
+        }
+
+    def strip_from_sheet(self, start, size, columns, rows=1):
+        # Strips individual frames from a sprite sheet given a start location,
+        # sprite size, and number of columns and rows.
+        frames = []
+        for j in range(rows):
+            for i in range(columns):
+                location = (start[0] + size[0] * i, start[1] + size[1] * j)
+                frames.append(self.png.subsurface(pygame.Rect(location, size)))
+        return frames
+
+    @staticmethod
+    def _direction_key(direction):
+        if abs(direction.x) > abs(direction.y):
+            return "right" if direction.x > 0 else "left"
+        return "front" if direction.y > 0 else "back"
+
+    def running(self, dt, direction):
+        direction_key = self._direction_key(direction)
+        sequence = self.run_frames[direction_key]
+        if direction_key != self.current_direction:
+            self.current_direction = direction_key
+            self.frame_index = 0
+            self.animation_timer = 0.0
+        self.animation_timer += dt
+        while self.animation_timer >= self.animation_speed:
+            self.animation_timer -= self.animation_speed
+            self.frame_index = (self.frame_index + 1) % len(sequence)
+
+        return self.frames[sequence[self.frame_index]]
+
+    def idle(self, direction):
+        direction_key = self._direction_key(direction)
+        self.current_direction = None
+        self.frame_index = self.idle_frames[direction_key]
+        self.animation_timer = 0.0
+        return self.frames[self.frame_index]
