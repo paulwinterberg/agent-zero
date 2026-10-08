@@ -6,8 +6,6 @@ from world.Tools.tools import Tools
 
 
 class Bullet:
-    """Kleine schwarze Kugel, die sich durch die Welt bewegt."""
-
     def __init__(self, position, target, collision_rects, damage):
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((8, 8), pygame.SRCALPHA)
@@ -15,6 +13,7 @@ class Bullet:
         self.sprite.rect = self.sprite.image.get_rect(center=position)
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
+        
         direction = pygame.Vector2(target) - self.position
         self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
         self.collision_rects = collision_rects
@@ -50,8 +49,8 @@ class Pistol(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Pistol"
-        self.anzahl = 50
-        self.max_anzahl = 50
+        self.amount = 50
+        self.max_amount = 50
         self.reload_item_name = "Munition"
         self.consumable = True
         self.can_fire = True

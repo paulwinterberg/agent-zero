@@ -30,6 +30,10 @@ class PatrolState(EntityState):
 class ChaseState(EntityState):
     def enter(self, enemy):
         enemy.player_lost_timer = 0
+        
+        self.last_fire_time = -10000
+        self.accumulated = 0
+        
         self.last_known_plr_position = None
         self.path = []
         self.path_index = 0
@@ -37,6 +41,8 @@ class ChaseState(EntityState):
         self.planned_player_position = None
 
     def update(self, enemy: "Enemy", dt):
+        self.accumulated += dt
+        
         if enemy.is_stunned():
             return
 
@@ -47,6 +53,11 @@ class ChaseState(EntityState):
         if enemy.perception.has_line_of_sight_to_player():
             enemy.player_lost_timer = 0
             self.last_known_plr_position = pygame.Vector2(player.pos)
+            
+            if self.accumulated - self.last_fire_time > settings.ENEMY_DEFAULT_FIRE_COOLDOWN and enemy.tool.can_fire:
+                enemy.fire_tool()
+                self.last_fire_time = self.accumulated
+            
         else:
             enemy.player_lost_timer += dt
 

@@ -2,6 +2,8 @@ import pygame
 import settings
 import core.state_manager as state_manager
 
+
+from globals import globs
 from settings import ENEMY_DEFAULT_SPEED #pixels/sec
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
@@ -52,6 +54,16 @@ class Enemy(pygame.sprite.Sprite):
             held_sprite,
             layer=self.tool_manager.tilemap.y_sort_layer(self.rect.bottom),
         )
+        
+    def fire_tool(self):
+        if not self.tool.can_fire: return
+        
+        projectile = self.tool.fire(
+            self.rect.center,
+            globs.get("player").rect.center,
+            globs.get("tilemap"),
+        )
+        self.tool_manager.add_projectile(projectile, self)
 
     def change_state(self, new_state):
         if self.state:

@@ -68,10 +68,10 @@ class Gameplay(GameState):
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
         if held_tool and held_tool.name == "Pistol":
-            self.ammo_label.set_text(f"Pistol: {held_tool.anzahl} Schuss")
+            self.ammo_label.set_text(f"Pistol: {held_tool.amount} Schuss")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
-            self.ammo_label.set_text(f"Taser: {held_tool.anzahl} Energie")
+            self.ammo_label.set_text(f"Taser: {held_tool.amount} Energie")
             self.ammo_label.show()
         else:
             self.ammo_label.hide()
@@ -100,7 +100,7 @@ class Gameplay(GameState):
                 name = font.render(tool.name or "Tool", True, (255, 255, 255))
                 name_rect = name.get_rect(center=(position.x, position.y + 48))
                 screen.blit(name, name_rect)
-                count = font.render(str(tool.anzahl), True, (255, 230, 120))
+                count = font.render(str(tool.amount), True, (255, 230, 120))
                 screen.blit(count, count.get_rect(center=position))
 
         
