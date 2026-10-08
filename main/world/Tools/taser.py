@@ -55,6 +55,7 @@ class Taser(Tools):
         self.reload_item_name = "Energie"
         self.consumable = True
         self.keep_when_empty = True
+        self.can_fire = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((32, 24))

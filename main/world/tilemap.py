@@ -1,3 +1,6 @@
+import heapq
+import math
+
 import pygame
 import pyscroll
 import pytmx
@@ -124,6 +127,167 @@ class TileMap:
                 return obj
 
         return None
+
+    def find_path(self, start, goal, hitbox_size):
+        """Find a collision-free route between hitbox midbottom positions."""
+        start = pygame.Vector2(start)
+        goal = pygame.Vector2(goal)
+        hitbox_width, hitbox_height = hitbox_size
+        if hitbox_width <= 0 or hitbox_height <= 0:
+            return []
+
+        cell_size = max(1, min(self.tmx_data.tilewidth, self.tmx_data.tileheight) // 2)
+        first_x = hitbox_width // 2
+        last_x = self.width - (hitbox_width - first_x)
+        first_y = hitbox_height
+        if first_x > last_x or first_y > self.height:
+            return []
+
+        columns = (last_x - first_x) // cell_size + 1
+        rows = (self.height - first_y) // cell_size + 1
+        points = [
+            (first_x + column * cell_size, first_y + row * cell_size)
+            for row in range(rows)
+            for column in range(columns)
+        ]
+        blocked = [False] * len(points)
+
+        # Expand each collider into the equivalent forbidden area for the
+        # enemy's midbottom anchor, then mark only grid cells it overlaps.
+        for collider in self.collision_rects:
+            left = collider.left - (hitbox_width - hitbox_width // 2) + 1
+            right = collider.right + hitbox_width // 2
+            top = collider.top + 1
+            bottom = collider.bottom + hitbox_height
+            min_column = max(0, math.ceil((left - first_x) / cell_size))
+            max_column = min(columns, math.ceil((right - first_x) / cell_size))
+            min_row = max(0, math.ceil((top - first_y) / cell_size))
+            max_row = min(rows, math.ceil((bottom - first_y) / cell_size))
+            for row in range(min_row, max_row):
+                y = first_y + row * cell_size
+                for column in range(min_column, max_column):
+                    x = first_x + column * cell_size
+                    if left <= x < right and top <= y < bottom:
+                        blocked[row * columns + column] = True
+
+        sample_spacing = max(1, cell_size // 4)
+        probe = pygame.Rect(0, 0, hitbox_width, hitbox_height)
+
+        def segment_is_clear(begin, end):
+            distance = begin.distance_to(end)
+            steps = max(1, math.ceil(distance / sample_spacing))
+            probe.midbottom = (round(begin.x), round(begin.y))
+            start_rect = probe.copy()
+            probe.midbottom = (round(end.x), round(end.y))
+            swept_rect = start_rect.union(probe)
+            nearby_colliders = [
+                rect for rect in self.collision_rects
+                if rect.colliderect(swept_rect)
+            ]
+            for index in range(steps + 1):
+                point = begin.lerp(end, index / steps)
+                probe.midbottom = (round(point.x), round(point.y))
+                if probe.left < 0 or probe.top < 0 or probe.right > self.width or probe.bottom > self.height:
+                    return False
+                if any(probe.colliderect(rect) for rect in nearby_colliders):
+                    return False
+            return True
+
+        if segment_is_clear(start, goal):
+            return [goal]
+
+        start_column = round((start.x - first_x) / cell_size)
+        start_row = round((start.y - first_y) / cell_size)
+        start_nodes = []
+        search_radius = 2
+        for row in range(max(0, start_row - search_radius), min(rows, start_row + search_radius + 1)):
+            for column in range(max(0, start_column - search_radius), min(columns, start_column + search_radius + 1)):
+                node_index = row * columns + column
+                if blocked[node_index]:
+                    continue
+                point = pygame.Vector2(points[node_index])
+                if segment_is_clear(start, point):
+                    start_nodes.append(((row, column), point, start.distance_to(point)))
+
+        if not start_nodes:
+            return []
+
+        def point_for(node):
+            row, column = node
+            return pygame.Vector2(points[row * columns + column])
+
+        target_tolerance = cell_size * 1.5
+        costs = {}
+        previous = {}
+        open_nodes = []
+        for node, point, cost in start_nodes:
+            if cost < costs.get(node, math.inf):
+                costs[node] = cost
+                previous[node] = None
+                heuristic = point.distance_to(goal)
+                heapq.heappush(open_nodes, (cost + heuristic, cost, node))
+
+        reached_node = None
+        closest_node = None
+        closest_distance = math.inf
+        while open_nodes:
+            _, current_cost, current = heapq.heappop(open_nodes)
+            if current_cost != costs.get(current):
+                continue
+            current_point = point_for(current)
+            distance_to_goal = current_point.distance_to(goal)
+            if distance_to_goal < closest_distance:
+                closest_node = current
+                closest_distance = distance_to_goal
+            if distance_to_goal <= target_tolerance and segment_is_clear(current_point, goal):
+                reached_node = current
+                break
+
+            row, column = current
+            for row_offset in (-1, 0, 1):
+                for column_offset in (-1, 0, 1):
+                    if row_offset == 0 and column_offset == 0:
+                        continue
+                    next_row = row + row_offset
+                    next_column = column + column_offset
+                    if not (0 <= next_row < rows and 0 <= next_column < columns):
+                        continue
+                    next_node = (next_row, next_column)
+                    next_index = next_row * columns + next_column
+                    if blocked[next_index]:
+                        continue
+                    if row_offset and column_offset:
+                        if (blocked[row * columns + next_column]
+                                or blocked[next_row * columns + column]):
+                            continue
+
+                    next_point = point_for(next_node)
+                    if not segment_is_clear(current_point, next_point):
+                        continue
+                    step_cost = cell_size * (math.sqrt(2) if row_offset and column_offset else 1)
+                    new_cost = current_cost + step_cost
+                    if new_cost >= costs.get(next_node, math.inf):
+                        continue
+                    costs[next_node] = new_cost
+                    previous[next_node] = current
+                    heuristic = next_point.distance_to(goal)
+                    heapq.heappush(open_nodes, (new_cost + heuristic, new_cost, next_node))
+
+        if reached_node is None:
+            reached_node = closest_node
+        if reached_node is None:
+            return []
+
+        path = []
+        node = reached_node
+        while node is not None:
+            path.append(point_for(node))
+            node = previous[node]
+        path.reverse()
+        endpoint = path[-1]
+        if endpoint.distance_squared_to(goal) > 0 and segment_is_clear(endpoint, goal):
+            path.append(goal)
+        return path
 
     
     def _load_collisions(self):

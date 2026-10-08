@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
 
         # --- movement speeds ---
-        self.walkspeed = 50
+        self.walkspeed = settings.PLAYER_WALK_SPEED
         self.runspeed_base = 60
         self.runspeed_max = 100
         self.runspeed = self.runspeed_base   # current sprint speed, ramps up over time

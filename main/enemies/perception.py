@@ -32,7 +32,19 @@ class Perception:
         if start.distance_squared_to(end) > ENEMY_VISION_RADIUS ** 2:
             return False
 
-        # 3. Line of sight, only testing walls near the ray
+        if not self.has_line_of_sight_to_player():
+            return False
+
+        return True
+
+    def has_line_of_sight_to_player(self) -> bool:
+        enemy, player = self.enemy, self.player
+        if enemy is None or player is None:
+            return False
+
+        start = pygame.Vector2(enemy.rect.center)
+        end = pygame.Vector2(player.rect.center)
+
         s = (int(start.x), int(start.y))
         e = (int(end.x), int(end.y))
         ray_bounds = pygame.Rect(
@@ -42,5 +54,5 @@ class Perception:
         for rect in self.tilemap.collision_rects:
             if rect.colliderect(ray_bounds) and rect.clipline(s, e):
                 return False
-
+    
         return True

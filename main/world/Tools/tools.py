@@ -11,6 +11,7 @@ class Tools:
         self.anzahl = 1
         self.consumable = False
         self.keep_when_empty = False
+        self.can_fire = False
         self.state = None
         self.collected = False
         self.equipped = False
@@ -90,7 +91,8 @@ class MissionToolManager:
 
     def add_tool(self, tool):
         """Fügt ein Tool mit passender Tiefensortierung zur Welt hinzu."""
-        self.tools.append(tool)
+        if tool not in self.tools:
+            self.tools.append(tool)
         self.sprite_group.add(
             tool.sprite,
             layer=self.tilemap.y_sort_layer(tool.sprite.rect.bottom),

@@ -19,9 +19,12 @@ class Gameplay(GameState):
         
         self.tilemap, self.group = load_tilemap("assets/levels/testlevel.tmx", self.player)
         self.interaction_manager = InteractionManager()
-        self.enemy_manager = EnemyManager(self.tilemap, self.group)
-
         self.tool_manager = MissionToolManager(self.group, self.tilemap)
+        self.enemy_manager = EnemyManager(
+            self.tilemap,
+            self.group,
+            self.tool_manager,
+        )
         
         self.tilemap.zoom_to(4)
         

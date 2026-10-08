@@ -54,6 +54,7 @@ class Pistol(Tools):
         self.max_anzahl = 50
         self.reload_item_name = "Munition"
         self.consumable = True
+        self.can_fire = True
         self.keep_when_empty = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
