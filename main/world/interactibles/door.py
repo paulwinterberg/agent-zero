@@ -10,9 +10,14 @@ class Door(Interactible):
     def set_tilemap(self, tilemap):
         self.tilemap = tilemap
         if self.bounds:
-            self.collision_rects = [
+            door_bounds = [
                 rect for rect in tilemap.door_collision_rects
                 if self.bounds.colliderect(rect)
+            ]
+            self.collision_rects = [
+                collision
+                for collision in tilemap.collision_rects
+                if any(collision.colliderect(rect) for rect in door_bounds)
             ]
 
     def set_sprites(self, sprites, properties=None):

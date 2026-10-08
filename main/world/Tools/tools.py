@@ -69,7 +69,7 @@ class Tools:
 class MissionToolManager:
     """Verwaltet Mission-Tools, Inventar, Eingaben und Projektile."""
 
-    def __init__(self, sprite_group, tilemap, interaction_range=50):
+    def __init__(self, sprite_group, tilemap, interaction_range=24):
         self.tools = []
         self.inventory = []
         self.sprite_group = sprite_group
@@ -145,9 +145,18 @@ class MissionToolManager:
             tool for tool in self.tools
             if not tool.collected
             and player_center.distance_to(tool.sprite.rect.center) <= self.interaction_range
+            and self._has_line_of_sight(player_center, tool.sprite.rect.center)
         ]
         self.nearby_tools.sort(
             key=lambda tool: player_center.distance_to(tool.sprite.rect.center)
+        )
+
+    def _has_line_of_sight(self, start, end):
+        start_point = (round(start.x), round(start.y))
+        end_point = (round(end.x), round(end.y))
+        return not any(
+            collision.clipline(start_point, end_point)
+            for collision in self.tilemap.collision_rects
         )
 
     def handle_event(self, event, player):
