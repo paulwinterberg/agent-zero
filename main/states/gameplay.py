@@ -3,6 +3,7 @@ import math
 import pygame
 import pygame_gui
 import settings
+import core.state_manager as state_manager
 
 from globals import globs
 from entities.player.player import Player
@@ -43,8 +44,18 @@ class Gameplay(GameState):
             manager=get_ui_manager(),
         )
         self.ammo_label.hide()
+
+    def exit(self):
+        self.stamina_bar.hide()
     
     def update(self, dt, events):
+        if self.player.dead:
+            from states.main_menu import MainMenu
+
+            state_manager.pop()
+            state_manager.push(MainMenu())
+            return
+
         self.enemy_manager.update(dt)
         self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)

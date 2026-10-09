@@ -40,6 +40,29 @@ class Player(pygame.sprite.Sprite):
         # last facing direction, used so sliding has something to lock onto
         self.facing = pygame.math.Vector2(0, 1)
 
+        self.stun_time = 0.0
+        self.health = settings.PLAYER_HEALTH
+        self.dead = False
+
+    def take_damage(self, dmg: float):
+        if self.dead: return
+    
+        self.health = max(0, self.health - dmg)
+    
+        if self.health == 0:
+            self.die()
+    
+    def die(self):
+        if self.dead: return
+
+        self.dead = True
+
+    def stun(self, amount_time: float = 2.0):
+            self.stun_time = amount_time
+    
+    def is_stunned(self) -> bool:
+        return self.stun_time > 0
+
     def get_stamina_percent(self):
         return self.stamina / self.stamina_max
 
@@ -59,6 +82,9 @@ class Player(pygame.sprite.Sprite):
     def _update_timers(self, dt):
         self.slidetime = max(0.0, self.slidetime - dt)
         self.slidecooldown = max(0.0, self.slidecooldown - dt)
+
+        if self.stun_time > 0:
+            self.stun_time = max(0, self.stun_time - dt)
 
     def _try_start_slide(self, keys, move_dir):
         can_slide = (

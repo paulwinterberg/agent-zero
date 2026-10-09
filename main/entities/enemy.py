@@ -7,6 +7,7 @@ from globals import globs
 from settings import ENEMY_DEFAULT_SPEED #pixels/sec
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
+from world.Tools.registry import tool_name_to_class_map
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos=(0,0), path: list = None, tool_manager=None):
@@ -39,14 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.tool_manager is None or settings.ENEMY_DEFAULT_TOOL is None:
             return
 
-        if settings.ENEMY_DEFAULT_TOOL != "Pistol":
-            raise ValueError(
-                f"Unsupported enemy default tool: {settings.ENEMY_DEFAULT_TOOL}"
-            )
-
-        from world.Tools.pistol import Pistol
-
-        self.tool = Pistol(self.rect.center)
+        self.tool = tool_name_to_class_map.get(settings.ENEMY_DEFAULT_TOOL)(self.rect.center)
         self.tool_manager.add_tool(self.tool)
         self.tool.on_interact()
         held_sprite = self.tool.create_held_sprite()

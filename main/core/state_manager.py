@@ -9,7 +9,9 @@ def push(state):
     stack.append(state)
 
 def pop():
-    stack.pop()
+    state = stack.pop()
+    if getattr(state, "exit"):
+        state.exit()
 
 def update(dt, events):
     stack[-1].update(dt, events)
