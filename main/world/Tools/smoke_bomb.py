@@ -2,7 +2,7 @@ import math
 
 import pygame
 
-from world.Tools.tools import Tools
+from world.Tools.tools import Tools, load_tool_texture
 
 
 class SmokeCloud:
@@ -42,9 +42,13 @@ class SmokeBombProjectile:
 
     def __init__(self, position, target, collision_rects):
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((12, 12), pygame.SRCALPHA)
-        pygame.draw.circle(self.sprite.image, (35, 35, 35), (6, 6), 6)
-        pygame.draw.circle(self.sprite.image, (180, 180, 180), (4, 4), 2)
+        texture = load_tool_texture("smoke_bomb", size=(12, 12))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((12, 12), pygame.SRCALPHA)
+            pygame.draw.circle(self.sprite.image, (35, 35, 35), (6, 6), 6)
+            pygame.draw.circle(self.sprite.image, (180, 180, 180), (4, 4), 2)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
@@ -84,9 +88,13 @@ class SmokeBomb(Tools):
         self.consumable = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((24, 24), pygame.SRCALPHA)
-        pygame.draw.circle(self.sprite.image, (35, 35, 35), (12, 12), 9)
-        pygame.draw.circle(self.sprite.image, (170, 170, 170), (9, 9), 3)
+        texture = load_tool_texture("smoke_bomb", size=(24, 24))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((24, 24), pygame.SRCALPHA)
+            pygame.draw.circle(self.sprite.image, (35, 35, 35), (12, 12), 9)
+            pygame.draw.circle(self.sprite.image, (170, 170, 170), (9, 9), 3)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
     def fire(self, position, target, tilemap):

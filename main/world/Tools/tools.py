@@ -1,6 +1,51 @@
-import pygame
-import settings
 import math
+from pathlib import Path
+
+import pygame
+
+import settings
+
+
+TOOL_TEXTURE_REGIONS = {
+    "pistol": pygame.Rect(34, 8, 27, 15),
+    "taser": pygame.Rect(1, 8, 27, 15),
+    "bullet": pygame.Rect(77, 13, 5, 3),
+    "munition": pygame.Rect(8, 41, 17, 14),
+    "smoke_bomb": pygame.Rect(43, 72, 10, 15),
+    "cocaine": pygame.Rect(75, 39, 10, 16),
+    "energy": pygame.Rect(8, 74, 17, 12),
+}
+TOOL_TEXTURE_ALIASES = {
+    "pistole": "pistol",
+    "kokain": "cocaine",
+    "energie": "energy",
+    "smokebomb": "smoke_bomb",
+}
+
+
+def load_tool_texture(tool_name, size=None):
+    """Load a named tool texture cropped from the tool sprite sheet."""
+    normalized = tool_name.strip().lower().replace(" ", "_").replace("-", "_")
+    normalized = TOOL_TEXTURE_ALIASES.get(normalized, normalized)
+    region = TOOL_TEXTURE_REGIONS.get(normalized)
+    if region is None:
+        return None
+
+    root_dir = Path(__file__).resolve().parents[3]
+    sheet_path = root_dir / "tiled" / "tilesets" / "pixil-frame-0.png"
+    sheet = pygame.image.load(sheet_path).convert_alpha()
+    texture = sheet.subsurface(region).copy()
+    if size is not None:
+        scale = min(size[0] / texture.get_width(), size[1] / texture.get_height())
+        scaled_size = (
+            max(1, round(texture.get_width() * scale)),
+            max(1, round(texture.get_height() * scale)),
+        )
+        texture = pygame.transform.scale(texture, scaled_size)
+        canvas = pygame.Surface(size, pygame.SRCALPHA)
+        canvas.blit(texture, texture.get_rect(center=canvas.get_rect().center))
+        texture = canvas
+    return texture
 
 
 class Tools:
@@ -16,6 +61,7 @@ class Tools:
         self.collected = False
         self.equipped = False
         self.held_sprite = None
+        self.aim_held_sprite = False
 
     def on_interact(self):
         if self.collected or (self.anzahl <= 0 and not self.keep_when_empty):
@@ -62,6 +108,7 @@ class Tools:
         held_size = (max(1, round(width * scale)), max(1, round(height * scale)))
         self.held_sprite = pygame.sprite.Sprite()
         self.held_sprite.image = pygame.transform.scale(self.sprite.image, held_size)
+        self.held_sprite.base_image = self.held_sprite.image.copy()
         self.held_sprite.rect = self.held_sprite.image.get_rect()
         return self.held_sprite
 
@@ -110,14 +157,17 @@ class MissionToolManager:
 
         tool_types = {
             "pistol": Pistol,
+            "pistole": Pistol,
             "taser": Taser,
             "redblock": RedBlock,
             "blueblock": RedBlock,
             "key": Key,
             "schlüssel": Key,
             "smokebomb": SmokeBomb,
+            "smoke_bomb": SmokeBomb,
             "munition": Munition,
             "energie": Energie,
+            "energy": Energie,
             "kokain": Cocaine,
             "cocaine": Cocaine,
         }
@@ -415,6 +465,13 @@ class MissionToolManager:
                 mouse_delta = pygame.Vector2(pygame.mouse.get_pos()) - pygame.Vector2(screen.get_rect().center)
                 if mouse_delta.length_squared() > 0:
                     direction = mouse_delta.normalize()
+
+            if self.current_tool.aim_held_sprite:
+                angle = math.degrees(math.atan2(-direction.y, direction.x)) - 180
+                held_sprite.image = pygame.transform.rotate(
+                    held_sprite.base_image,
+                    angle,
+                )
 
             orbit_position = pygame.Vector2(player.rect.center) + direction * 18
             center = round(orbit_position.x), round(orbit_position.y)

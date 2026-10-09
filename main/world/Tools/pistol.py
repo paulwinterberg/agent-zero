@@ -1,21 +1,30 @@
-import pygame
 import math
 
-from world.Tools.tools import Tools
+import pygame
+
+from world.Tools.tools import Tools, load_tool_texture
 
 
 class Bullet:
-    """Kleine schwarze Kugel, die sich durch die Welt bewegt."""
 
     def __init__(self, position, target, collision_rects):
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((8, 8), pygame.SRCALPHA)
-        pygame.draw.circle(self.sprite.image, (0, 0, 0), (4, 4), 4)
-        self.sprite.rect = self.sprite.image.get_rect(center=position)
+        texture = load_tool_texture("bullet", size=(8, 8))
+        if texture is not None:
+            base_image = texture
+        else:
+            base_image = pygame.Surface((8, 8), pygame.SRCALPHA)
+            pygame.draw.circle(base_image, (0, 0, 0), (4, 4), 4)
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
         direction = pygame.Vector2(target) - self.position
         self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
+        if self.velocity.length_squared():
+            angle = 180 - math.degrees(math.atan2(self.velocity.y, self.velocity.x))
+            self.sprite.image = pygame.transform.rotate(base_image, angle)
+        else:
+            self.sprite.image = base_image
+        self.sprite.rect = self.sprite.image.get_rect(center=position)
         self.collision_rects = collision_rects
         self.remaining_time = 2.0
 
@@ -48,11 +57,16 @@ class Pistol(Tools):
         self.reload_item_name = "Munition"
         self.consumable = True
         self.keep_when_empty = True
+        self.aim_held_sprite = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((32, 20))
-        self.sprite.image.fill((70, 70, 70))
-        pygame.draw.rect(self.sprite.image, (0, 0, 0), self.sprite.image.get_rect(), 3)
+        texture = load_tool_texture("pistol", size=(32, 20))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((32, 20))
+            self.sprite.image.fill((70, 70, 70))
+            pygame.draw.rect(self.sprite.image, (0, 0, 0), self.sprite.image.get_rect(), 3)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
     def fire(self, position, target, tilemap):

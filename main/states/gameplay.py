@@ -10,6 +10,28 @@ from core.renderer import load_tilemap, render_world, get_ui_manager
 from core.interactions import InteractionManager
 from world.Tools.tools import MissionToolManager
 
+
+TUTORIAL_MESSAGES = {
+    "ContainermapStart": (
+        "Willkommen auf dem Containerschiff. Suche das Kokain, das die "
+        "Schmuggler hier schmuggeln, und fliehe mit den Beweismitteln. "
+        "Gehe nun zum grünen Container auf der linken Seite der nächsten "
+        "Kreuzung."
+    ),
+    "OpenContainer": (
+        "Mit F kannst du den Container öffnen, falls er nicht verschlossen "
+        "ist. Für die verschlossenen brauchst du einen Schlüssel, den du in "
+        "einem gelben Container findest. Insgesamt gibt es 8 Container, die "
+        "du öffnen kannst. Finde anschließend den Knopf, um in die "
+        "Kommandostelle zu kommen."
+    ),
+    "PressTheButton": (
+        "Drücke den Knopf, um die verschlossene Eisentür zur Kommandostelle "
+        "zu öffnen."
+    ),
+}
+
+
 class Gameplay(State):
     def __init__(self):
         self.player = Player()
@@ -36,6 +58,15 @@ class Gameplay(State):
         self.ammo_label.hide()
         self.interaction_feedback = ""
         self.interaction_feedback_timer = 0
+        self.tutorial_feedback_duration = 8
+        self.tutorial_feedback_durations = {"OpenContainer": 14}
+        self.tutorial_trigger_radius = 48
+        self.shown_tutorials = set()
+        self.tutorial_points = {
+            name: point
+            for name in TUTORIAL_MESSAGES
+            if (point := self.tilemap.get_object("Tutorial", name)) is not None
+        }
         self.interaction_feedback_font = pygame.font.Font(
             "assets/fonts/PixelifySans-Medium.ttf", 22
         )
@@ -45,6 +76,7 @@ class Gameplay(State):
             0, self.interaction_feedback_timer - dt
         )
         self.player.update(dt, self.tilemap)
+        self._update_tutorial_feedback()
         self.interaction_manager.update(dt, self.player, self.tilemap)
 
         self.stamina_bar.set_current_progress(self.player.get_stamina_percent() * 100.0)
@@ -62,6 +94,22 @@ class Gameplay(State):
                         self.interaction_manager.feedback_message
                     )
                     self.interaction_feedback_timer = 2
+
+    def _update_tutorial_feedback(self):
+        player_position = pygame.Vector2(self.player.rect.center)
+        for name, point in self.tutorial_points.items():
+            if name in self.shown_tutorials:
+                continue
+            if player_position.distance_to((point.x, point.y)) > self.tutorial_trigger_radius:
+                continue
+
+            self.shown_tutorials.add(name)
+            self.interaction_feedback = TUTORIAL_MESSAGES[name]
+            self.interaction_feedback_timer = self.tutorial_feedback_durations.get(
+                name,
+                self.tutorial_feedback_duration,
+            )
+            return
     
     def draw(self, screen, dt):
         render_world(dt, self.tilemap, self.group, self.player)
@@ -71,9 +119,36 @@ class Gameplay(State):
             self._draw_interaction_feedback(screen)
 
     def _draw_interaction_feedback(self, screen):
-        text = self.interaction_feedback_font.render(
-            self.interaction_feedback, True, (255, 255, 255)
+        max_text_width = max(1, min(900, screen.get_width() - 64))
+        lines = []
+        current_line = ""
+        for word in self.interaction_feedback.split():
+            candidate = f"{current_line} {word}".strip()
+            if (
+                current_line
+                and self.interaction_feedback_font.size(candidate)[0] > max_text_width
+            ):
+                lines.append(current_line)
+                current_line = word
+            else:
+                current_line = candidate
+        if current_line:
+            lines.append(current_line)
+
+        line_height = self.interaction_feedback_font.get_linesize()
+        text = pygame.Surface(
+            (
+                max(self.interaction_feedback_font.size(line)[0] for line in lines),
+                line_height * len(lines),
+            ),
+            pygame.SRCALPHA,
         )
+        for index, line in enumerate(lines):
+            rendered_line = self.interaction_feedback_font.render(
+                line, True, (255, 255, 255)
+            )
+            text.blit(rendered_line, (0, index * line_height))
+
         padding = 18
         panel = pygame.Surface(
             (text.get_width() + padding * 2, text.get_height() + 16),

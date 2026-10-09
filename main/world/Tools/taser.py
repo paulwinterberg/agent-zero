@@ -1,6 +1,6 @@
 import pygame
 
-from world.Tools.tools import Tools
+from world.Tools.tools import Tools, load_tool_texture
 
 
 class TaserSpark:
@@ -44,11 +44,16 @@ class Taser(Tools):
         self.reload_item_name = "Energie"
         self.consumable = True
         self.keep_when_empty = True
+        self.aim_held_sprite = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((32, 24))
-        self.sprite.image.fill((210, 30, 30))
-        pygame.draw.rect(self.sprite.image, (255, 220, 220), self.sprite.image.get_rect(), 2)
+        texture = load_tool_texture("taser", size=(32, 24))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((32, 24))
+            self.sprite.image.fill((210, 30, 30))
+            pygame.draw.rect(self.sprite.image, (255, 220, 220), self.sprite.image.get_rect(), 2)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
     def fire(self, position, target, tilemap):

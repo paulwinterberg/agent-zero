@@ -1,6 +1,6 @@
 import pygame
 
-from world.Tools.tools import Tools
+from world.Tools.tools import Tools, load_tool_texture
 
 
 class Munition(Tools):
@@ -13,9 +13,13 @@ class Munition(Tools):
         self.refill_amount = 50
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
-        self.sprite.image = pygame.Surface((30, 22))
-        self.sprite.image.fill((210, 175, 45))
-        pygame.draw.rect(self.sprite.image, (70, 45, 20), self.sprite.image.get_rect(), 3)
-        pygame.draw.line(self.sprite.image, (255, 235, 130), (7, 7), (23, 7), 3)
-        pygame.draw.line(self.sprite.image, (255, 235, 130), (7, 15), (23, 15), 3)
+        texture = load_tool_texture("munition", size=(30, 22))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((30, 22))
+            self.sprite.image.fill((210, 175, 45))
+            pygame.draw.rect(self.sprite.image, (70, 45, 20), self.sprite.image.get_rect(), 3)
+            pygame.draw.line(self.sprite.image, (255, 235, 130), (7, 7), (23, 7), 3)
+            pygame.draw.line(self.sprite.image, (255, 235, 130), (7, 15), (23, 15), 3)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
