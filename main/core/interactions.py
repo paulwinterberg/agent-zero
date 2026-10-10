@@ -127,3 +127,26 @@ class InteractionManager:
         if interaction_obj is None:
             return None
         return self._load_interactible(interaction_obj)
+
+    def are_buttons_for_door_pushed(self, door_name):
+        """Return whether every button assigned to a door has been pushed."""
+        if not self.tilemap:
+            return False
+
+        buttons = [
+            obj for obj in self.tilemap.get_interactible_objects()
+            if obj["properties"].get("InteractibleClass") == "Button"
+            and obj["properties"].get("OpensDoor") == door_name
+        ]
+        if not buttons:
+            return False
+
+        for button_obj in buttons:
+            button = self._load_interactible(button_obj)
+            if not isinstance(button, Button):
+                raise ValueError(
+                    f"Configured button {button_obj['name']!r} could not be loaded"
+                )
+            if not button.pushed:
+                return False
+        return True

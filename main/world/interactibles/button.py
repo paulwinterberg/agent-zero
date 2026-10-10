@@ -3,7 +3,7 @@ from world.interactibles.interactible import Interactible
 
 
 class Button(Interactible):
-    """One-use button that opens the door configured in Tiled."""
+    """One-use button that opens its configured door when its button group is pushed."""
 
     def set_sprites(self, sprites, properties=None):
         super().set_sprites(sprites, properties)
@@ -19,9 +19,10 @@ class Button(Interactible):
                 f"Button {self.object_name!r} has no OpensDoor property"
             )
 
-        self._open_door(self.opens_door)
         self.pushed = True
         self.properties["Pushed"] = True
+        if self.interaction_manager.are_buttons_for_door_pushed(self.opens_door):
+            self._open_door(self.opens_door)
         return True
 
     def _open_door(self, object_name):

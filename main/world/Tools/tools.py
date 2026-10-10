@@ -11,8 +11,8 @@ TOOL_TEXTURE_REGIONS = {
     "taser": pygame.Rect(1, 8, 27, 15),
     "bullet": pygame.Rect(77, 13, 5, 3),
     "munition": pygame.Rect(8, 41, 17, 14),
-    "smoke_bomb": pygame.Rect(43, 72, 10, 15),
-    "cocaine": pygame.Rect(75, 39, 10, 16),
+    "smoke_bomb": pygame.Rect(75, 39, 10, 16),
+    "cocaine": pygame.Rect(43, 72, 10, 15),
     "energy": pygame.Rect(8, 74, 17, 12),
 }
 TOOL_TEXTURE_ALIASES = {

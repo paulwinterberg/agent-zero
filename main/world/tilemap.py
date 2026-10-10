@@ -99,7 +99,7 @@ class TileMap:
                 and interaction_member.properties.get("InteractibleClass")
                 in ("Door", "ContainerDoor")
             ):
-                door_collisions.append(group["interaction_bounds"].copy())
+                door_collisions.append(group["bounds"].copy())
         return door_collisions
 
     def get_layer_index(self, layer_name):
