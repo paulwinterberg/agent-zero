@@ -84,6 +84,8 @@ class SmokeBomb(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Smoke Bomb"
+        self.max_anzahl = 5
+        self.stackable = True
         self.secondary_use = True
         self.consumable = True
         self.state = "ready"

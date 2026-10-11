@@ -94,12 +94,14 @@ class Door(Interactible):
         # Aktualisiere Kollisionen
         if self.tilemap:
             if self.state == "open":
-                for rect in self.collision_rects:
-                    self.tilemap.collision_rects[:] = [
-                        collision
-                        for collision in self.tilemap.collision_rects
-                        if collision is not rect
-                    ]
+                self.tilemap.collision_rects[:] = [
+                    collision
+                    for collision in self.tilemap.collision_rects
+                    if not any(
+                        collision is rect or rect.contains(collision)
+                        for rect in self.collision_rects
+                    )
+                ]
             else:
                 for rect in self.collision_rects:
                     if not any(
