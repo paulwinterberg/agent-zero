@@ -9,6 +9,7 @@ from states.state import State
 from core.renderer import load_tilemap, render_world, get_ui_manager
 from core.interactions import InteractionManager
 from world.Tools.tools import MissionToolManager
+from world.interactibles.hint import Hint
 
 
 TUTORIAL_MESSAGES = {
@@ -84,6 +85,10 @@ class Gameplay(State):
         self.interaction_feedback = ""
         self.interaction_feedback_timer = 0
         self.tutorial_active = False
+        self.hint_active = False
+        self.hint_image = pygame.image.load(
+            "tiled/tilesets/Hint.png"
+        ).convert_alpha()
         self.money_font = pygame.font.Font("assets/fonts/PixelifySans-Medium.ttf", 22)
         self.tutorial_trigger_radius = 48
         self.shown_tutorials = set()
@@ -104,9 +109,22 @@ class Gameplay(State):
             self._update_completion(dt)
             return
 
+        if self.hint_active:
+            if any(
+                event.type == pygame.KEYDOWN
+                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+                for event in events
+            ):
+                hint = self.interaction_manager.get_interactible_instance("Hint")
+                if isinstance(hint, Hint):
+                    hint.close()
+                self.hint_active = False
+            return
+
         if self.tutorial_active:
             if any(
-                event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN
+                event.type == pygame.KEYDOWN
+                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
                 for event in events
             ):
                 self.tutorial_active = False
@@ -131,7 +149,19 @@ class Gameplay(State):
         
         for event in events:
             self.tool_manager.handle_event(event, self.player)
-            if event.type == pygame.KEYDOWN and event.key == settings.INTERACT:
+            if (
+                event.type == pygame.KEYDOWN
+                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+                and self._is_hint_nearby()
+            ):
+                self.interaction_manager.try_interact()
+                hint = self.interaction_manager.get_interactible_instance("Hint")
+                self.hint_active = isinstance(hint, Hint) and hint.opened
+            elif (
+                event.type == pygame.KEYDOWN
+                and event.key == settings.INTERACT
+                and not self._is_hint_nearby()
+            ):
                 held_tool = self.tool_manager.current_tool
                 self.interaction_manager.try_interact(held_tool)
                 if self.interaction_manager.feedback_message:
@@ -139,6 +169,13 @@ class Gameplay(State):
                         self.interaction_manager.feedback_message
                     )
                     self.interaction_feedback_timer = 2
+
+    def _is_hint_nearby(self):
+        nearest = self.interaction_manager.get_nearest_interaction()
+        return (
+            nearest is not None
+            and nearest["properties"].get("InteractibleClass") == "Hint"
+        )
 
     def _update_tutorial_feedback(self):
         player_position = pygame.Vector2(self.player.rect.center)
@@ -177,7 +214,12 @@ class Gameplay(State):
             game.state_manager.push(MainMenu(money=self.tool_manager.money))
     
     def draw(self, screen, dt):
-        render_world(dt, self.tilemap, self.group, self.player)
+        render_world(
+            0 if self.hint_active else dt,
+            self.tilemap,
+            self.group,
+            self.player,
+        )
         self._draw_money_counter(screen)
         if self.tool_manager.weapon_wheel_open:
             self._draw_weapon_wheel(screen)
@@ -185,6 +227,60 @@ class Gameplay(State):
             self._draw_interaction_feedback(screen)
         if self.completion_started:
             self._draw_completion(screen)
+        if self.hint_active:
+            self._draw_hint(screen)
+        elif self._is_hint_nearby() and not self.tutorial_active:
+            self._draw_hint_prompt(screen)
+
+    def _draw_hint_prompt(self, screen):
+        text = self.interaction_feedback_font.render(
+            "Durchsuchen Enter drücken.", True, (255, 255, 255)
+        )
+        padding = 16
+        panel = pygame.Surface(
+            (text.get_width() + padding * 2, text.get_height() + 16),
+            pygame.SRCALPHA,
+        )
+        pygame.draw.rect(panel, (20, 25, 29, 225), panel.get_rect(), border_radius=5)
+        pygame.draw.rect(panel, (95, 205, 145), panel.get_rect(), 2, border_radius=5)
+        panel_rect = panel.get_rect(
+            midbottom=(screen.get_width() // 2, screen.get_height() - 32)
+        )
+        screen.blit(panel, panel_rect)
+        screen.blit(text, text.get_rect(center=panel_rect.center))
+
+    def _draw_hint(self, screen):
+        overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 225))
+        screen.blit(overlay, (0, 0))
+
+        max_width = max(1, screen.get_width() - 80)
+        max_height = max(1, screen.get_height() - 150)
+        scale = min(
+            max_width / self.hint_image.get_width(),
+            max_height / self.hint_image.get_height(),
+        )
+        image_size = (
+            max(1, round(self.hint_image.get_width() * scale)),
+            max(1, round(self.hint_image.get_height() * scale)),
+        )
+        image = pygame.transform.scale(self.hint_image, image_size)
+        screen.blit(
+            image,
+            image.get_rect(
+                center=(screen.get_width() // 2, screen.get_height() // 2 - 24)
+            ),
+        )
+
+        instruction = self.interaction_feedback_font.render(
+            "Enter drücken um zu verlassen", True, (255, 255, 255)
+        )
+        screen.blit(
+            instruction,
+            instruction.get_rect(
+                center=(screen.get_width() // 2, screen.get_height() - 48)
+            ),
+        )
 
     def _draw_completion(self, screen):
         alpha = min(255, round(255 * self.completion_elapsed / COMPLETION_FADE_DURATION))

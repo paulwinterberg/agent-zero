@@ -125,6 +125,7 @@ class TileMap:
                 "rect": group["interaction_bounds"],
                 "sprites": group["sprites"],
                 "properties": dict(interaction_member.properties),
+                "sort_layer": group["sort_layer"],
             })
 
         return interactibles
@@ -342,6 +343,7 @@ class TileMap:
             object_groups[key] = {
                 "sprites": group_sprites,
                 "bounds": bounds,
+                "sort_layer": sort_layer,
                 "bottom_member": bottom_member,
                 "interaction_name": key if isinstance(key, str) else bottom_member.name,
                 "interaction_member": interaction_member,

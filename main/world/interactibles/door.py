@@ -1,11 +1,19 @@
+import math
+
+import pygame
+
 from world.interactibles.interactible import Interactible
 
 
 class Door(Interactible):
+    PUZZLE_DOOR_NAMES = ("IronDoor2", "IronDoor3", "IronDoor4")
+
     def __init__(self):
         super().__init__()
         self.state = "closed"
         self.locked = False
+        self.lock_visible = False
+        self.locked_images = []
 
     def set_tilemap(self, tilemap):
         self.tilemap = tilemap
@@ -14,11 +22,7 @@ class Door(Interactible):
                 rect for rect in tilemap.door_collision_rects
                 if self.bounds.colliderect(rect)
             ]
-            self.collision_rects = [
-                collision
-                for collision in tilemap.collision_rects
-                if any(collision.colliderect(rect) for rect in door_bounds)
-            ]
+            self.collision_rects = door_bounds
 
     def set_sprites(self, sprites, properties=None):
         """Speichert Sprites und erstellt open_images Variante."""
@@ -27,13 +31,28 @@ class Door(Interactible):
             "locked", self.properties.get("Locked", False)
         )
         
-        # Erstelle die "open" Variante (heller)
         if self.closed_images:
             self.open_images = [self.create_light_version(img) for img in self.closed_images]
+            if self.object_name in self.PUZZLE_DOOR_NAMES:
+                self.lock_visible = True
+                self.locked_images = [image.copy() for image in self.closed_images]
+                self._draw_lock(self.locked_images[-1])
+                self.update_sprites(self.locked_images)
+
+    def _draw_lock(self, image):
+        """Draw a prominent padlock over the lower tile of a puzzle door."""
+        black = (35, 27, 18)
+        gold = (245, 190, 62)
+        pygame.draw.arc(image, black, (8, 0, 16, 21), math.pi, math.tau, 5)
+        pygame.draw.arc(image, gold, (10, 2, 12, 17), math.pi, math.tau, 3)
+        pygame.draw.rect(image, black, (4, 11, 24, 19), border_radius=4)
+        pygame.draw.rect(image, gold, (6, 13, 20, 15), border_radius=3)
+        pygame.draw.circle(image, black, (16, 19), 2)
+        pygame.draw.rect(image, black, (15, 20, 2, 5), border_radius=1)
 
     def on_interact(self, held_tool=None):
         """Toggle Tür-State zwischen offen und zu."""
-        if self.object_name in ("IronDoor2", "IronDoor3", "IronDoor4"):
+        if self.object_name in self.PUZZLE_DOOR_NAMES:
             return False
         if (
             self.state == "closed"
@@ -54,6 +73,7 @@ class Door(Interactible):
             return True
 
         self.state = "open"
+        self.lock_visible = False
         # Aktualisiere Sprites
         self.update_sprites(self.open_images)
         self._update_collisions()
@@ -64,7 +84,9 @@ class Door(Interactible):
             return True
 
         self.state = "closed"
-        self.update_sprites(self.closed_images)
+        self.update_sprites(
+            self.locked_images if self.lock_visible else self.closed_images
+        )
         self._update_collisions()
         return True
 

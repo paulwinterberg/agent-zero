@@ -9,17 +9,22 @@ class InteractionManager:
     def __init__(self):
         self.active_interactions = []
         self.last_interaction_target = None
-        self.interaction_range = 50  # Pixels
+        self.interaction_range = 70  # Pixels
         self.interaction_cooldown = 0
         self.interaction_cooldown_time = 0.3  # Sekunden
         self.interactible_instances = {}  # Cache für Interactible-Instanzen
         self.tilemap = None
         self.feedback_message = None
+        self._puzzle_doors_initialized = False
     
     def update(self, dt, player, tilemap):
         """Aktualisiert Interaktionsstatus und prüft auf neue Interaktionen."""
         self.tilemap = tilemap  # Speichere tilemap für Interactibles
         self.interaction_cooldown = max(0, self.interaction_cooldown - dt)
+        if not self._puzzle_doors_initialized:
+            for door_name in Door.PUZZLE_DOOR_NAMES:
+                self.get_interactible_instance(door_name)
+            self._puzzle_doors_initialized = True
         
         # Finde alle interaktiven Objekte in Reichweite
         self.active_interactions = self._get_nearby_interactions(player, tilemap)
@@ -54,7 +59,13 @@ class InteractionManager:
         if not self.active_interactions or self.interaction_cooldown > 0:
             return False
         
-        closest = self.active_interactions[0]
+        closest = min(
+            self.active_interactions,
+            key=lambda interaction: (
+                interaction.get("sort_layer", 0),
+                interaction["distance"],
+            ),
+        )
         self.interaction_cooldown = self.interaction_cooldown_time
         self.last_interaction_target = closest
         
