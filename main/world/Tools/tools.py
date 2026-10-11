@@ -119,6 +119,7 @@ class MissionToolManager:
     def __init__(self, sprite_group, tilemap, interaction_range=24):
         self.tools = []
         self.inventory = []
+        self.money = 0
         self.sprite_group = sprite_group
         self.tilemap = tilemap
         self.interaction_range = interaction_range
@@ -154,6 +155,7 @@ class MissionToolManager:
         from world.Tools.munition import Munition
         from world.Tools.energie import Energie
         from world.Tools.cocaine import Cocaine
+        from world.Tools.money import Money
 
         tool_types = {
             "pistol": Pistol,
@@ -170,6 +172,7 @@ class MissionToolManager:
             "energy": Energie,
             "kokain": Cocaine,
             "cocaine": Cocaine,
+            "money": Money,
         }
         for spawn in self.tilemap.get_tool_spawns():
             tool_name = spawn["name"].strip().casefold()
@@ -277,6 +280,11 @@ class MissionToolManager:
 
         self.interaction_cooldown = self.interaction_cooldown_time
         tool = self.nearby_tools[0]
+        if tool.name == "Money":
+            if tool.on_interact():
+                self.money += getattr(tool, "value", 100)
+                return True
+            return False
         if getattr(tool, "refill_tool_name", None):
             if tool.name in ("Munition", "Energie"):
                 return self.collect_reload_pickup(tool)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="629">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="643">
  <tileset firstgid="1" source="../../tiled/tilesets/Outdoors.tsx"/>
  <tileset firstgid="485" source="../../tiled/tilesets/containermap.tsx"/>
  <tileset firstgid="490" source="../../tiled/tilesets/container und co..tsx"/>
@@ -241,7 +241,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="11" name="Toolspawn">
+ <objectgroup id="11" name="Toolspawn" visible="0">
   <object id="85" name="Pistol" x="543" y="386.25">
    <point/>
   </object>
@@ -269,13 +269,6 @@
   <object id="300" name="Kokain" x="2398.67" y="1315.67">
    <point/>
   </object>
-  <object id="301" name="IronDoor1" gid="529" x="640" y="1088" width="32" height="32"/>
-  <object id="302" name="IronDoor1" type="Interactible" gid="539" x="640" y="1120" width="32" height="32">
-   <properties>
-    <property name="InteractibleClass" value="Door"/>
-    <property name="Locked" type="bool" value="true"/>
-   </properties>
-  </object>
   <object id="320" name="Munition" x="584" y="1546.67">
    <point/>
   </object>
@@ -291,8 +284,44 @@
   <object id="628" name="Taser" x="543.75" y="161">
    <point/>
   </object>
+  <object id="631" name="Money" x="588" y="1248.67">
+   <point/>
+  </object>
+  <object id="632" name="Money" x="1585" y="1009.5">
+   <point/>
+  </object>
+  <object id="633" name="Money" x="2144.91" y="578.727">
+   <point/>
+  </object>
+  <object id="634" name="Money" x="2160" y="1025.33">
+   <point/>
+  </object>
+  <object id="635" name="Money" x="2364" y="1264">
+   <point/>
+  </object>
+  <object id="636" name="Money" x="1858.67" y="1874.67">
+   <point/>
+  </object>
+  <object id="637" name="Money" x="549" y="1890.5">
+   <point/>
+  </object>
+  <object id="638" name="Money" x="527" y="1626">
+   <point/>
+  </object>
+  <object id="639" name="Money" x="737" y="1536">
+   <point/>
+  </object>
+  <object id="640" name="Money" x="540" y="868">
+   <point/>
+  </object>
+  <object id="641" name="Money" x="2146" y="634">
+   <point/>
+  </object>
+  <object id="642" name="Money" x="1432" y="94">
+   <point/>
+  </object>
  </objectgroup>
- <objectgroup id="5" name="Objektebene">
+ <objectgroup id="5" name="Objektebene" visible="0">
   <object id="2" name="Wall1" gid="506" x="512" y="256" width="32" height="32">
    <properties>
     <property name="Seethrough" type="bool" value="true"/>
@@ -953,7 +982,6 @@
   <object id="305" name="Button1" gid="1543" x="832" y="1536" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Button"/>
-    <property name="OpensDoor" value="IronDoor3"/>
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
@@ -988,21 +1016,18 @@
   <object id="318" name="Button1" gid="1543" x="1184" y="1120" width="32" height="32" rotation="90">
    <properties>
     <property name="InteractibleClass" value="Button"/>
-    <property name="OpensDoor" value="IronDoor3"/>
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
   <object id="319" name="Button1" gid="1543" x="2176" y="928" width="32" height="32" rotation="-90">
    <properties>
     <property name="InteractibleClass" value="Button"/>
-    <property name="OpensDoor" value="IronDoor2"/>
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
   <object id="328" name="Button1" gid="1543" x="512" y="1888" width="32" height="32" rotation="90">
    <properties>
     <property name="InteractibleClass" value="Button"/>
-    <property name="OpensDoor" value="IronDoor4"/>
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
@@ -1057,7 +1082,6 @@
   <object id="478" name="Button1" gid="1543" x="2031.75" y="1417.75" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Button"/>
-    <property name="OpensDoor" value="IronDoor4"/>
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
@@ -1218,8 +1242,15 @@
     <property name="Locked" type="bool" value="false"/>
    </properties>
   </object>
+  <object id="629" name="IronDoor1" gid="529" x="640" y="1088" width="32" height="32"/>
+  <object id="630" name="IronDoor1" type="Interactible" gid="539" x="640" y="1120" width="32" height="32">
+   <properties>
+    <property name="InteractibleClass" value="Door"/>
+    <property name="Locked" type="bool" value="false"/>
+   </properties>
+  </object>
  </objectgroup>
- <objectgroup id="9" name="Collisions">
+ <objectgroup id="9" name="Collisions" visible="0">
   <object id="6" x="569.167" y="257.333" width="6.16667" height="157.75"/>
   <object id="7" x="512.083" y="356.833" width="63.5" height="9.5"/>
   <object id="9" x="569.667" y="1" width="5.33333" height="190.333"/>
@@ -1492,7 +1523,7 @@
   <object id="539" x="546.667" y="1664.33" width="60.6667" height="4.66667"/>
   <object id="540" x="603.667" y="1667.33" width="4" height="50.6667"/>
  </objectgroup>
- <objectgroup id="10" name="Spawns">
+ <objectgroup id="10" name="Spawns" visible="0">
   <object id="21" name="PlayerSpawn" x="607" y="24">
    <point/>
   </object>
@@ -1775,5 +1806,5 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="6" name="Interactions"/>
+ <objectgroup id="6" name="Interactions" visible="0"/>
 </map>

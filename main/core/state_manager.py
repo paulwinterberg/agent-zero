@@ -13,6 +13,11 @@ class StateManager:
     def pop(self):
         self.stack.pop()
 
+    def replace(self, state):
+        if self.stack:
+            self.stack.pop()
+        self.stack.append(state)
+
     def update(self, dt, events):
         self.stack[-1].update(dt, events)
 

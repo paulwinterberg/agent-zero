@@ -133,20 +133,21 @@ class InteractionManager:
         if not self.tilemap:
             return False
 
-        buttons = [
-            obj for obj in self.tilemap.get_interactible_objects()
-            if obj["properties"].get("InteractibleClass") == "Button"
-            and obj["properties"].get("OpensDoor") == door_name
-        ]
-        if not buttons:
+        required_button_names = Button.BUTTON_GROUPS.get(door_name)
+        if required_button_names is None:
+            buttons = [
+                obj for obj in self.tilemap.get_interactible_objects()
+                if obj["properties"].get("InteractibleClass") == "Button"
+                and obj["properties"].get("OpensDoor") == door_name
+            ]
+            required_button_names = tuple(obj["name"] for obj in buttons)
+        if not required_button_names:
             return False
 
-        for button_obj in buttons:
-            button = self._load_interactible(button_obj)
+        for button_name in required_button_names:
+            button = self.get_interactible_instance(button_name)
             if not isinstance(button, Button):
-                raise ValueError(
-                    f"Configured button {button_obj['name']!r} could not be loaded"
-                )
+                return False
             if not button.pushed:
                 return False
         return True

@@ -33,7 +33,7 @@ class Door(Interactible):
 
     def on_interact(self, held_tool=None):
         """Toggle Tür-State zwischen offen und zu."""
-        if self.object_name in ("IronDoor2", "IronDoor3"):
+        if self.object_name in ("IronDoor2", "IronDoor3", "IronDoor4"):
             return False
         if (
             self.state == "closed"
