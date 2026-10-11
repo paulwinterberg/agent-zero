@@ -23,7 +23,9 @@ TUTORIAL_MESSAGES = {
         "ist. Für die verschlossenen brauchst du einen Schlüssel, den du in "
         "einem gelben Container findest. Insgesamt gibt es 8 Container, die "
         "du öffnen kannst. Danach suchst du nach dem Knopf, der die "
-        "Eisentür zur Kommandostelle öffnet."
+        "Eisentür zur Kommandostelle öffnet. Kleiner Tipp: Einen Hinweis "
+        "auf die Position der Container findest du bei den gelben Kränen."
+        "Die sind hier ganz in der Nähe. Viel Glück!"
     ),
     "PressTheButton": (
         "Drücke den Knopf, damit die verschlossene Eisentür zur "
