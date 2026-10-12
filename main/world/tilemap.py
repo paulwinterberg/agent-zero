@@ -23,9 +23,7 @@ class TileMap:
         self.sort_base_layer = len(list(tmx_data.visible_layers))
 
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
-        self.collision_rects = self._remove_door_collisions(
-            self._load_collisions()
-        )
+        self.collision_rects = self._load_collisions()
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
