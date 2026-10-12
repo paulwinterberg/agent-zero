@@ -118,6 +118,10 @@ Für das Schalterrätsel in `containership.tmx`:
 als auch `Button3` gedrückt wurden; die Reihenfolge ist beliebig. Diese beiden
 Türen lassen sich nicht direkt oder mit dem Schlüssel öffnen.
 
+`Door`- und `ContainerDoor`-Objekte erzeugen keine eigenen Kollisionen.
+Überlappende Kollisionen aus der `Collisions`-Ebene werden nur innerhalb der
+Türfläche ausgespart; außerhalb bleibt die Ebene aktiv.
+
 ## Troubleshooting
 
 ### Objekt wird nicht als Interactible erkannt

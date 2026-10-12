@@ -22,10 +22,10 @@ class TileMap:
         # y-sorted sprites always draw on top of the flat map.
         self.sort_base_layer = len(list(tmx_data.visible_layers))
 
-        self.collision_rects = self._load_collisions()
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
-        self.door_collision_rects = self._load_door_collisions()
-        self.collision_rects.extend(self.door_collision_rects)
+        self.collision_rects = self._remove_door_collisions(
+            self._load_collisions()
+        )
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
@@ -88,19 +88,6 @@ class TileMap:
             for obj in layer
             if obj.name and not obj.gid
         ]
-
-    def _load_door_collisions(self):
-        """Create closed-door colliders for doors in the Objects layer."""
-        door_collisions = []
-        for group in self._object_groups.values():
-            interaction_member = group["interaction_member"]
-            if (
-                interaction_member is not None
-                and interaction_member.properties.get("InteractibleClass")
-                in ("Door", "ContainerDoor")
-            ):
-                door_collisions.append(group["bounds"].copy())
-        return door_collisions
 
     def get_layer_index(self, layer_name):
         for i, layer in enumerate(self.tmx_data.visible_layers):
@@ -210,6 +197,61 @@ class TileMap:
                 rects.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
     
         return rects
+
+    def _remove_door_collisions(self, collisions):
+        door_bounds = [
+            group["bounds"]
+            for group in self._object_groups.values()
+            if group["interaction_member"] is not None
+            and group["interaction_member"].properties.get("InteractibleClass")
+            in ("Door", "ContainerDoor")
+        ]
+        filtered_collisions = []
+
+        for collision in collisions:
+            remaining = [collision]
+            for door_bounds_rect in door_bounds:
+                split_rects = []
+                for rect in remaining:
+                    overlap = rect.clip(door_bounds_rect)
+                    if overlap.width == 0 or overlap.height == 0:
+                        split_rects.append(rect)
+                        continue
+
+                    split_rects.extend(
+                        piece
+                        for piece in (
+                            pygame.Rect(
+                                rect.left,
+                                rect.top,
+                                rect.width,
+                                overlap.top - rect.top,
+                            ),
+                            pygame.Rect(
+                                rect.left,
+                                overlap.bottom,
+                                rect.width,
+                                rect.bottom - overlap.bottom,
+                            ),
+                            pygame.Rect(
+                                rect.left,
+                                overlap.top,
+                                overlap.left - rect.left,
+                                overlap.height,
+                            ),
+                            pygame.Rect(
+                                overlap.right,
+                                overlap.top,
+                                rect.right - overlap.right,
+                                overlap.height,
+                            ),
+                        )
+                        if piece.width > 0 and piece.height > 0
+                    )
+                remaining = split_rects
+            filtered_collisions.extend(remaining)
+
+        return filtered_collisions
 
     def _load_y_sorted_objects(self):
         """Build Decoration sprites from the 'objects' object layer.
