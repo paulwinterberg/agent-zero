@@ -41,6 +41,23 @@
                 "y": 1107
             }
         },
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx": {
+            "expandedObjectLayers": [
+                12
+            ],
+            "scale": 3,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 609.6666666666666,
+                "y": 41
+            }
+        },
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx#TX Tileset Wall": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx#parkinglot": {
+            "scaleInDock": 1
+        },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx": {
             "scale": 1.5,
             "selectedLayer": 3,
@@ -73,13 +90,24 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx": {
+            "expandedObjectLayers": [
+                6
+            ],
+            "scale": 5.5,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 844.7272727272727,
+                "y": 1323.2727272727275
+            }
+        },
         "tilesets/InteriorTutorial.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 2
         },
         "tilesets/Outdoors.tsx": {
             "scaleInDock": 1,
-            "scaleInEditor": 3
+            "scaleInEditor": 4
         }
     },
     "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
@@ -90,13 +118,13 @@
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx"
     ],
     "project": "agent-zero.tiled-project",
-    "property.type": "bool",
+    "property.type": "int",
     "recentFiles": [
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
+        "tilesets/Outdoors.tsx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
-        "tilesets/Outdoors.tsx",
         "tilesets/InteriorTutorial.tsx"
     ],
     "tileset.embedInMap": true,

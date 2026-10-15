@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="Outdoors" tilewidth="32" tileheight="32" tilecount="484" columns="44">
+<tileset version="1.10" tiledversion="1.12.2" name="Outdoors" tilewidth="32" tileheight="32" tilecount="484" columns="44">
  <image source="ws_tileset_free.png" width="1408" height="352"/>
+ <tile id="279">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="3.09091" y="22.8182" width="27.9091" height="6.36364"/>
+  </objectgroup>
+ </tile>
  <tile id="280">
   <objectgroup draworder="index" id="2">
    <object id="1" x="24.1332" y="25.1566" width="7.67488" height="5.71352"/>
@@ -19,6 +24,11 @@
  <tile id="283">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0.170553" y="24.048" width="6.73684" height="5.88408"/>
+  </objectgroup>
+ </tile>
+ <tile id="323">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="11.1818" y="28" width="9.63636" height="4"/>
   </objectgroup>
  </tile>
  <tile id="444">
