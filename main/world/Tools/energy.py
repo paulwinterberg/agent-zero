@@ -3,12 +3,12 @@ import pygame
 from world.Tools.tools import Tools, load_tool_texture
 
 
-class Energie(Tools):
-    """Pickup, das dem Taser Energie hinzufügt."""
+class Energy(Tools):
+    """Pickup, das dem Taser Energy hinzufügt."""
 
     def __init__(self, position):
         super().__init__()
-        self.name = "Energie"
+        self.name = "Energy"
         self.refill_tool_name = "Taser"
         self.refill_amount = 20
         self.state = "ready"

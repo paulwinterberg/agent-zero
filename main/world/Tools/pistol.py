@@ -60,13 +60,14 @@ class Pistol(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Pistol"
-        self.amount = 50
-        self.max_amount = 50
+        self.max_amount = settings.PISTOL_MAX_AMMO
+        self.amount = self.max_amount
         self.reload_item_name = "Munition"
         self.consumable = True
         self.can_fire = True
         self.keep_when_empty = True
         self.aim_held_sprite = True
+        self.shot_cooldown = settings.PISTOL_COOLDOWN
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("pistol", size=(32, 20))

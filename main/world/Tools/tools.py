@@ -2,7 +2,6 @@ import math
 from pathlib import Path
 
 import pygame
-
 import settings
 
 
@@ -18,7 +17,7 @@ TOOL_TEXTURE_REGIONS = {
 TOOL_TEXTURE_ALIASES = {
     "pistole": "pistol",
     "kokain": "cocaine",
-    "energie": "energy",
+    "energy": "energy",
     "smokebomb": "smoke_bomb",
 }
 
@@ -59,6 +58,8 @@ class Tools:
         self.consumable = False
         self.keep_when_empty = False
         self.can_fire = False
+        self.shot_cooldown = 0.0
+        self.shot_cooldown_remaining = 0.0
         self.state = None
         self.collected = False
         self.equipped = False
@@ -149,7 +150,41 @@ class MissionToolManager:
         )
 
     def spawn_tools_from_map(self):
+        from world.Tools.cocaine import Cocaine
+        from world.Tools.money import Money
+        from world.Tools.pistol import Pistol
+        from world.Tools.taser import Taser
+        from world.Tools.key import Key
+        from world.Tools.smoke_bomb import SmokeBomb
+        from world.Tools.munition import Munition
+        from world.Tools.energy import Energy
         """Create mission tools at the named Toolspawn points from Tiled."""
+
+        tool_types = {
+            "pistol": Pistol,
+            "taser": Taser,
+            "key": Key,
+            "smokebomb": SmokeBomb,
+            "munition": Munition,
+            "energy": Energy,
+            "kokain": Cocaine,
+            "cocaine": Cocaine,
+            "money": Money,
+        }
+        for spawn in self.tilemap.get_tool_spawns():
+            tool_name = spawn["name"].strip().casefold()
+            normalized_name = tool_name.replace(" ", "").replace("_", "").replace("-", "")
+            tool_type = tool_types.get(tool_name, tool_types.get(normalized_name))
+            if tool_type is None:
+                raise ValueError(f"Unknown tool spawn name in Tiled: {spawn['name']!r}")
+
+            tool = tool_type(spawn["position"])
+            if normalized_name == "blueblock":
+                tool.name = "Blue Block"
+                tool.sprite.image.fill((40, 100, 255))
+            self.add_tool(tool)
+
+
     def add_projectile(self, projectile, owner=None):
         projectile.owner = owner
         self.sprite_group.add(
@@ -165,24 +200,18 @@ class MissionToolManager:
         from world.Tools.key import Key
         from world.Tools.smoke_bomb import SmokeBomb
         from world.Tools.munition import Munition
-        from world.Tools.energie import Energie
+        from world.Tools.energy import Energy
         from world.Tools.cocaine import Cocaine
         from world.Tools.money import Money
 
         tool_types = {
             "pistol": Pistol,
-            "pistole": Pistol,
             "taser": Taser,
-            "redblock": RedBlock,
-            "blueblock": RedBlock,
             "key": Key,
             "schlüssel": Key,
             "smokebomb": SmokeBomb,
-            "smoke_bomb": SmokeBomb,
             "munition": Munition,
-            "energie": Energie,
-            "energy": Energie,
-            "kokain": Cocaine,
+            "energy": Energy,
             "cocaine": Cocaine,
             "money": Money,
         }
@@ -201,6 +230,10 @@ class MissionToolManager:
 
     def update(self, dt, player):
         self.interaction_cooldown = max(0, self.interaction_cooldown - dt)
+        for tool in self.tools:
+            tool.shot_cooldown_remaining = max(
+                0.0, tool.shot_cooldown_remaining - dt
+            )
         self.update_projectiles(dt)
         if self.weapon_wheel_open:
             self.select_slot_at(pygame.mouse.get_pos())
@@ -298,7 +331,7 @@ class MissionToolManager:
                 return True
             return False
         if getattr(tool, "refill_tool_name", None):
-            if tool.name in ("Munition", "Energie"):
+            if tool.name in ("Munition", "Energy"):
                 return self.collect_reload_pickup(tool)
             return self.collect_refill(tool)
         if tool.stackable:
@@ -327,7 +360,7 @@ class MissionToolManager:
         return False
 
     def collect_refill(self, refill):
-        """Nimmt ein Munitions- oder Energie-Pickup auf."""
+        """Nimmt ein Munitions- oder Energy-Pickup auf."""
         target = self.current_tool
         if not target or target.name != refill.refill_tool_name:
             return False
@@ -343,7 +376,7 @@ class MissionToolManager:
         return self.collect_reload_pickup(pickup)
 
     def collect_reload_pickup(self, pickup):
-        """Nimmt Munition oder Energie auf und lädt das passende Tool."""
+        """Nimmt Munition oder Energy auf und lädt das passende Tool."""
         reserve = next(
             (tool for tool in self.inventory if tool.name == pickup.name),
             None,
@@ -511,11 +544,15 @@ class MissionToolManager:
             return False
 
         tool = self.current_tool
+        if tool.shot_cooldown_remaining > 0:
+            return False
+
         projectile = tool.fire(
             player.rect.center,
             target,
             self.tilemap,
         )
+        tool.shot_cooldown_remaining = tool.shot_cooldown
         self.add_projectile(projectile, player)
         if tool.consumable:
             tool.consume()
