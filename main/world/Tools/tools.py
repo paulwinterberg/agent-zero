@@ -1,6 +1,51 @@
-import pygame
-import settings
 import math
+from pathlib import Path
+
+import pygame
+
+import settings
+
+
+TOOL_TEXTURE_REGIONS = {
+    "pistol": pygame.Rect(34, 8, 27, 15),
+    "taser": pygame.Rect(1, 8, 27, 15),
+    "bullet": pygame.Rect(77, 13, 5, 3),
+    "munition": pygame.Rect(8, 41, 17, 14),
+    "smoke_bomb": pygame.Rect(75, 39, 10, 16),
+    "cocaine": pygame.Rect(43, 72, 10, 15),
+    "energy": pygame.Rect(8, 74, 17, 12),
+}
+TOOL_TEXTURE_ALIASES = {
+    "pistole": "pistol",
+    "kokain": "cocaine",
+    "energie": "energy",
+    "smokebomb": "smoke_bomb",
+}
+
+
+def load_tool_texture(tool_name, size=None):
+    """Load a named tool texture cropped from the tool sprite sheet."""
+    normalized = tool_name.strip().lower().replace(" ", "_").replace("-", "_")
+    normalized = TOOL_TEXTURE_ALIASES.get(normalized, normalized)
+    region = TOOL_TEXTURE_REGIONS.get(normalized)
+    if region is None:
+        return None
+
+    root_dir = Path(__file__).resolve().parents[3]
+    sheet_path = root_dir / "tiled" / "tilesets" / "pixil-frame-0.png"
+    sheet = pygame.image.load(sheet_path).convert_alpha()
+    texture = sheet.subsurface(region).copy()
+    if size is not None:
+        scale = min(size[0] / texture.get_width(), size[1] / texture.get_height())
+        scaled_size = (
+            max(1, round(texture.get_width() * scale)),
+            max(1, round(texture.get_height() * scale)),
+        )
+        texture = pygame.transform.scale(texture, scaled_size)
+        canvas = pygame.Surface(size, pygame.SRCALPHA)
+        canvas.blit(texture, texture.get_rect(center=canvas.get_rect().center))
+        texture = canvas
+    return texture
 
 
 class Tools:
@@ -8,6 +53,8 @@ class Tools:
 
     def __init__(self):
         self.name = None
+        self.anzahl = 1
+        self.stackable = False
         self.amount = 1
         self.consumable = False
         self.keep_when_empty = False
@@ -16,6 +63,7 @@ class Tools:
         self.collected = False
         self.equipped = False
         self.held_sprite = None
+        self.aim_held_sprite = False
 
     def on_interact(self):
         if self.collected or (self.amount <= 0 and not self.keep_when_empty):
@@ -62,6 +110,7 @@ class Tools:
         held_size = (max(1, round(width * scale)), max(1, round(height * scale)))
         self.held_sprite = pygame.sprite.Sprite()
         self.held_sprite.image = pygame.transform.scale(self.sprite.image, held_size)
+        self.held_sprite.base_image = self.held_sprite.image.copy()
         self.held_sprite.rect = self.held_sprite.image.get_rect()
         return self.held_sprite
 
@@ -69,9 +118,10 @@ class Tools:
 class MissionToolManager:
     """Verwaltet Mission-Tools, Inventar, Eingaben und Projektile."""
 
-    def __init__(self, sprite_group, tilemap, interaction_range=50):
+    def __init__(self, sprite_group, tilemap, interaction_range=24):
         self.tools = []
         self.inventory = []
+        self.money = 0
         self.sprite_group = sprite_group
         self.tilemap = tilemap
         self.interaction_range = interaction_range
@@ -98,6 +148,8 @@ class MissionToolManager:
             layer=self.tilemap.y_sort_layer(tool.sprite.rect.bottom),
         )
 
+    def spawn_tools_from_map(self):
+        """Create mission tools at the named Toolspawn points from Tiled."""
     def add_projectile(self, projectile, owner=None):
         projectile.owner = owner
         self.sprite_group.add(
@@ -114,19 +166,37 @@ class MissionToolManager:
         from world.Tools.smoke_bomb import SmokeBomb
         from world.Tools.munition import Munition
         from world.Tools.energie import Energie
+        from world.Tools.cocaine import Cocaine
+        from world.Tools.money import Money
 
-        tools = (
-            Taser((player.rect.centerx + 40, player.rect.centery)),
-            RedBlock((player.rect.centerx + 80, player.rect.centery)),
-            Pistol((player.rect.centerx + 120, player.rect.centery)),
-            Key((player.rect.centerx + 160, player.rect.centery)),
-            SmokeBomb((player.rect.centerx + 200, player.rect.centery)),
-            Munition((player.rect.centerx + 240, player.rect.centery)),
-            Energie((player.rect.centerx + 280, player.rect.centery)),
-        )
-        tools[1].name = "Blue Block"
-        tools[1].sprite.image.fill((40, 100, 255))
-        for tool in tools:
+        tool_types = {
+            "pistol": Pistol,
+            "pistole": Pistol,
+            "taser": Taser,
+            "redblock": RedBlock,
+            "blueblock": RedBlock,
+            "key": Key,
+            "schlüssel": Key,
+            "smokebomb": SmokeBomb,
+            "smoke_bomb": SmokeBomb,
+            "munition": Munition,
+            "energie": Energie,
+            "energy": Energie,
+            "kokain": Cocaine,
+            "cocaine": Cocaine,
+            "money": Money,
+        }
+        for spawn in self.tilemap.get_tool_spawns():
+            tool_name = spawn["name"].strip().casefold()
+            normalized_name = tool_name.replace(" ", "").replace("_", "").replace("-", "")
+            tool_type = tool_types.get(tool_name, tool_types.get(normalized_name))
+            if tool_type is None:
+                raise ValueError(f"Unknown tool spawn name in Tiled: {spawn['name']!r}")
+
+            tool = tool_type(spawn["position"])
+            if normalized_name == "blueblock":
+                tool.name = "Blue Block"
+                tool.sprite.image.fill((40, 100, 255))
             self.add_tool(tool)
 
     def update(self, dt, player):
@@ -140,9 +210,20 @@ class MissionToolManager:
             tool for tool in self.tools
             if not tool.collected
             and player_center.distance_to(tool.sprite.rect.center) <= self.interaction_range
+            and self._has_line_of_sight(player_center, tool.sprite.rect.center)
         ]
         self.nearby_tools.sort(
             key=lambda tool: player_center.distance_to(tool.sprite.rect.center)
+        )
+
+    def _has_line_of_sight(self, start, end):
+        start = pygame.Vector2(start)
+        end = pygame.Vector2(end)
+        start_point = (round(start.x), round(start.y))
+        end_point = (round(end.x), round(end.y))
+        return not any(
+            collision.clipline(start_point, end_point)
+            for collision in self.tilemap.collision_rects
         )
 
     def handle_event(self, event, player):
@@ -211,10 +292,29 @@ class MissionToolManager:
 
         self.interaction_cooldown = self.interaction_cooldown_time
         tool = self.nearby_tools[0]
+        if tool.name == "Money":
+            if tool.on_interact():
+                self.money += getattr(tool, "value", 100)
+                return True
+            return False
         if getattr(tool, "refill_tool_name", None):
             if tool.name in ("Munition", "Energie"):
                 return self.collect_reload_pickup(tool)
             return self.collect_refill(tool)
+        if tool.stackable:
+            stack = next(
+                (
+                    item for item in self.inventory
+                    if item.stackable and item.name == tool.name
+                ),
+                None,
+            )
+            if stack:
+                room = stack.max_anzahl - stack.anzahl
+                if room <= 0 or not tool.on_interact():
+                    return False
+                stack.anzahl += min(room, tool.anzahl)
+                return True
         if len(self.inventory) >= self.max_inventory_slots:
             return False
 
@@ -386,6 +486,13 @@ class MissionToolManager:
                 if mouse_delta.length_squared() > 0:
                     direction = mouse_delta.normalize()
 
+            if self.current_tool.aim_held_sprite:
+                angle = math.degrees(math.atan2(-direction.y, direction.x)) - 180
+                held_sprite.image = pygame.transform.rotate(
+                    held_sprite.base_image,
+                    angle,
+                )
+
             orbit_position = pygame.Vector2(player.rect.center) + direction * 18
             center = round(orbit_position.x), round(orbit_position.y)
             held_sprite.rect = held_sprite.image.get_rect(center=center)
@@ -428,6 +535,16 @@ class MissionToolManager:
             return False
 
         tool = self.current_tool
+        action = getattr(tool, "secondary_action", None)
+        if action:
+            if not action(player):
+                return False
+        else:
+            projectile = tool.fire(player.rect.center, target, self.tilemap)
+            self.sprite_group.add(
+                projectile.sprite,
+                layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
+            )
         projectile = tool.fire(player.rect.center, target, self.tilemap)
         self.add_projectile(projectile, player)
         if tool.consumable:

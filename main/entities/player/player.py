@@ -45,6 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.stamina_drain_rate = 1.0   # per second while sprinting
         self.stamina_regen_rate = .5   # per second while not sprinting
         self.is_sprinting = False
+        self.cocaine_speed_boost_timer = 0.0
 
         # last facing direction, used so sliding has something to lock onto
         self.facing = pygame.math.Vector2(0, 1)
@@ -75,6 +76,11 @@ class Player(pygame.sprite.Sprite):
     def get_stamina_percent(self):
         return self.stamina / self.stamina_max
 
+    def activate_cocaine_speed_boost(self, duration):
+        self.cocaine_speed_boost_timer = max(
+            self.cocaine_speed_boost_timer, duration
+        )
+
     def goto(self, pos=(0, 0)):
         self.rect.topleft = pos
         self.hitbox.midbottom = self.rect.midbottom
@@ -92,6 +98,9 @@ class Player(pygame.sprite.Sprite):
     def _update_timers(self, dt):
         self.slidetime = max(0.0, self.slidetime - dt)
         self.slidecooldown = max(0.0, self.slidecooldown - dt)
+        self.cocaine_speed_boost_timer = max(
+            0.0, self.cocaine_speed_boost_timer - dt
+        )
 
         if self.stun_time > 0:
             self.stun_time = max(0, self.stun_time - dt)
@@ -112,10 +121,16 @@ class Player(pygame.sprite.Sprite):
 
     def _resolve_speed_and_stamina(self, keys, dt):
         """Returns the speed (units/sec) to move at this frame."""
+        speed_multiplier = (
+            settings.COCAINE_SPEED_BOOST_MULTIPLIER
+            if self.cocaine_speed_boost_timer > 0
+            else 1
+        )
+
         if self.slidetime > 0:
             self.stamina = min(self.stamina_max, self.stamina + self.stamina_regen_rate * dt)
             self.is_sprinting = False
-            return self.slidespeed
+            return self.slidespeed * speed_multiplier
 
         wants_sprint = keys[settings.SPRINT]
 
@@ -131,11 +146,11 @@ class Player(pygame.sprite.Sprite):
         if self.is_sprinting:
             self.stamina = max(0.0, self.stamina - self.stamina_drain_rate * dt)
             self.runspeed = min(self.runspeed_max, self.runspeed + self.runspeed_accel * dt)
-            return self.runspeed
+            return self.runspeed * speed_multiplier
         else:
             self.stamina = min(self.stamina_max, self.stamina + self.stamina_regen_rate * dt)
             self.runspeed = max(self.runspeed_base, self.runspeed - self.runspeed_decel * dt)
-            return self.walkspeed
+            return self.walkspeed * speed_multiplier
 
     def _move_and_collide(self, motion, tilemap: TileMap):
         # horizontal

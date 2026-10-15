@@ -13,6 +13,11 @@ def pop():
     if hasattr(state, "exit"):
         state.exit()
 
+def replace(state):
+    if stack:
+        stack.pop()
+    stack.append(state)
+
 def update(dt, events):
     stack[-1].update(dt, events)
 

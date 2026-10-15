@@ -25,8 +25,8 @@ class TileMap:
         # y-sorted sprites always draw on top of the flat map.
         self.sort_base_layer = len(list(tmx_data.visible_layers))
 
-        self.collision_rects = self._load_collisions()
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
+        self.collision_rects = self._load_collisions()
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
@@ -57,17 +57,38 @@ class TileMap:
             overlapping = obj.rect.colliderect(player.rect)
             obj.update(dt, drawn_in_front and overlapping)
 
+    def _get_object_layer(self, preferred_names):
+        names = [preferred_names] if isinstance(preferred_names, str) else preferred_names
+        for name in names:
+            if not name:
+                continue
+            try:
+                layer = self.tmx_data.get_layer_by_name(name)
+            except ValueError:
+                continue
+            if isinstance(layer, pytmx.TiledObjectGroup):
+                return layer
+        return None
+
     def get_object(self, layer_name, object_name) -> pytmx.TiledObject | None:
-        try:
-            layer = self.tmx_data.get_layer_by_name(layer_name)
-        except ValueError:
-            return None
-        if not isinstance(layer, pytmx.TiledObjectGroup):
+        layer = self._get_object_layer([layer_name])
+        if layer is None:
             return None
         for obj in layer:
             if obj.name == object_name:
                 return obj
         return None
+
+    def get_tool_spawns(self):
+        """Return named tool spawn points from the Toolspawn object layer."""
+        layer = self._get_object_layer("Toolspawn")
+        if layer is None:
+            return []
+        return [
+            {"name": obj.name, "position": (obj.x, obj.y)}
+            for obj in layer
+            if obj.name and not obj.gid
+        ]
 
     def get_layer_index(self, layer_name):
         for i, layer in enumerate(self.tmx_data.visible_layers):
@@ -78,20 +99,23 @@ class TileMap:
     def get_interactible_objects(self):
         """Return each interactible object group, including its Tiled properties."""
         interactibles = []
-    
-        for key, group in self._object_groups.items():
-            bottom_member = group["bottom_member"]
-    
-            if bottom_member.type != "Interactible":
+
+        for group in self._object_groups.values():
+            if not any(sprite.alive() for sprite in group["sprites"]):
                 continue
-            
+
+            interaction_member = group["interaction_member"]
+            if interaction_member is None:
+                continue
+
             interactibles.append({
-                "name": key if isinstance(key, str) else bottom_member.name,
-                "rect": group["bounds"],
+                "name": group["interaction_name"],
+                "rect": group["interaction_bounds"],
                 "sprites": group["sprites"],
-                "properties": dict(bottom_member.properties),
+                "properties": dict(interaction_member.properties),
+                "sort_layer": group["sort_layer"],
             })
-    
+
         return interactibles
 
     def get_layer_objects(self, layer_name):
@@ -127,6 +151,7 @@ class TileMap:
                 return obj
 
         return None
+
 
     def find_path(self, start, goal, hitbox_size):
         """Find a collision-free route between hitbox midbottom positions."""
@@ -320,11 +345,8 @@ class TileMap:
         # Collisions layer). obj.x/obj.y are already top-left — see
         # _load_y_sorted_objects — so the collider offsets from the
         # tileset apply directly, no grid-cell math needed.
-        try:
-            objects_layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
-        except ValueError:
-            objects_layer = None
-    
+        objects_layer = self._get_object_layer([TILED_OBJECTS_LAYER_NAME, "Objektebene", "Objects", "objects"])
+
         if isinstance(objects_layer, pytmx.TiledObjectGroup):
             for obj in objects_layer:
                 if not obj.gid:
@@ -352,6 +374,61 @@ class TileMap:
     
         return rects
 
+    def _remove_door_collisions(self, collisions):
+        door_bounds = [
+            group["bounds"]
+            for group in self._object_groups.values()
+            if group["interaction_member"] is not None
+            and group["interaction_member"].properties.get("InteractibleClass")
+            in ("Door", "ContainerDoor")
+        ]
+        filtered_collisions = []
+
+        for collision in collisions:
+            remaining = [collision]
+            for door_bounds_rect in door_bounds:
+                split_rects = []
+                for rect in remaining:
+                    overlap = rect.clip(door_bounds_rect)
+                    if overlap.width == 0 or overlap.height == 0:
+                        split_rects.append(rect)
+                        continue
+
+                    split_rects.extend(
+                        piece
+                        for piece in (
+                            pygame.Rect(
+                                rect.left,
+                                rect.top,
+                                rect.width,
+                                overlap.top - rect.top,
+                            ),
+                            pygame.Rect(
+                                rect.left,
+                                overlap.bottom,
+                                rect.width,
+                                rect.bottom - overlap.bottom,
+                            ),
+                            pygame.Rect(
+                                rect.left,
+                                overlap.top,
+                                overlap.left - rect.left,
+                                overlap.height,
+                            ),
+                            pygame.Rect(
+                                overlap.right,
+                                overlap.top,
+                                rect.right - overlap.right,
+                                overlap.height,
+                            ),
+                        )
+                        if piece.width > 0 and piece.height > 0
+                    )
+                remaining = split_rects
+            filtered_collisions.extend(remaining)
+
+        return filtered_collisions
+
     def _load_y_sorted_objects(self):
         """Build Decoration sprites from the 'objects' object layer.
     
@@ -378,12 +455,8 @@ class TileMap:
         obj.y is already a top-left coordinate and obj.y + obj.height
         is the bottom edge — no manual adjustment needed here.
         """
-        try:
-            layer = self.tmx_data.get_layer_by_name(TILED_OBJECTS_LAYER_NAME)
-        except ValueError:
-            return [], [], {}
-
-        if not isinstance(layer, pytmx.TiledObjectGroup):
+        layer = self._get_object_layer([TILED_OBJECTS_LAYER_NAME, "Objektebene", "Objects", "objects"])
+        if layer is None:
             return [], [], {}
 
         groups = {}
@@ -393,8 +466,51 @@ class TileMap:
             image = self.tmx_data.get_tile_image_by_gid(obj.gid)
             if not image:
                 continue
-            key = obj.name if obj.name else id(obj)
+            is_seethrough = bool(obj.properties.get("Seethrough"))
+            key = id(obj) if is_seethrough or not obj.name else obj.name
             groups.setdefault(key, []).append((obj, image))
+
+        for name, members in list(groups.items()):
+            if (
+                not isinstance(name, str)
+                or not any(obj.properties.get("InteractibleClass") for obj, _ in members)
+            ):
+                continue
+
+            remaining = set(range(len(members)))
+            components = []
+            while remaining:
+                pending = [remaining.pop()]
+                component = []
+                while pending:
+                    index = pending.pop()
+                    component.append(members[index])
+                    rect = pygame.Rect(
+                        members[index][0].x,
+                        members[index][0].y,
+                        members[index][0].width,
+                        members[index][0].height,
+                    ).inflate(2, 2)
+                    neighbors = [
+                        other_index
+                        for other_index in remaining
+                        if rect.colliderect(pygame.Rect(
+                            members[other_index][0].x,
+                            members[other_index][0].y,
+                            members[other_index][0].width,
+                            members[other_index][0].height,
+                        ))
+                    ]
+                    for neighbor in neighbors:
+                        remaining.remove(neighbor)
+                    pending.extend(neighbors)
+                components.append(component)
+
+            if len(components) > 1:
+                del groups[name]
+                for component in components:
+                    component_id = min(obj.id for obj, _ in component)
+                    groups[f"{name}_{component_id}"] = component
 
         flat_sprites = []
         tall_objects = []
@@ -414,7 +530,14 @@ class TileMap:
             sort_y = bounds.bottom - bottom_offset
             sort_layer = self.y_sort_layer(sort_y)
 
-            is_tall = bounds.height > self.tmx_data.tileheight * TILED_TALL_OBJECT_TILE_THRESHOLD
+            is_seethrough = any(
+                obj.properties.get("Seethrough") for obj, _ in members
+            )
+            is_tall = (
+                is_seethrough
+                or bounds.height
+                > self.tmx_data.tileheight * TILED_TALL_OBJECT_TILE_THRESHOLD
+            )
 
             group_sprites = []
             for obj, image in members:
@@ -426,13 +549,35 @@ class TileMap:
             if is_tall:
                 tall_objects.append(YSortedObject(group_sprites, bounds, sort_layer))
 
-            # "Bottom tile" = the member anchored lowest to the ground —
-            # its Tiled class is what get_interactible_objects checks.
+            # Use the lowest member for sorting, while interaction metadata
+            # comes only from members explicitly marked as interactibles.
             bottom_member = max((obj for obj, _ in members), key=lambda o: o.y + o.height)
+            interaction_members = [
+                obj for obj, _ in members
+                if obj.properties.get("InteractibleClass")
+            ]
+            interaction_member = (
+                max(interaction_members, key=lambda obj: obj.y + obj.height)
+                if interaction_members else None
+            )
+            interaction_rects = [
+                pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                for obj in interaction_members
+            ]
+            interaction_bounds = (
+                interaction_rects[0].unionall(interaction_rects[1:])
+                if len(interaction_rects) > 1
+                else interaction_rects[0] if interaction_rects
+                else None
+            )
             object_groups[key] = {
                 "sprites": group_sprites,
                 "bounds": bounds,
+                "sort_layer": sort_layer,
                 "bottom_member": bottom_member,
+                "interaction_name": key if isinstance(key, str) else bottom_member.name,
+                "interaction_member": interaction_member,
+                "interaction_bounds": interaction_bounds,
             }
 
         return flat_sprites, tall_objects, object_groups
