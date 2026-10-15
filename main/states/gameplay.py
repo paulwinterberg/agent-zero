@@ -60,7 +60,7 @@ COMPLETION_MESSAGE_DURATION = 3.0
 COMPLETION_REWARD = 800
 
 
-class Gameplay(State):
+class Gameplay(GameState):
     def __init__(self, initial_money=0):
         self.player = Player()
         self.tilemap, self.group = load_tilemap("assets/levels/containership.tmx", self.player)

@@ -1,7 +1,7 @@
 import core.state_manager as state_manager
 
 from core import renderer, audio
-from core.state_manager import StateManager
+import core.state_manager as state_manager
 from states.gameplay import Gameplay
 from states.main_menu import MainMenu
 
