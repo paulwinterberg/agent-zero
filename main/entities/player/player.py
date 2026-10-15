@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
             / "running.png"
         )
         sprite_sheet = pygame.image.load(str(sprite_sheet_path))
+        
         self.animation = PlayerAnimationManager(sprite_sheet)
         self.image = self.animation.frames[1]
         self.rect = self.image.get_rect(midbottom=pos)
@@ -82,8 +83,7 @@ class Player(pygame.sprite.Sprite):
         )
 
     def goto(self, pos=(0, 0)):
-        self.rect.topleft = pos
-        self.hitbox.midbottom = self.rect.midbottom
+        self.hitbox.midbottom = pos
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
         self.rect.midbottom = self.hitbox.midbottom
 
