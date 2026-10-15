@@ -54,7 +54,7 @@ class Enemy(pygame.sprite.Sprite):
         
         projectile = self.tool.fire(
             self.rect.center,
-            globs.get("player").rect.center,
+            globs.get("player").hitbox.center,
             globs.get("tilemap"),
         )
         self.tool_manager.add_projectile(projectile, self)
