@@ -6,6 +6,7 @@ import settings
 import core.state_manager as state_manager
 
 from globals import globs
+from core import levels
 from entities.player.player import Player
 from states.game_state import GameState
 from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
@@ -14,58 +15,12 @@ from world.tools.tools import MissionToolManager
 from world.interactibles.hint import Hint
 from enemies.enemy_manager import EnemyManager
 
-
-TUTORIAL_MESSAGES = {
-    "ContainermapStart": (
-        "Willkommen auf dem Containerschiff. Suche das Kokain, das die "
-        "Schmuggler hier schmuggeln, und fliehe mit den Beweismitteln. "
-        "Gehe nun nach links zur ersten Kreuzung und suche den grünen "
-        "Container dort am Rand."
-    ),
-    "OpenContainer": (
-        "Mit F kannst du den Container öffnen, falls er nicht verschlossen "
-        "ist. Für die verschlossenen brauchst du einen Schlüssel, den du in "
-        "einem gelben Container findest. Insgesamt gibt es 8 Container, die "
-        "du öffnen kannst. Danach suchst du nach dem Knopf, der die "
-        "Eisentür zur Kommandostelle öffnet. Kleiner Tipp: Einen Hinweis "
-        "auf die Position der Container findest du bei den gelben Kränen."
-        "Die sind hier ganz in der Nähe. Viel Glück!"
-    ),
-    "PressTheButton": (
-        "Drücke den Knopf, damit die verschlossene Eisentür zur "
-        "Kommandostelle aufspringt."
-    ),
-    "Komandostelle": (
-        "Finde die 2 verborgenen Knöpfe, um die vorletzte Ebene "
-        "freizuschalten. Viel Glück!"
-    ),
-    "NextStep": (
-        "Fast geschafft! Du musst nur noch 2 Knöpfe finden und du bist "
-        "fertig. Probiere nicht, getötet zu werden."
-    ),
-    "Brücke": (
-        "Auf der Brücke wird das ganze Schiff gesteuert. Finde den Knopf, "
-        "der hier verborgen ist."
-    ),
-    "FindExit": (
-        "Nur noch ein letzter Schritt. Du bist schon ganz nah. Töte die "
-        "Wachen und steig in den Container, um als blinder Passagier das "
-        "Schiff zu verlassen."
-    ),
-}
-
-COMPLETION_TUTORIAL_NAME = "ContainermapEnd"
-COMPLETION_FADE_DURATION = 1.0
-COMPLETION_MESSAGE_DURATION = 3.0
-COMPLETION_REWARD = 800
-
-
 class Gameplay(GameState):
-    def __init__(self, initial_money=0):
+    def __init__(self, initial_money=0, level="containership"):
         self.player = Player()
         globs["player"] = self.player
         
-        self.tilemap, self.group = load_tilemap("assets/levels/containership.tmx", self.player)
+        self.tilemap, self.group = load_tilemap("assets/levels/"+level+".tmx", self.player)
         self.interaction_manager = InteractionManager()
         self.interaction_manager.initialize_doors(self.tilemap)
         self.tool_manager = MissionToolManager(self.group, self.tilemap)
@@ -75,6 +30,8 @@ class Gameplay(GameState):
             self.group,
             self.tool_manager,
         )
+        
+        self.level_meta = levels.LEVELS[level]
         
         self.tilemap.zoom_to(4)
         
@@ -108,7 +65,7 @@ class Gameplay(GameState):
         self.completion_rewarded = False
         self.tutorial_points = {
             name: point
-            for name in (*TUTORIAL_MESSAGES, COMPLETION_TUTORIAL_NAME)
+            for name in (*self.level_meta.MESSAGES, self.level_meta.COMPLETION_TUTORIAL_NAME)
             if (point := self.tilemap.get_object("Tutorial", name)) is not None
         }
         self.interaction_feedback_font = pygame.font.Font(
@@ -212,11 +169,11 @@ class Gameplay(GameState):
                 continue
 
             self.shown_tutorials.add(name)
-            if name == COMPLETION_TUTORIAL_NAME:
+            if name ==self.level_meta.COMPLETION_TUTORIAL_NAME:
                 self.completion_started = True
                 self.interaction_feedback_timer = 0
                 return
-            self.interaction_feedback = TUTORIAL_MESSAGES[name]
+            self.interaction_feedback = self.level_meta.MESSAGES[name]
             self.tutorial_active = True
             self.interaction_feedback_timer = 0
             return
@@ -224,13 +181,13 @@ class Gameplay(GameState):
     def _update_completion(self, dt):
         self.completion_elapsed += dt
         if (
-            self.completion_elapsed >= COMPLETION_FADE_DURATION
+            self.completion_elapsed >=self.level_meta.COMPLETION_FADE_DURATION
             and not self.completion_rewarded
         ):
-            self.tool_manager.money += COMPLETION_REWARD
+            self.tool_manager.money += self.level_meta.COMPLETION_REWARD
             self.completion_rewarded = True
 
-        if self.completion_elapsed >= COMPLETION_FADE_DURATION + COMPLETION_MESSAGE_DURATION:
+        if self.completion_elapsed >= self.level_meta.COMPLETION_FADE_DURATION + self.level_meta.COMPLETION_MESSAGE_DURATION:
             from states.main_menu import MainMenu
             from core import game
 
@@ -309,17 +266,17 @@ class Gameplay(GameState):
         )
 
     def _draw_completion(self, screen):
-        alpha = min(255, round(255 * self.completion_elapsed / COMPLETION_FADE_DURATION))
+        alpha = min(255, round(255 * self.completion_elapsed /self.level_meta.COMPLETION_FADE_DURATION))
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, alpha))
         screen.blit(overlay, (0, 0))
 
-        if self.completion_elapsed >= COMPLETION_FADE_DURATION:
+        if self.completion_elapsed >=self.level_meta.COMPLETION_FADE_DURATION:
             message = self.interaction_feedback_font.render(
-                "Du hast es geschafft...", True, (255, 255, 255)
+                "Mission Accomplished...", True, (255, 255, 255)
             )
             reward = self.money_font.render(
-                f"+{COMPLETION_REWARD} Geld", True, (255, 219, 88)
+                f"+{self.level_meta.COMPLETION_REWARD} Gold", True, (255, 219, 88)
             )
             screen.blit(message, message.get_rect(center=screen.get_rect().center))
             screen.blit(

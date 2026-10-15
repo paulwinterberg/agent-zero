@@ -4,9 +4,10 @@ from core import audio, game
 from states.gameplay import Gameplay
 from states.game_state import GameState
 
+CURRENT_LEVEL = "containership"
 
 class MainMenu(GameState):
-    MENU_ITEMS = ("Einstellungen", "Level", "Shop")
+    MENU_ITEMS = ("Play", "Settings")
 
     def __init__(self, money=0):
         self.title_image = pygame.image.load("assets/ui/title_screen.png").convert()
@@ -111,11 +112,7 @@ class MainMenu(GameState):
             screen.blit(text, text.get_rect(center=rect.center))
 
     def _draw_placeholder(self, screen):
-        label = (
-            "Einstellungen kommen später."
-            if self.page == "settings"
-            else "Der Shop kommt später."
-        )
+        label = "Coming soon."
         text = self.small_font.render(label, True, (255, 255, 255))
         screen.blit(text, text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 20)))
         pygame.draw.rect(
@@ -125,14 +122,12 @@ class MainMenu(GameState):
             border_radius=6,
         )
         pygame.draw.rect(screen, (230, 181, 76), self.back_rect, 2, border_radius=6)
-        back_text = self.small_font.render("Zurück", True, (255, 255, 255))
+        back_text = self.small_font.render("Back", True, (255, 255, 255))
         screen.blit(back_text, back_text.get_rect(center=self.back_rect.center))
 
     def _activate_item(self, index):
         if index == 0:
-            self.page = "settings"
-        elif index == 1:
             audio.stop_music(fade_ms=500)
-            game.state_manager.replace(Gameplay(initial_money=self.money))
-        else:
-            self.page = "shop"
+            game.state_manager.replace(Gameplay(initial_money=self.money, level=CURRENT_LEVEL))
+        elif index == 1:
+            self.page = "settings"
