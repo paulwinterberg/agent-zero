@@ -94,7 +94,7 @@ class TileMap:
         if layer is None:
             return []
         return [
-            {"name": obj.name, "position": (obj.x, obj.y)}
+            {"name": obj.name, "position": (obj.x, obj.y), "props": obj.properties}
             for obj in layer
             if obj.name and not obj.gid
         ]

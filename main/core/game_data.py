@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 
 DEFAULT_GAME_DATA: Dict[str, bool] = {
-    "has_played": False
+    "has_played": True
 }
 
 RESET_DATA_EVERY_TIME = True

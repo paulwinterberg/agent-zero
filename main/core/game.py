@@ -2,6 +2,7 @@ import core.state_manager as state_manager
 import core.game_data as game_data
 
 from core import renderer, audio
+from states.gameplay import Gameplay
 from states.main_menu import MainMenu
 from states.intro_video import IntroVideo
 
@@ -13,7 +14,7 @@ def start():
         game_data.save_game_data({"has_played": True})
         state_manager.push(IntroVideo())
     else:
-        state_manager.push(MainMenu())
+        state_manager.push(Gameplay(level="tutorial")) #state_manager.push(MainMenu())
 
     renderer.start_loop(tick)
 

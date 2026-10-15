@@ -4,6 +4,7 @@ import pygame
 import pygame_gui
 import settings
 import core.state_manager as state_manager
+from core import audio
 
 from globals import globs
 from core import levels
@@ -32,6 +33,10 @@ class Gameplay(GameState):
         )
         
         self.level_meta = levels.LEVELS[level]
+        
+        #load ambience sound if existing
+        if self.level_meta.AMBIENCE:
+            audio.play_sfx(self.level_meta.AMBIENCE, loops=-1, fade_ms=1000)
         
         self.tilemap.zoom_to(4)
         
@@ -160,16 +165,28 @@ class Gameplay(GameState):
             and nearest["properties"].get("InteractibleClass") == "Hint"
         )
 
+    def _is_tutorial_triggered(self, obj, player_position):
+        width = getattr(obj, "width", 0) or 0
+        height = getattr(obj, "height", 0) or 0
+    
+        # Rectangle object: trigger when the player's center is inside it
+        if width > 0 and height > 0:
+            rect = pygame.Rect(obj.x, obj.y, width, height)
+            return rect.collidepoint(player_position)
+    
+        # Point object: trigger when the player is within the trigger radius
+        return player_position.distance_to((obj.x, obj.y)) <= self.tutorial_trigger_radius
+
     def _update_tutorial_feedback(self):
         player_position = pygame.Vector2(self.player.rect.center)
-        for name, point in self.tutorial_points.items():
+        for name, area in self.tutorial_points.items():
             if name in self.shown_tutorials:
                 continue
-            if player_position.distance_to((point.x, point.y)) > self.tutorial_trigger_radius:
+            if not self._is_tutorial_triggered(area, player_position):
                 continue
 
             self.shown_tutorials.add(name)
-            if name ==self.level_meta.COMPLETION_TUTORIAL_NAME:
+            if name == self.level_meta.COMPLETION_TUTORIAL_NAME:
                 self.completion_started = True
                 self.interaction_feedback_timer = 0
                 return

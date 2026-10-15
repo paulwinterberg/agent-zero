@@ -179,6 +179,8 @@ class MissionToolManager:
                 raise ValueError(f"Unknown tool spawn name in Tiled: {spawn['name']!r}")
 
             tool = tool_type(spawn["position"])
+            for k in spawn["props"]:
+                setattr(tool, k, spawn["props"][k])
             if normalized_name == "blueblock":
                 tool.name = "Blue Block"
                 tool.sprite.image.fill((40, 100, 255))
