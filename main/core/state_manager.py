@@ -10,7 +10,7 @@ def push(state):
 
 def pop():
     state = stack.pop()
-    if getattr(state, "exit"):
+    if hasattr(state, "exit"):
         state.exit()
 
 def update(dt, events):
