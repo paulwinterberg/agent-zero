@@ -63,6 +63,8 @@ COMPLETION_REWARD = 800
 class Gameplay(GameState):
     def __init__(self, initial_money=0):
         self.player = Player()
+        globs["player"] = self.player
+        
         self.tilemap, self.group = load_tilemap("assets/levels/containership.tmx", self.player)
         self.interaction_manager = InteractionManager()
         self.interaction_manager.initialize_doors(self.tilemap)
