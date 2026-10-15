@@ -3,10 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
+    "activeFile": "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
     "expandedProjectPaths": [
-        ".",
-        "tilesets"
+        "tilesets",
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -92,13 +92,14 @@
         },
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx": {
             "expandedObjectLayers": [
-                6
+                8,
+                9
             ],
-            "scale": 5.5,
-            "selectedLayer": 5,
+            "scale": 8,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 844.7272727272727,
-                "y": 1323.2727272727275
+                "x": 861,
+                "y": 1258
             }
         },
         "tilesets/InteriorTutorial.tsx": {
@@ -106,23 +107,32 @@
             "scaleInEditor": 2
         },
         "tilesets/Outdoors.tsx": {
-            "scaleInDock": 1,
+            "scaleInDock": 5.5,
             "scaleInEditor": 4
+        },
+        "tilesets/container und co..tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/containermap.tsx": {
+            "scaleInDock": 1
         }
     },
     "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
-        "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx"
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx",
+        "tilesets/Outdoors.tsx"
     ],
     "project": "agent-zero.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "tilesets/Outdoors.tsx",
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx",
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
-        "tilesets/Outdoors.tsx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
         "tilesets/InteriorTutorial.tsx"
