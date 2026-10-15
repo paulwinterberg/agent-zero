@@ -150,14 +150,14 @@ class MissionToolManager:
         )
 
     def spawn_tools_from_map(self):
-        from world.Tools.cocaine import Cocaine
-        from world.Tools.money import Money
-        from world.Tools.pistol import Pistol
-        from world.Tools.taser import Taser
-        from world.Tools.key import Key
-        from world.Tools.smoke_bomb import SmokeBomb
-        from world.Tools.munition import Munition
-        from world.Tools.energy import Energy
+        from world.tools.cocaine import Cocaine
+        from world.tools.money import Money
+        from world.tools.pistol import Pistol
+        from world.tools.taser import Taser
+        from world.tools.key import Key
+        from world.tools.smoke_bomb import SmokeBomb
+        from world.tools.munition import Munition
+        from world.tools.energy import Energy
         """Create mission tools at the named Toolspawn points from Tiled."""
 
         tool_types = {
@@ -194,15 +194,15 @@ class MissionToolManager:
 
     def add_demo_tools(self, player):
         """Platziert die aktuell verfügbaren Mission-Tools im Testlevel."""
-        from world.Tools.pistol import Pistol
-        from world.Tools.red_block import RedBlock
-        from world.Tools.taser import Taser
-        from world.Tools.key import Key
-        from world.Tools.smoke_bomb import SmokeBomb
-        from world.Tools.munition import Munition
-        from world.Tools.energy import Energy
-        from world.Tools.cocaine import Cocaine
-        from world.Tools.money import Money
+        from world.tools.pistol import Pistol
+        from world.tools.red_block import RedBlock
+        from world.tools.taser import Taser
+        from world.tools.key import Key
+        from world.tools.smoke_bomb import SmokeBomb
+        from world.tools.munition import Munition
+        from world.tools.energy import Energy
+        from world.tools.cocaine import Cocaine
+        from world.tools.money import Money
 
         tool_types = {
             "pistol": Pistol,

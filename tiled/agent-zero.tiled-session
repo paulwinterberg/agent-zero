@@ -33,6 +33,20 @@
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx#Walls": {
             "scaleInDock": 1
         },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx": {
+            "scale": 0.529625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 800.5664385178192,
+                "y": 800.5664385178192
+            }
+        },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx#TX Tileset Wall": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx#parkinglot": {
+            "scaleInDock": 1
+        },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
             "scale": 1,
             "selectedLayer": 2,
@@ -128,9 +142,7 @@
     "project": "agent-zero.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "tilesets/Outdoors.tsx",
-        "H:/GitHub/agent-zero/assets/levels/containership.tmx",
-        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",

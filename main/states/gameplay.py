@@ -10,7 +10,7 @@ from entities.player.player import Player
 from states.game_state import GameState
 from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
 from core.interactions import InteractionManager
-from world.Tools.tools import MissionToolManager
+from world.tools.tools import MissionToolManager
 from world.interactibles.hint import Hint
 from enemies.enemy_manager import EnemyManager
 
