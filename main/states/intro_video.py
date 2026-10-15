@@ -14,13 +14,18 @@ class IntroVideo(GameState):
             pygame.mixer.music.play()
             
         self.elapsed = 0
+        self.close_time = self.clip.duration + 10
 
     def update(self, dt, events):
         self.elapsed += dt
-        if self.elapsed >= self.clip.duration:
+        if self.elapsed >= self.close_time:
             state_manager.replace(Gameplay(level="tutorial"))
 
     def draw(self, screen: pygame.Surface, dt):
+        if self.elapsed > self.clip.duration:
+            renderer.screen.fill((0, 0, 0, 0))
+            return pygame.display.flip()
+        
         t = min(self.elapsed, self.clip.duration - 0.001)
         frame = self.clip.get_frame(t)
         surf = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
