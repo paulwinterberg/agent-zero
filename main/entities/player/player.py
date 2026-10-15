@@ -152,7 +152,7 @@ class Player(pygame.sprite.Sprite):
         previous_pos = self.pos.copy()
         self._move_and_collide(motion, tilemap)
         if self.pos != previous_pos:
-            self.image = self.animation.running(dt, direction)
+            self.image = self.animation.running(dt, direction, self.is_sprinting)
         else:
             self.image = self.animation.idle(self.facing)
 
@@ -167,7 +167,8 @@ class PlayerAnimationManager:
         self.png = png
         self.frames = self.strip_from_sheet((0, 0), (32, 64), 5, 5)
         self.frame_index = 1
-        self.animation_speed = 0.12
+        self.animation_walk_speed = 0.2
+        self.animation_run_speed = 0.13
         self.animation_timer = 0.0
         self.current_direction = None
 
@@ -201,16 +202,17 @@ class PlayerAnimationManager:
             return "right" if direction.x > 0 else "left"
         return "front" if direction.y > 0 else "back"
 
-    def running(self, dt, direction):
+    def running(self, dt, direction, is_sprinting):
         direction_key = self._direction_key(direction)
         sequence = self.run_frames[direction_key]
+        frame_duration = self.animation_run_speed if is_sprinting else self.animation_walk_speed
         if direction_key != self.current_direction:
             self.current_direction = direction_key
             self.frame_index = 0
             self.animation_timer = 0.0
         self.animation_timer += dt
-        while self.animation_timer >= self.animation_speed:
-            self.animation_timer -= self.animation_speed
+        while self.animation_timer >= frame_duration:
+            self.animation_timer -= frame_duration
             self.frame_index = (self.frame_index + 1) % len(sequence)
 
         return self.frames[sequence[self.frame_index]]
