@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.slide_dir = pygame.math.Vector2()
 
         # --- stamina ---
-        self.stamina_max = 5.0
+        self.stamina_max = 100.0
         self.stamina = self.stamina_max
         self.stamina_drain_rate = 1.0   # per second while sprinting
         self.stamina_regen_rate = .5   # per second while not sprinting
