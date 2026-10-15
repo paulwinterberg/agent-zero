@@ -14,11 +14,11 @@
             "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/containership.tmx": {
-            "scale": 0.4098323170731707,
-            "selectedLayer": 3,
+            "scale": 2,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 1312.7320066951834,
-                "y": 976.0089269109171
+                "x": 784.5,
+                "y": 539.5
             }
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/containership.tmx#TX Tileset Wall": {
@@ -63,10 +63,10 @@
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
             "scale": 4,
-            "selectedLayer": 3,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 887.75,
-                "y": 1141
+                "x": 1092,
+                "y": 1126.25
             }
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx": {
@@ -155,8 +155,9 @@
     "project": "agent-zero.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "tilesets/containermap.tsx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/containership.tmx",
+        "tilesets/containermap.tsx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "tilesets/Outdoors.tsx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",

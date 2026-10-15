@@ -160,21 +160,39 @@
    <point/>
   </object>
   <object id="29" name="Enemy2" type="EnemySpawn" x="1296" y="1136">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
   <object id="30" name="Enemy3" type="EnemySpawn" x="1326" y="1133.5">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
   <object id="31" name="Enemy4" type="EnemySpawn" x="1356.5" y="1134.5">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
   <object id="32" name="Enemy5" type="EnemySpawn" x="1291.5" y="1164.5">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
   <object id="33" name="Enemy6" type="EnemySpawn" x="1321" y="1168">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
   <object id="34" name="Enemy7" type="EnemySpawn" x="1356" y="1164.5">
+   <properties>
+    <property name="EnemyGroup" value="LotsOfEnemiesGroup"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
