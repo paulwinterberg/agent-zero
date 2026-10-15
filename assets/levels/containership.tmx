@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="677">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="677">
  <tileset firstgid="1" source="../../tiled/tilesets/Outdoors.tsx"/>
  <tileset firstgid="485" source="../../tiled/tilesets/container und co..tsx"/>
  <tileset firstgid="585" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
@@ -1552,9 +1552,15 @@
    <point/>
   </object>
   <object id="550" name="Enemy2" type="EnemySpawn" x="928" y="454.667">
+   <properties>
+    <property name="EnemyGroup" value="Group1"/>
+   </properties>
    <point/>
   </object>
   <object id="551" name="Enemy1" type="EnemySpawn" x="544" y="447">
+   <properties>
+    <property name="EnemyGroup" value="Group1"/>
+   </properties>
    <point/>
   </object>
   <object id="552" name="Enemy" type="EnemySpawn" x="660" y="645.333">
