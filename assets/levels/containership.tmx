@@ -1690,7 +1690,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Paths">
   <object id="646" name="Enemy22_1" type="EnemySpawn" x="544" y="1349.33">
    <point/>
   </object>

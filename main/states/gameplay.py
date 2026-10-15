@@ -114,8 +114,19 @@ class Gameplay(GameState):
         self.interaction_feedback_font = pygame.font.Font(
             "assets/fonts/PixelifySans-Medium.ttf", 22
         )
+
+    def exit(self):
+        self.stamina_bar.hide()
+        self.ammo_label.hide()
     
     def update(self, dt, events):
+        if self.player.dead:
+            from states.main_menu import MainMenu
+
+            state_manager.pop()
+            state_manager.push(MainMenu())
+            return
+
         if self.completion_started:
             self._update_completion(dt)
             return
@@ -146,24 +157,15 @@ class Gameplay(GameState):
         self.interaction_feedback_timer = max(
             0, self.interaction_feedback_timer - dt
         )
+        if self.interaction_feedback_timer == 0:
+            self.interaction_feedback = ""
+
+        self.enemy_manager.update(dt)
+        self.player.update(dt, self.tilemap)
         self._update_tutorial_feedback()
         if self.tutorial_active or self.completion_started:
             return
 
-
-    def exit(self):
-        self.stamina_bar.hide()
-    
-    def update(self, dt, events):
-        if self.player.dead:
-            from states.main_menu import MainMenu
-
-            state_manager.pop()
-            state_manager.push(MainMenu())
-            return
-
-        self.enemy_manager.update(dt)
-        self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)
 
         self.stamina_bar.set_current_progress(self.player.get_stamina_percent() * 100.0)
