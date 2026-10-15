@@ -2,10 +2,10 @@ import pygame
 
 from core import game, audio, screen
 from states.gameplay import Gameplay
-from states.state import State
+from states.game_state import GameState
 
 
-class MainMenu(State):
+class MainMenu(GameState):
     def __init__(self):
         self.title_image = pygame.image.load("assets/ui/title_screen.png")
         self.screen_size = screen.get_screen_size()

@@ -3,6 +3,7 @@ import pyscroll
 import settings
 import pygame_gui
 
+from globals import globs
 from entities.player.player import Player
 from world.tilemap import TileMap
 import core.screen as screen_module
@@ -23,7 +24,7 @@ def init():
     clock = pygame.time.Clock()
 
     screen_size = screen_module.get_screen_size()
-    print(screen_size)
+
     ui_manager = pygame_gui.UIManager((screen_size.x, screen_size.y))
 
 def start_loop(tickFunc):
@@ -62,6 +63,8 @@ def load_tilemap(path, player: Player) -> tuple[TileMap, pyscroll.PyscrollGroup]
     group.add(player, layer=tilemap.y_sort_layer(player.rect.bottom))
     group.add(*tilemap.objects)
 
+    globs["tilemap"] = tilemap
+    
     return tilemap, group
 
 def get_ui_manager():

@@ -5,7 +5,7 @@ import settings
 
 from world.tilemap import TileMap
 
-from settings import SPRINT_STAMINA_PERCENT_THRESHOLD
+from settings import SPRINT_STAMINA_PERCENT_THRESHOLD, PLAYER_HITBOX_HEIGHT
 
 
 class Player(pygame.sprite.Sprite):
@@ -22,13 +22,12 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation.frames[1]
         self.rect = self.image.get_rect(midbottom=pos)
 
-        hitbox_height = 8
-        self.hitbox = pygame.Rect(0, 0, 32, hitbox_height)
+        self.hitbox = pygame.Rect(0, 0, 32, PLAYER_HITBOX_HEIGHT)
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
 
         # --- movement speeds ---
-        self.walkspeed = 50
+        self.walkspeed = settings.PLAYER_WALK_SPEED
         self.runspeed_base = 60
         self.runspeed_max = 100
         self.runspeed = self.runspeed_base   # current sprint speed, ramps up over time
@@ -50,6 +49,29 @@ class Player(pygame.sprite.Sprite):
         # last facing direction, used so sliding has something to lock onto
         self.facing = pygame.math.Vector2(0, 1)
 
+        self.stun_time = 0.0
+        self.health = settings.PLAYER_HEALTH
+        self.dead = False
+
+    def take_damage(self, dmg: float):
+        if self.dead: return
+    
+        self.health = max(0, self.health - dmg)
+    
+        if self.health == 0:
+            self.die()
+    
+    def die(self):
+        if self.dead: return
+
+        self.dead = True
+
+    def stun(self, amount_time: float = 2.0):
+            self.stun_time = amount_time
+    
+    def is_stunned(self) -> bool:
+        return self.stun_time > 0
+
     def get_stamina_percent(self):
         return self.stamina / self.stamina_max
 
@@ -70,6 +92,9 @@ class Player(pygame.sprite.Sprite):
     def _update_timers(self, dt):
         self.slidetime = max(0.0, self.slidetime - dt)
         self.slidecooldown = max(0.0, self.slidecooldown - dt)
+
+        if self.stun_time > 0:
+            self.stun_time = max(0, self.stun_time - dt)
 
     def _try_start_slide(self, keys, move_dir):
         can_slide = (
@@ -99,7 +124,7 @@ class Player(pygame.sprite.Sprite):
             can_continue = self.stamina > 0
         else:
             # Not sprinting yet: need to clear the threshold to start.
-            can_continue = self.get_stamina_percent() > settings.SPRINT_STAMINA_PERCENT_THRESHOLD
+            can_continue = self.get_stamina_percent() > SPRINT_STAMINA_PERCENT_THRESHOLD
 
         self.is_sprinting = wants_sprint and can_continue
 
