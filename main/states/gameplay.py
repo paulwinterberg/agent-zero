@@ -3,13 +3,16 @@ import math
 import pygame
 import pygame_gui
 import settings
+import core.state_manager as state_manager
 
+from globals import globs
 from entities.player.player import Player
-from states.state import State
-from core.renderer import load_tilemap, render_world, get_ui_manager
+from states.game_state import GameState
+from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
 from core.interactions import InteractionManager
 from world.Tools.tools import MissionToolManager
 from world.interactibles.hint import Hint
+from enemies.enemy_manager import EnemyManager
 
 
 TUTORIAL_MESSAGES = {
@@ -65,6 +68,11 @@ class Gameplay(State):
         self.interaction_manager.initialize_doors(self.tilemap)
         self.tool_manager = MissionToolManager(self.group, self.tilemap)
         self.tool_manager.money = initial_money
+        self.enemy_manager = EnemyManager(
+            self.tilemap,
+            self.group,
+            self.tool_manager,
+        )
         
         self.tilemap.zoom_to(4)
         
@@ -140,6 +148,19 @@ class Gameplay(State):
         if self.tutorial_active or self.completion_started:
             return
 
+
+    def exit(self):
+        self.stamina_bar.hide()
+    
+    def update(self, dt, events):
+        if self.player.dead:
+            from states.main_menu import MainMenu
+
+            state_manager.pop()
+            state_manager.push(MainMenu())
+            return
+
+        self.enemy_manager.update(dt)
         self.player.update(dt, self.tilemap)
         self.interaction_manager.update(dt, self.player, self.tilemap)
 
@@ -365,10 +386,10 @@ class Gameplay(State):
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
         if held_tool and held_tool.name == "Pistol":
-            self.ammo_label.set_text(f"Pistol: {held_tool.anzahl} Schuss")
+            self.ammo_label.set_text(f"Pistol: {held_tool.amount} Schuss")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
-            self.ammo_label.set_text(f"Taser: {held_tool.anzahl} Energie")
+            self.ammo_label.set_text(f"Taser: {held_tool.amount} Energie")
             self.ammo_label.show()
         else:
             self.ammo_label.hide()
@@ -397,7 +418,7 @@ class Gameplay(State):
                 name = font.render(tool.name or "Tool", True, (255, 255, 255))
                 name_rect = name.get_rect(center=(position.x, position.y + 48))
                 screen.blit(name, name_rect)
-                count = font.render(str(tool.anzahl), True, (255, 230, 120))
+                count = font.render(str(tool.amount), True, (255, 230, 120))
                 screen.blit(count, count.get_rect(center=position))
 
         

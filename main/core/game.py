@@ -1,8 +1,9 @@
+import core.state_manager as state_manager
+
 from core import renderer, audio
 from core.state_manager import StateManager
+from states.gameplay import Gameplay
 from states.main_menu import MainMenu
-
-state_manager = StateManager()
 
 def start():
     renderer.init()

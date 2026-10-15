@@ -55,8 +55,10 @@ class Tools:
         self.name = None
         self.anzahl = 1
         self.stackable = False
+        self.amount = 1
         self.consumable = False
         self.keep_when_empty = False
+        self.can_fire = False
         self.state = None
         self.collected = False
         self.equipped = False
@@ -64,7 +66,7 @@ class Tools:
         self.aim_held_sprite = False
 
     def on_interact(self):
-        if self.collected or (self.anzahl <= 0 and not self.keep_when_empty):
+        if self.collected or (self.amount <= 0 and not self.keep_when_empty):
             return False
 
         self.collected = True
@@ -74,12 +76,12 @@ class Tools:
         return True
 
     def consume(self):
-        """Verbraucht eine Ladung und entfernt das Tool bei Anzahl null."""
-        if self.anzahl <= 0:
+        """Verbraucht eine Ladung und entfernt das Tool bei amount null."""
+        if self.amount <= 0:
             return False
 
-        self.anzahl -= 1
-        if self.anzahl == 0:
+        self.amount -= 1
+        if self.amount == 0:
             if self.keep_when_empty:
                 self.state = "empty"
                 return True
@@ -139,7 +141,8 @@ class MissionToolManager:
 
     def add_tool(self, tool):
         """Fügt ein Tool mit passender Tiefensortierung zur Welt hinzu."""
-        self.tools.append(tool)
+        if tool not in self.tools:
+            self.tools.append(tool)
         self.sprite_group.add(
             tool.sprite,
             layer=self.tilemap.y_sort_layer(tool.sprite.rect.bottom),
@@ -147,6 +150,15 @@ class MissionToolManager:
 
     def spawn_tools_from_map(self):
         """Create mission tools at the named Toolspawn points from Tiled."""
+    def add_projectile(self, projectile, owner=None):
+        projectile.owner = owner
+        self.sprite_group.add(
+            projectile.sprite,
+            layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
+        )
+
+    def add_demo_tools(self, player):
+        """Platziert die aktuell verfügbaren Mission-Tools im Testlevel."""
         from world.Tools.pistol import Pistol
         from world.Tools.red_block import RedBlock
         from world.Tools.taser import Taser
@@ -323,7 +335,7 @@ class MissionToolManager:
         if not target or not refill.on_interact():
             return False
 
-        target.anzahl += refill.refill_amount
+        target.amount += refill.refill_amount
         return True
 
     def collect_ammo_pickup(self, pickup):
@@ -339,7 +351,7 @@ class MissionToolManager:
 
         current = self.current_tool
         if current and getattr(current, "reload_item_name", None) == pickup.name:
-            missing = current.max_anzahl - current.anzahl
+            missing = current.max_amount - current.amount
             loaded = min(missing, pickup.refill_amount)
             remaining = pickup.refill_amount - loaded
             if remaining and not reserve and len(self.inventory) >= self.max_inventory_slots:
@@ -347,17 +359,17 @@ class MissionToolManager:
             if not pickup.on_interact():
                 return False
 
-            current.anzahl += loaded
+            current.amount += loaded
             if remaining:
                 if reserve:
-                    reserve.anzahl += remaining
+                    reserve.amount += remaining
                 else:
-                    pickup.anzahl = remaining
+                    pickup.amount = remaining
                     self.inventory.append(pickup)
             return True
 
         if reserve:
-            reserve.anzahl += pickup.refill_amount
+            reserve.amount += pickup.refill_amount
             pickup.on_interact()
             return True
 
@@ -366,7 +378,7 @@ class MissionToolManager:
         if not pickup.on_interact():
             return False
 
-        pickup.anzahl = pickup.refill_amount
+        pickup.amount = pickup.refill_amount
         self.inventory.append(pickup)
         return True
 
@@ -376,15 +388,15 @@ class MissionToolManager:
         if not tool or not getattr(tool, "reload_item_name", None):
             return False
 
-        maximum = getattr(tool, "max_anzahl", tool.anzahl)
-        missing = maximum - tool.anzahl
+        maximum = getattr(tool, "max_amount", tool.amount)
+        missing = maximum - tool.amount
         if missing <= 0:
             return False
 
         reserve_index = next(
             (
                 index for index, item in enumerate(self.inventory)
-                if item.name == tool.reload_item_name and item.anzahl > 0
+                if item.name == tool.reload_item_name and item.amount > 0
             ),
             None,
         )
@@ -392,10 +404,10 @@ class MissionToolManager:
             return False
 
         reserve = self.inventory[reserve_index]
-        loaded = min(missing, reserve.anzahl)
-        tool.anzahl += loaded
-        reserve.anzahl -= loaded
-        if reserve.anzahl == 0:
+        loaded = min(missing, reserve.amount)
+        tool.amount += loaded
+        reserve.amount -= loaded
+        if reserve.amount == 0:
             self.remove_inventory_slot(reserve_index)
         return True
 
@@ -494,7 +506,7 @@ class MissionToolManager:
         if (
             not self.current_tool
             or not hasattr(self.current_tool, "fire")
-            or self.current_tool.anzahl <= 0
+            or self.current_tool.amount <= 0
         ):
             return False
 
@@ -504,13 +516,10 @@ class MissionToolManager:
             target,
             self.tilemap,
         )
-        self.sprite_group.add(
-            projectile.sprite,
-            layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
-        )
+        self.add_projectile(projectile, player)
         if tool.consumable:
             tool.consume()
-        if tool.anzahl <= 0 and not tool.keep_when_empty:
+        if tool.amount <= 0 and not tool.keep_when_empty:
             self.inventory.pop(self.active_slot)
             self.active_slot = min(self.active_slot, max(0, len(self.inventory) - 1))
             self.selected_slot = self.active_slot
@@ -521,7 +530,7 @@ class MissionToolManager:
         if (
             not self.current_tool
             or not getattr(self.current_tool, "secondary_use", False)
-            or self.current_tool.anzahl <= 0
+            or self.current_tool.amount <= 0
         ):
             return False
 
@@ -536,9 +545,11 @@ class MissionToolManager:
                 projectile.sprite,
                 layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
             )
+        projectile = tool.fire(player.rect.center, target, self.tilemap)
+        self.add_projectile(projectile, player)
         if tool.consumable:
             tool.consume()
-        if tool.anzahl <= 0 and not tool.keep_when_empty:
+        if tool.amount <= 0 and not tool.keep_when_empty:
             self.inventory.pop(self.active_slot)
             self.active_slot = min(self.active_slot, max(0, len(self.inventory) - 1))
             self.selected_slot = self.active_slot
@@ -546,9 +557,22 @@ class MissionToolManager:
 
     def update_projectiles(self, dt):
         """Bewegt Kugeln und entfernt abgelaufene Sprites."""
+        enemies = [
+            sprite
+            for sprite in self.sprite_group.sprites()
+            if callable(getattr(sprite, "take_damage", None))
+        ]
         for sprite in list(self.sprite_group.sprites()):
             projectile = getattr(sprite, "projectile", None)
-            if projectile and not projectile.update(dt):
+            if not projectile:
+                continue
+            if getattr(projectile, "damage", None) is not None:
+                owner = getattr(projectile, "owner", None)
+                targets = [enemy for enemy in enemies if enemy is not owner]
+                active = projectile.update(dt, targets)
+            else:
+                active = projectile.update(dt)
+            if not active:
                 effect = getattr(projectile, "on_expire", lambda: None)()
                 sprite.kill()
                 if effect:

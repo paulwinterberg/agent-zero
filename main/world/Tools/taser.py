@@ -1,4 +1,5 @@
 import pygame
+import settings
 
 from world.Tools.tools import Tools, load_tool_texture
 
@@ -11,6 +12,7 @@ class TaserSpark:
         self.sprite.image = pygame.Surface((180, 180), pygame.SRCALPHA)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
         self.sprite.projectile = self
+        self.damage = settings.TASER_DAMAGE
         self.remaining_time = 0.18
 
         direction = pygame.Vector2(target) - pygame.Vector2(position)
@@ -28,7 +30,16 @@ class TaserSpark:
                 points.append(origin + direction * distance + jitter)
             pygame.draw.lines(self.sprite.image, (70, 180, 255), False, points, 2)
 
-    def update(self, dt):
+    def update(self, dt, enemies=()):
+        for enemy in enemies:
+            if (
+                getattr(enemy, "health", 1) > 0
+                and pygame.sprite.collide_mask(self.sprite, enemy)
+            ):
+                enemy.take_damage(self.damage)
+                enemy.stun(settings.TASER_STUN_TIME)
+                return False
+
         self.remaining_time -= dt
         return self.remaining_time > 0
 
@@ -39,12 +50,13 @@ class Taser(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Taser"
-        self.anzahl = 20
-        self.max_anzahl = 20
+        self.amount = 20
+        self.max_amount = 20
         self.reload_item_name = "Energie"
         self.consumable = True
         self.keep_when_empty = True
         self.aim_held_sprite = True
+        self.can_fire = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("taser", size=(32, 24))

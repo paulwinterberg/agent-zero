@@ -2,10 +2,10 @@ import pygame
 
 from core import audio, game
 from states.gameplay import Gameplay
-from states.state import State
+from states.game_state import GameState
 
 
-class MainMenu(State):
+class MainMenu(GameState):
     MENU_ITEMS = ("Einstellungen", "Level", "Shop")
 
     def __init__(self, money=0):

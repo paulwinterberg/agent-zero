@@ -82,15 +82,18 @@
             "scaleInEditor": 3
         }
     },
-    "last.imagePath": "C:/Users/Paul/Documents/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
+    "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx"
     ],
     "project": "agent-zero.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
         "tilesets/Outdoors.tsx",

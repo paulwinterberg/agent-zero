@@ -1,4 +1,5 @@
 import math
+import settings
 
 import pygame
 
@@ -7,7 +8,7 @@ from world.Tools.tools import Tools, load_tool_texture
 
 class Bullet:
 
-    def __init__(self, position, target, collision_rects):
+    def __init__(self, position, target, collision_rects, damage):
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("bullet", size=(8, 8))
         if texture is not None:
@@ -17,6 +18,7 @@ class Bullet:
             pygame.draw.circle(base_image, (0, 0, 0), (4, 4), 4)
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
+        
         direction = pygame.Vector2(target) - self.position
         self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
         if self.velocity.length_squared():
@@ -26,9 +28,10 @@ class Bullet:
             self.sprite.image = base_image
         self.sprite.rect = self.sprite.image.get_rect(center=position)
         self.collision_rects = collision_rects
+        self.damage = damage
         self.remaining_time = 2.0
 
-    def update(self, dt):
+    def update(self, dt, enemies=()):
         movement = self.velocity * dt
         steps = max(1, math.ceil(movement.length() / 4))
         step = movement / steps
@@ -39,6 +42,11 @@ class Bullet:
             )
             if any(next_rect.colliderect(rect) for rect in self.collision_rects):
                 return False
+            for enemy in enemies:
+                hitbox = getattr(enemy, "hitbox", enemy.rect)
+                if hitbox.colliderect(next_rect) and getattr(enemy, "health", 1) > 0:
+                    enemy.take_damage(self.damage)
+                    return False
             self.position = next_position
 
         self.sprite.rect.center = round(self.position.x), round(self.position.y)
@@ -52,10 +60,11 @@ class Pistol(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Pistol"
-        self.anzahl = 50
-        self.max_anzahl = 50
+        self.amount = 50
+        self.max_amount = 50
         self.reload_item_name = "Munition"
         self.consumable = True
+        self.can_fire = True
         self.keep_when_empty = True
         self.aim_held_sprite = True
         self.state = "ready"
@@ -69,5 +78,7 @@ class Pistol(Tools):
             pygame.draw.rect(self.sprite.image, (0, 0, 0), self.sprite.image.get_rect(), 3)
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
+        self.damage = settings.PISTOL_DAMAGE
+
     def fire(self, position, target, tilemap):
-        return Bullet(position, target, tilemap.collision_rects)
+        return Bullet(position, target, tilemap.collision_rects, self.damage)
