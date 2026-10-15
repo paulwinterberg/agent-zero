@@ -7,7 +7,7 @@ from globals import globs
 from settings import ENEMY_DEFAULT_SPEED #pixels/sec
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
-from world.Tools.registry import tool_name_to_class_map
+from world.tools.registry import tool_name_to_class_map
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos=(0,0), path: list = None, tool_manager=None):

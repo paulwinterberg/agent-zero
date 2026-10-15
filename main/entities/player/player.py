@@ -90,10 +90,7 @@ class Player(pygame.sprite.Sprite):
     def _get_input_dir(self, keys):
         dx = keys[settings.RIGHT] - keys[settings.LEFT]
         dy = keys[settings.BACKWARD] - keys[settings.FORWARD]
-        direction = pygame.math.Vector2(dx, dy)
-        if direction.length_squared() > 0:
-            direction = direction.normalize()
-        return direction
+        return pygame.math.Vector2(dx, dy)
 
     def _update_timers(self, dt):
         self.slidetime = max(0.0, self.slidetime - dt)
@@ -198,7 +195,6 @@ class Player(pygame.sprite.Sprite):
 
         # Keep pos, hitbox and rect all in sync (midbottom of hitbox)
         self.hitbox.midbottom = (round(self.pos.x), round(self.pos.y))
-        self.pos = pygame.math.Vector2(self.hitbox.midbottom)
         self.rect.midbottom = self.hitbox.midbottom
 
 ###################################################################
