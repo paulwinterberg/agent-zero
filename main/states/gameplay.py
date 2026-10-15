@@ -391,7 +391,7 @@ class Gameplay(GameState):
             self.ammo_label.set_text(f"Pistol: {held_tool.amount} Schuss")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
-            self.ammo_label.set_text(f"Taser: {held_tool.amount} Energie")
+            self.ammo_label.set_text(f"Taser: {held_tool.amount} Energy")
             self.ammo_label.show()
         else:
             self.ammo_label.hide()

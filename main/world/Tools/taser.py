@@ -50,13 +50,14 @@ class Taser(Tools):
     def __init__(self, position):
         super().__init__()
         self.name = "Taser"
-        self.amount = 20
-        self.max_amount = 20
-        self.reload_item_name = "Energie"
+        self.max_amount = settings.TASER_MAX_AMMO
+        self.amount = self.max_amount
+        self.reload_item_name = "Energy"
         self.consumable = True
         self.keep_when_empty = True
         self.aim_held_sprite = True
         self.can_fire = True
+        self.shot_cooldown = settings.TASER_COOLDOWN
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("taser", size=(32, 24))
