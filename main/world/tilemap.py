@@ -5,7 +5,7 @@ import pygame
 import pyscroll
 import pytmx
 
-from settings import TILED_OBJECTS_LAYER_NAME, TILED_OBJECT_OCCLUSION_ALPHA, TILED_OCCLUSION_FADE_SPEED, TILED_TALL_OBJECT_TILE_THRESHOLD, TILED_SPAWNS_LAYER_NAME
+from settings import CAMERA_RENDER_SCALE, TILED_OBJECTS_LAYER_NAME, TILED_OBJECT_OCCLUSION_ALPHA, TILED_OCCLUSION_FADE_SPEED, TILED_TALL_OBJECT_TILE_THRESHOLD, TILED_SPAWNS_LAYER_NAME
 
 
 class TileMap:
@@ -29,11 +29,20 @@ class TileMap:
         self.collision_rects = self._load_collisions()
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
+        display = pygame.display.get_surface()
+        screen_width, screen_height = (
+            display.get_size()
+            if display is not None
+            else pygame.display.get_desktop_sizes()[0]
+        )
         self.map_layer = pyscroll.orthographic.BufferedRenderer(
             map_data,
-            pygame.display.get_desktop_sizes()[0]
+            (
+                screen_width * CAMERA_RENDER_SCALE,
+                screen_height * CAMERA_RENDER_SCALE,
+            ),
         )
-        self.map_layer.zoom = zoom_level
+        self.map_layer.zoom = zoom_level * CAMERA_RENDER_SCALE
 
     def y_sort_layer(self, pixel_y):
         """Fractional pyscroll layer, monotonic in pixel_y, always
@@ -43,7 +52,7 @@ class TileMap:
         return self.sort_base_layer + (pixel_y / self.tmx_data.tileheight)
 
     def zoom_to(self, zoom_level):
-        self.map_layer.zoom = zoom_level
+        self.map_layer.zoom = zoom_level * CAMERA_RENDER_SCALE
 
     def update_occlusion(self, player, dt):
         """Fade any tall object that currently hides the player: it

@@ -312,7 +312,7 @@ class Gameplay(GameState):
         if current_line:
             lines.append(current_line)
         if self.tutorial_active:
-            lines.append("Drücke ENTER zum Fortfahren")
+            lines.append("Press ENTER to continue.")
 
         line_height = self.interaction_feedback_font.get_linesize()
         text = pygame.Surface(

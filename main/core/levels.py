@@ -6,6 +6,14 @@ class Level:
 
     MESSAGES = {}
 
+class TutorialIslandLevel(Level):
+    COMPLETION_TUTORIAL_NAME = "TutorialEnd"
+
+    MESSAGES = {
+       "FirstTutorial": (
+           "Find your way out of this island."
+       )
+    }
 
 class ContainershipLevel(Level):
     COMPLETION_TUTORIAL_NAME = "ContainermapEnd"
@@ -49,7 +57,7 @@ class ContainershipLevel(Level):
         ),
     }
 
-
 LEVELS = {
+    "tutorial": TutorialIslandLevel,
     "containership": ContainershipLevel
 }

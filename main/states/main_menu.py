@@ -4,7 +4,7 @@ from core import audio, game
 from states.gameplay import Gameplay
 from states.game_state import GameState
 
-CURRENT_LEVEL = "containership"
+CURRENT_LEVEL = "tutorial"
 
 class MainMenu(GameState):
     MENU_ITEMS = ("Play", "Settings")
