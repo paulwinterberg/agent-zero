@@ -23,6 +23,16 @@ class Door(Interactible):
                 rect for rect in self.tilemap.collision_rects
                 if self.bounds.colliderect(rect)
             ]
+            if self.sprites:
+                bottom = max(sprite.rect.bottom for sprite in self.sprites)
+                bottom_rects = [
+                    sprite.rect for sprite in self.sprites
+                    if sprite.rect.bottom == bottom
+                ]
+                bottom_collision = bottom_rects[0].unionall(bottom_rects[1:])
+                if bottom_collision not in self.collision_rects:
+                    self.collision_rects.append(bottom_collision)
+            self._sync_collision_state()
 
     def _sync_collision_state(self):
         if not self.tilemap or not self.collision_rects:

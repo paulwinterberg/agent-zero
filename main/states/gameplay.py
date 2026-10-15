@@ -62,6 +62,7 @@ class Gameplay(State):
         self.player = Player()
         self.tilemap, self.group = load_tilemap("assets/levels/containership.tmx", self.player)
         self.interaction_manager = InteractionManager()
+        self.interaction_manager.initialize_doors(self.tilemap)
         self.tool_manager = MissionToolManager(self.group, self.tilemap)
         self.tool_manager.money = initial_money
         

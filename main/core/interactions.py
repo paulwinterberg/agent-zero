@@ -15,16 +15,28 @@ class InteractionManager:
         self.interactible_instances = {}  # Cache für Interactible-Instanzen
         self.tilemap = None
         self.feedback_message = None
-        self._puzzle_doors_initialized = False
+        self._doors_initialized = False
+
+    def initialize_doors(self, tilemap):
+        self.tilemap = tilemap
+        if self._doors_initialized:
+            return
+
+        for obj in tilemap.get_interactible_objects():
+            if obj["properties"].get("InteractibleClass") in (
+                "Door",
+                "ContainerDoor",
+            ):
+                self._load_interactible(obj)
+
+        for door_name in Door.PUZZLE_DOOR_NAMES:
+            self.get_interactible_instance(door_name)
+        self._doors_initialized = True
     
     def update(self, dt, player, tilemap):
         """Aktualisiert Interaktionsstatus und prüft auf neue Interaktionen."""
-        self.tilemap = tilemap  # Speichere tilemap für Interactibles
+        self.initialize_doors(tilemap)
         self.interaction_cooldown = max(0, self.interaction_cooldown - dt)
-        if not self._puzzle_doors_initialized:
-            for door_name in Door.PUZZLE_DOOR_NAMES:
-                self.get_interactible_instance(door_name)
-            self._puzzle_doors_initialized = True
         
         # Finde alle interaktiven Objekte in Reichweite
         self.active_interactions = self._get_nearby_interactions(player, tilemap)
@@ -86,6 +98,8 @@ class InteractionManager:
                 door = self.get_interactible_instance(interactible.opens_door)
                 if isinstance(door, Door) and door.state == "open":
                     self.feedback_message = "Tür geöffnet."
+                else:
+                    self.feedback_message = "Knopf gedrückt. Finde den zweiten Knopf."
         
         return True
     

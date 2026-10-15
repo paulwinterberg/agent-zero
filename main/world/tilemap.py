@@ -158,20 +158,8 @@ class TileMap:
         objects_layer = self._get_object_layer([TILED_OBJECTS_LAYER_NAME, "Objektebene", "Objects", "objects"])
 
         if isinstance(objects_layer, pytmx.TiledObjectGroup):
-            door_names = {
-                obj.name
-                for obj in objects_layer
-                if obj.name
-                and obj.properties.get("InteractibleClass")
-                in ("Door", "ContainerDoor")
-            }
             for obj in objects_layer:
-                if (
-                    not obj.gid
-                    or obj.properties.get("InteractibleClass")
-                    in ("Door", "ContainerDoor")
-                    or obj.name in door_names
-                ):
+                if not obj.gid:
                     continue
                 props = self.tmx_data.get_tile_properties_by_gid(obj.gid)
                 if not props or not props.get("colliders"):
