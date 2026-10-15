@@ -2,3 +2,4 @@ pygame-ce
 pytmx
 pyscroll
 pygame_gui
+moviepy

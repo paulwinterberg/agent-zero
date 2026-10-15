@@ -68,9 +68,6 @@ class MainMenu(GameState):
             wallet,
             wallet.get_rect(topright=(screen.get_width() - 28, 24)),
         )
-        panel = pygame.Surface((390, screen.get_height()), pygame.SRCALPHA)
-        panel.fill((8, 12, 20, 205))
-        screen.blit(panel, (0, 0))
 
         if self.page == "main":
             self._draw_main_menu(screen)
