@@ -8,7 +8,7 @@ from core import audio
 
 class Bullet:
 
-    def __init__(self, position, target, collision_rects, damage):
+    def __init__(self, position, target, collision_rects, damage, is_enemy=False):
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("bullet", size=(8, 8))
         if texture is not None:
@@ -30,6 +30,7 @@ class Bullet:
         self.collision_rects = collision_rects
         self.damage = damage
         self.remaining_time = 2.0
+        self.is_enemy = is_enemy
 
     def update(self, dt, enemies=()):
         movement = self.velocity * dt
@@ -40,7 +41,7 @@ class Bullet:
             next_rect = self.sprite.image.get_rect(
                 center=(round(next_position.x), round(next_position.y))
             )
-            if any(next_rect.colliderect(rect) for rect in self.collision_rects):
+            if any(next_rect.colliderect(rect) for rect in self.collision_rects): #and not self.is_enemy
                 return False
             for enemy in enemies:
                 hitbox = getattr(enemy, "hitbox", enemy.rect)
@@ -85,4 +86,4 @@ class Pistol(Tools):
 
     def fire(self, position, target, tilemap):
         self.sound.play()
-        return Bullet(position, target, tilemap.collision_rects, self.damage)
+        return Bullet(position, target, tilemap.collision_rects, self.damage, is_enemy=self.is_enemy)

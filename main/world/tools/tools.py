@@ -65,6 +65,7 @@ class Tools:
         self.equipped = False
         self.held_sprite = None
         self.aim_held_sprite = False
+        self.is_enemy = False
 
     def on_interact(self):
         if self.collected or (self.amount <= 0 and not self.keep_when_empty):
