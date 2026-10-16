@@ -1,7 +1,7 @@
 import pygame
 
 import settings
-from world.Tools.tools import Tools, load_tool_texture
+from world.tools.tools import Tools, load_tool_texture
 
 class Cocaine(Tools):
     """Stackbares Kokain-Pickup mit kurzem Geschwindigkeitsschub."""

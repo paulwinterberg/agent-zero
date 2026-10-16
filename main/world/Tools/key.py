@@ -1,6 +1,6 @@
 import pygame
 
-from world.Tools.tools import Tools
+from world.tools.tools import Tools
 
 
 class Key(Tools):

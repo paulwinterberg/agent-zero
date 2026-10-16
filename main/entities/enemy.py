@@ -7,10 +7,10 @@ from globals import globs
 from settings import ENEMY_DEFAULT_SPEED #pixels/sec
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
-from world.Tools.registry import tool_name_to_class_map
+from world.tools.registry import tool_name_to_class_map
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos=(0,0), path: list = None, tool_manager=None):
+    def __init__(self, pos=(0,0), path: list = None, tool_manager=None, groupId=""):
         super().__init__()
 
         self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
@@ -25,6 +25,9 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, 32, settings.ENEMY_HITBOX_HEIGHT)
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
+        
+        self.groupId = groupId
+        self.group = []
 
         self.path = path
         self.tool_manager = tool_manager
@@ -35,6 +38,9 @@ class Enemy(pygame.sprite.Sprite):
 
         self.state: EntityState = None
         self.change_state(PatrolState() if self.path else IdleState())
+        
+    def set_group(self, group):
+        self.group = group
 
     def _equip_default_tool(self):
         if self.tool_manager is None or settings.ENEMY_DEFAULT_TOOL is None:
@@ -54,7 +60,7 @@ class Enemy(pygame.sprite.Sprite):
         
         projectile = self.tool.fire(
             self.rect.center,
-            globs.get("player").rect.center,
+            globs.get("player").hitbox.center,
             globs.get("tilemap"),
         )
         self.tool_manager.add_projectile(projectile, self)
@@ -140,7 +146,8 @@ class Enemy(pygame.sprite.Sprite):
             self.stun_time = max(0, self.stun_time - dt)
 
         if self.see_player_timer > settings.ENEMY_PLAYER_SPOT_TIME and self.state.__class__ != ChaseState:
-            self.change_state(ChaseState())
+            for enemy in self.group:
+                enemy.change_state(ChaseState())
 
         sees_player = self.perception.can_see_player()
         if sees_player and not self.is_stunned():

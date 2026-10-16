@@ -20,17 +20,31 @@ class EnemyManager:
     def _load_enemies(self):
         for spawn in self.enemy_spawns:
             path = self.get_enemy_path(spawn["name"])
-
-
             enemy = Enemy(
                 (spawn["rect"].left, spawn["rect"].top),
                 path,
                 tool_manager=self.tool_manager,
+                groupId=spawn["properties"].get("EnemyGroup", None)
             )
             self.enemies.append(enemy)
 
             if self.group is not None:
                 self.group.add(enemy, layer=self.tilemap.y_sort_layer(enemy.rect.bottom))
+                
+        groups = {}
+        for enemy in self.enemies:
+            groupId = enemy.groupId
+            if not groupId: continue
+            
+            if groupId in groups:
+                groups[groupId].append(enemy)
+            else:
+                groups[groupId] = []
+                groups[groupId].append(enemy)
+                
+        for groupKey in groups:
+            for enemy in groups[groupKey]:
+                enemy.set_group(groups[groupKey])
 
     def get_enemy_path(self, enemy_name):
         prefix = enemy_name + "_"
