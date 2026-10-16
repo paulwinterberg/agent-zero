@@ -5,6 +5,7 @@ import pygame_gui
 import settings
 import core.state_manager as state_manager
 from core import audio
+from core import screen
 
 from globals import globs
 from core import levels
@@ -48,12 +49,18 @@ class Gameplay(GameState):
         self.stamina_bar = pygame_gui.elements.UIProgressBar(
             relative_rect=pygame.Rect((20, 20), (200, 25)),
             manager=get_ui_manager(),
+            object_id=pygame_gui.core.ObjectID(class_id="@stamina_bar")
+        )
+        self.health_bar = pygame_gui.elements.UIProgressBar(
+            relative_rect=pygame.Rect((20, screen.get_screen_size()[1] - 45), (200 , 25)),
+            manager=get_ui_manager(),
         )
         self.ammo_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((20, 50), (220, 30)),
             text="",
             manager=get_ui_manager(),
         )
+
         self.ammo_label.hide()
         self.interaction_feedback = ""
         self.interaction_feedback_timer = 0
@@ -78,8 +85,9 @@ class Gameplay(GameState):
         )
 
     def exit(self):
-        self.stamina_bar.hide()
-        self.ammo_label.hide()
+        self.stamina_bar.kill()
+        self.health_bar.kill()
+        self.ammo_label.kill()
     
     def update(self, dt, events):
         if self.player.dead:
@@ -131,6 +139,7 @@ class Gameplay(GameState):
         self.interaction_manager.update(dt, self.player, self.tilemap)
 
         self.stamina_bar.set_current_progress(self.player.get_stamina_percent() * 100.0)
+        self.health_bar.set_current_progress(self.player.get_health_percent() * 100.0)
         
         self.tool_manager.update(dt, self.player)
         self._update_ammo_label()

@@ -68,6 +68,9 @@ class Player(pygame.sprite.Sprite):
 
         self.dead = True
 
+    def get_health_percent(self):
+        return self.health / settings.PLAYER_HEALTH
+
     def stun(self, amount_time: float = 2.0):
             self.stun_time = amount_time
     

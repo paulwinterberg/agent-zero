@@ -1,0 +1,26 @@
+{
+    "progress_bar": {
+        "colours": {
+            "normal_text": "#c5cbd8",
+            "text_shadow": "#777777",
+            "normal_border": "#DDDDDD",
+            "filled_bar": "#f4251b,#A4150b,180",
+            "unfilled_bar": "#CCCCCC"
+        },
+        "font": {
+            "name": "montserrat",
+            "size": "12",
+            "bold": "0",
+            "italic": "1"
+        }
+    },
+    "@stamina_bar": {
+        "colours": {
+            "normal_text": "#c5cbd8",
+            "text_shadow": "#777777",
+            "normal_border": "#DDDDDD",
+            "filled_bar": "#f5ea76,#fae60c,180",
+            "unfilled_bar": "#CCCCCC"
+        }
+    }
+}
