@@ -47,6 +47,7 @@ class Enemy(pygame.sprite.Sprite):
             return
 
         self.tool = tool_name_to_class_map.get(settings.ENEMY_DEFAULT_TOOL)(self.rect.center)
+        self.tool.is_enemy = True
         self.tool_manager.add_tool(self.tool)
         self.tool.on_interact()
         held_sprite = self.tool.create_held_sprite()
