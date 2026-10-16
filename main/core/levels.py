@@ -3,9 +3,33 @@ class Level:
     COMPLETION_FADE_DURATION = 1.0
     COMPLETION_MESSAGE_DURATION = 3.0
     COMPLETION_REWARD = 800
+    
+    AMBIENCE = None
 
     MESSAGES = {}
 
+class TutorialIslandLevel(Level):
+    COMPLETION_TUTORIAL_NAME = "TutorialEnd"
+    
+    AMBIENCE = "island_sounds.mp3"
+
+    MESSAGES = {
+       "1": (
+           "You've been stranded in enemy territory. Find your way out of this island."
+       ),
+       "2": (
+            "There are enemies lurking nearby. Pick up the gun and be quick to not alert them."
+        ),
+       "3": (
+           "Press E to pick up the gun."
+        ),
+       "4": (
+           "Enemies drop their weapons when killed. Pick it up and hold TAB to see your inventory."
+        ),
+       "5": (
+           "Sometimes it's better to not be spotted at all. Press C while sprinting to slide past the enemies."
+        )
+    }
 
 class ContainershipLevel(Level):
     COMPLETION_TUTORIAL_NAME = "ContainermapEnd"
@@ -49,7 +73,7 @@ class ContainershipLevel(Level):
         ),
     }
 
-
 LEVELS = {
+    "tutorial": TutorialIslandLevel,
     "containership": ContainershipLevel
 }

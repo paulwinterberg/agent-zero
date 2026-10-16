@@ -27,7 +27,7 @@ def init():
 
     screen_size = screen_module.get_screen_size()
 
-    ui_manager = pygame_gui.UIManager((screen_size.x, screen_size.y))
+    ui_manager = pygame_gui.UIManager((screen_size.x, screen_size.y), 'assets/themes/ui_theme.json')
 
 def start_loop(tickFunc):
     global running

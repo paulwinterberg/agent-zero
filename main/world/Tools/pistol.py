@@ -1,9 +1,9 @@
 import math
 import settings
-
 import pygame
 
 from world.tools.tools import Tools, load_tool_texture
+from core import audio
 
 
 class Bullet:
@@ -80,6 +80,9 @@ class Pistol(Tools):
         self.sprite.rect = self.sprite.image.get_rect(center=position)
 
         self.damage = settings.PISTOL_DAMAGE
+        
+        self.sound = audio.load_sfx("pistol_shot.mp3")
 
     def fire(self, position, target, tilemap):
+        self.sound.play()
         return Bullet(position, target, tilemap.collision_rects, self.damage)

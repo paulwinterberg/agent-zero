@@ -1,4 +1,5 @@
 import os
+from os import path
 import pygame
 
 from settings import MUSIC_PATH, SFX_PATH
@@ -50,6 +51,8 @@ def play_music(name: str, loops: int = 0, fade_ms: int = 0, volume: float = 1.0)
 def stop_music(fade_ms: int = 0):
     pygame.mixer.music.fadeout(fade_ms)
 
+def load_sfx(name: str):
+    return load_sound(SFX_PATH + "/" + name)
 
 def load_sound(path: str):
     sound = pygame.mixer.Sound(path)
