@@ -27,7 +27,7 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
         
         self.groupId = groupId
-        self.group = []
+        self.group = [self]
 
         self.path = path
         self.tool_manager = tool_manager

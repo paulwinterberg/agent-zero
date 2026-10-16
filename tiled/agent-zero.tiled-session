@@ -62,12 +62,15 @@
             "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
-            "scale": 4,
-            "selectedLayer": 5,
+            "scale": 16,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1092,
-                "y": 1126.25
+                "x": 347.75,
+                "y": 1062.625
             }
+        },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx#Helicopter": {
+            "scaleInDock": 1
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx": {
             "expandedObjectLayers": [
@@ -135,7 +138,7 @@
             "scaleInEditor": 2
         },
         "tilesets/Outdoors.tsx": {
-            "scaleInDock": 0.75,
+            "scaleInDock": 1.5,
             "scaleInEditor": 4
         },
         "tilesets/container und co..tsx": {
@@ -146,7 +149,7 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets/basic_pixel_art_topdown",
+    "last.imagePath": "C:/Users/Paul/Downloads",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
