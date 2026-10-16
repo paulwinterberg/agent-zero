@@ -104,7 +104,7 @@ class Gameplay(GameState):
         if self.hint_active:
             if any(
                 event.type == pygame.KEYDOWN
-                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+                and event.key == pygame.K_SPACE
                 for event in events
             ):
                 hint = self.interaction_manager.get_interactible_instance("Hint")
@@ -116,7 +116,7 @@ class Gameplay(GameState):
         if self.tutorial_active:
             if any(
                 event.type == pygame.KEYDOWN
-                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+                and event.key == pygame.K_SPACE
                 for event in events
             ):
                 self.tutorial_active = False
@@ -202,7 +202,6 @@ class Gameplay(GameState):
             self.interaction_feedback = self.level_meta.MESSAGES[name]
             self.tutorial_active = True
             self.interaction_feedback_timer = 0
-            return
 
     def _update_completion(self, dt):
         self.completion_elapsed += dt
@@ -282,7 +281,7 @@ class Gameplay(GameState):
         )
 
         instruction = self.interaction_feedback_font.render(
-            "Enter drücken um zu verlassen", True, (255, 255, 255)
+            "Press SPACE to continue", True, (255, 255, 255)
         )
         screen.blit(
             instruction,
@@ -338,7 +337,7 @@ class Gameplay(GameState):
         if current_line:
             lines.append(current_line)
         if self.tutorial_active:
-            lines.append("Press ENTER to continue.")
+            lines.append("Press SPACE to continue.")
 
         line_height = self.interaction_feedback_font.get_linesize()
         text = pygame.Surface(

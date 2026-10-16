@@ -27,7 +27,7 @@ class TutorialIslandLevel(Level):
            "Enemies drop their weapons when killed. Pick it up and hold TAB to see your inventory."
         ),
        "5": (
-           "Sometimes it's better to not be spotted at all. Press C while sprinting to slide past the enemies."
+           "Sometimes it's better to not be spotted at all. Press CONTROL while sprinting to slide past the enemies."
         )
     }
 
