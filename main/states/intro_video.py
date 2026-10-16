@@ -19,6 +19,7 @@ class IntroVideo(GameState):
     def update(self, dt, events):
         self.elapsed += dt
         if self.elapsed >= self.close_time:
+            self.clip.close()
             state_manager.replace(Gameplay(level="tutorial"))
 
     def draw(self, screen: pygame.Surface, dt):

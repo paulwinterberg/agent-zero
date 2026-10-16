@@ -5,7 +5,7 @@ import settings
 
 from world.tilemap import TileMap
 
-from settings import SPRINT_STAMINA_PERCENT_THRESHOLD, PLAYER_HITBOX_HEIGHT
+from settings import PLAYER_HITBOX_WIDTH, SPRINT_STAMINA_PERCENT_THRESHOLD, PLAYER_HITBOX_HEIGHT
 
 
 class Player(pygame.sprite.Sprite):
@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation.frames[1]
         self.rect = self.image.get_rect(midbottom=pos)
 
-        self.hitbox = pygame.Rect(0, 0, 32, PLAYER_HITBOX_HEIGHT)
+        self.hitbox = pygame.Rect(0, 0, PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT)
         self.hitbox.midbottom = self.rect.midbottom
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
 
@@ -67,6 +67,9 @@ class Player(pygame.sprite.Sprite):
         if self.dead: return
 
         self.dead = True
+
+    def get_health_percent(self):
+        return self.health / settings.PLAYER_HEALTH
 
     def stun(self, amount_time: float = 2.0):
             self.stun_time = amount_time
