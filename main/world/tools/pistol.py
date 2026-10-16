@@ -2,6 +2,7 @@ import math
 import settings
 import pygame
 
+from entities.player.player import Player
 from world.tools.tools import Tools, load_tool_texture
 from core import audio
 
@@ -41,9 +42,11 @@ class Bullet:
             next_rect = self.sprite.image.get_rect(
                 center=(round(next_position.x), round(next_position.y))
             )
-            if any(next_rect.colliderect(rect) for rect in self.collision_rects): #and not self.is_enemy
+            if any(next_rect.colliderect(rect) for rect in self.collision_rects):
                 return False
             for enemy in enemies:
+                if not isinstance(enemy, Player) and self.is_enemy: continue #friendly fire
+                
                 hitbox = getattr(enemy, "hitbox", enemy.rect)
                 if hitbox.colliderect(next_rect) and getattr(enemy, "health", 1) > 0:
                     enemy.take_damage(self.damage)
