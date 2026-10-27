@@ -5,8 +5,8 @@
     },
     "activeFile": "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
     "expandedProjectPaths": [
-        "tilesets",
-        "."
+        ".",
+        "tilesets"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -62,12 +62,15 @@
             "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
-            "scale": 16,
+            "scale": 4,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 347.75,
-                "y": 1062.625
+                "x": 456,
+                "y": 1000.5
             }
+        },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx#Heli": {
+            "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx#Helicopter": {
             "scaleInDock": 1
@@ -149,7 +152,7 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/Paul/Downloads",
+    "last.imagePath": "C:/Users/Paul/Documents/GitHub/agent-zero/tiled/tilesets/tutorial",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
