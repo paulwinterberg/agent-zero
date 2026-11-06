@@ -73,7 +73,15 @@ class ContainershipLevel(Level):
         ),
     }
 
+class HQLobbyLevel(Level):
+    MESSAGES = {}
+
+class TestLevel(Level):
+    MESSAGES = {}
+
 LEVELS = {
     "tutorial": TutorialIslandLevel,
-    "containership": ContainershipLevel
+    "containership": ContainershipLevel,
+    "hq_lobby": HQLobbyLevel,
+    "testlevel": TestLevel,
 }

@@ -1,0 +1,73 @@
+import pygame
+import settings
+
+from world.tools.tools import Tools, load_tool_texture
+
+
+class TaserSpark:
+    """Kurz sichtbarer blauer Blitz in Richtung des Mauszeigers."""
+
+    def __init__(self, position, target):
+        self.sprite = pygame.sprite.Sprite()
+        self.sprite.image = pygame.Surface((180, 180), pygame.SRCALPHA)
+        self.sprite.rect = self.sprite.image.get_rect(center=position)
+        self.sprite.projectile = self
+        self.damage = settings.TASER_DAMAGE
+        self.remaining_time = 0.18
+
+        direction = pygame.Vector2(target) - pygame.Vector2(position)
+        if direction.length_squared() == 0:
+            direction = pygame.Vector2(1, 0)
+        direction = direction.normalize()
+        perpendicular = pygame.Vector2(-direction.y, direction.x)
+        origin = pygame.Vector2(90, 90)
+
+        for index, offset in enumerate((-8, 0, 8)):
+            points = [origin + perpendicular * offset]
+            for step in range(1, 5):
+                distance = step * 18
+                jitter = perpendicular * (6 if (step + index) % 2 else -6)
+                points.append(origin + direction * distance + jitter)
+            pygame.draw.lines(self.sprite.image, (70, 180, 255), False, points, 2)
+
+    def update(self, dt, enemies=()):
+        for enemy in enemies:
+            if (
+                getattr(enemy, "health", 1) > 0
+                and pygame.sprite.collide_mask(self.sprite, enemy)
+            ):
+                enemy.take_damage(self.damage)
+                enemy.stun(settings.TASER_STUN_TIME)
+                return False
+
+        self.remaining_time -= dt
+        return self.remaining_time > 0
+
+
+class Taser(Tools):
+    """Mission-Tool, das beim Linksklick kurze blaue Blitze sprüht."""
+
+    def __init__(self, position):
+        super().__init__()
+        self.name = "Taser"
+        self.max_amount = settings.TASER_MAX_AMMO
+        self.amount = self.max_amount
+        self.reload_item_name = "Energy"
+        self.consumable = True
+        self.keep_when_empty = True
+        self.aim_held_sprite = True
+        self.can_fire = True
+        self.shot_cooldown = settings.TASER_COOLDOWN
+        self.state = "ready"
+        self.sprite = pygame.sprite.Sprite()
+        texture = load_tool_texture("taser", size=(32, 24))
+        if texture is not None:
+            self.sprite.image = texture
+        else:
+            self.sprite.image = pygame.Surface((32, 24))
+            self.sprite.image.fill((210, 30, 30))
+            pygame.draw.rect(self.sprite.image, (255, 220, 220), self.sprite.image.get_rect(), 2)
+        self.sprite.rect = self.sprite.image.get_rect(center=position)
+
+    def fire(self, position, target, tilemap):
+        return TaserSpark(position, target)

@@ -19,6 +19,7 @@ from enemies.enemy_manager import EnemyManager
 
 class Gameplay(GameState):
     def __init__(self, initial_money=0, level="containership"):
+        self.level_name = level
         self.player = Player()
         globs["player"] = self.player
         
@@ -70,11 +71,15 @@ class Gameplay(GameState):
             "tiled/tilesets/Hint.png"
         ).convert_alpha()
         self.money_font = pygame.font.Font("assets/fonts/PixelifySans-Medium.ttf", 22)
+        self.small_font = pygame.font.Font("assets/fonts/PixelifySans-Medium.ttf", 26)
         self.tutorial_trigger_radius = 48
         self.shown_tutorials = set()
         self.completion_started = False
         self.completion_elapsed = 0
         self.completion_rewarded = False
+        self.pause_menu_active = False
+        self.pause_menu_selected_index = 0
+        self.pause_buttons = []
         self.tutorial_points = {
             name: point
             for name in (*self.level_meta.MESSAGES, self.level_meta.COMPLETION_TUTORIAL_NAME)
@@ -95,6 +100,10 @@ class Gameplay(GameState):
 
             state_manager.pop()
             state_manager.push(MainMenu())
+            return
+
+        if self.pause_menu_active:
+            self._update_pause_menu(events)
             return
 
         if self.completion_started:
@@ -123,6 +132,13 @@ class Gameplay(GameState):
                 self.interaction_feedback = ""
                 self.interaction_feedback_timer = 0
             return
+
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.pause_menu_active = True
+                self.pause_menu_selected_index = 0
+                self._layout_pause_buttons(pygame.display.get_surface().get_size())
+                return
 
         self.interaction_feedback_timer = max(
             0, self.interaction_feedback_timer - dt
@@ -233,12 +249,75 @@ class Gameplay(GameState):
             self._draw_weapon_wheel(screen)
         if self.interaction_feedback_timer > 0 or self.tutorial_active:
             self._draw_interaction_feedback(screen)
+        if self.pause_menu_active:
+            self._draw_pause_menu(screen)
         if self.completion_started:
             self._draw_completion(screen)
         if self.hint_active:
             self._draw_hint(screen)
         elif self._is_hint_nearby() and not self.tutorial_active:
             self._draw_hint_prompt(screen)
+
+    def _update_pause_menu(self, events):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_UP, pygame.K_w):
+                    self.pause_menu_selected_index = (self.pause_menu_selected_index - 1) % len(self.pause_buttons)
+                elif event.key in (pygame.K_DOWN, pygame.K_s):
+                    self.pause_menu_selected_index = (self.pause_menu_selected_index + 1) % len(self.pause_buttons)
+                elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    self._activate_pause_option(self.pause_menu_selected_index)
+                elif event.key == pygame.K_ESCAPE:
+                    self.pause_menu_active = False
+            elif event.type == pygame.MOUSEMOTION:
+                for index, rect in enumerate(self.pause_buttons):
+                    if rect.collidepoint(event.pos):
+                        self.pause_menu_selected_index = index
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for index, rect in enumerate(self.pause_buttons):
+                    if rect.collidepoint(event.pos):
+                        self._activate_pause_option(index)
+                        break
+
+    def _layout_pause_buttons(self, screen_size):
+        width, height = screen_size
+        button_width = min(330, width - 80)
+        button_height = 56
+        x = (width - button_width) // 2
+        start_y = max(180, height // 2 - 110)
+        self.pause_buttons = [
+            pygame.Rect(x, start_y + offset * 76, button_width, button_height)
+            for offset in range(3)
+        ]
+
+    def _activate_pause_option(self, index):
+        if index == 0:
+            self.pause_menu_active = False
+        elif index == 1:
+            state_manager.replace(Gameplay(initial_money=self.tool_manager.money, level=self.level_name))
+        elif index == 2:
+            from states.main_menu import MainMenu
+            state_manager.replace(MainMenu(money=self.tool_manager.money))
+
+    def _draw_pause_menu(self, screen):
+        overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+
+        title = self.interaction_feedback_font.render("Pause", True, (255, 255, 255))
+        screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 120)))
+
+        for index, rect in enumerate(self.pause_buttons):
+            selected = index == self.pause_menu_selected_index
+            color = (230, 181, 76) if selected else (235, 235, 235)
+            pygame.draw.rect(screen, (35, 40, 48, 220) if selected else (18, 22, 28, 220), rect, border_radius=6)
+            pygame.draw.rect(screen, color, rect, 3 if selected else 1, border_radius=6)
+            label = self.small_font.render(
+                ["Resume", "Restart Level", "Main Menu"][index],
+                True,
+                color,
+            )
+            screen.blit(label, label.get_rect(center=rect.center))
 
     def _draw_hint_prompt(self, screen):
         text = self.interaction_feedback_font.render(
