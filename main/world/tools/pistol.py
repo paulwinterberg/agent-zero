@@ -2,13 +2,14 @@ import math
 import settings
 import pygame
 
+from entities.player.player import Player
 from world.tools.tools import Tools, load_tool_texture
 from core import audio
 
 
 class Bullet:
 
-    def __init__(self, position, target, collision_rects, damage):
+    def __init__(self, position, target, collision_rects, damage, is_enemy=False):
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("bullet", size=(8, 8))
         if texture is not None:
@@ -30,6 +31,7 @@ class Bullet:
         self.collision_rects = collision_rects
         self.damage = damage
         self.remaining_time = 2.0
+        self.is_enemy = is_enemy
 
     def update(self, dt, enemies=()):
         movement = self.velocity * dt
@@ -43,6 +45,8 @@ class Bullet:
             if any(next_rect.colliderect(rect) for rect in self.collision_rects):
                 return False
             for enemy in enemies:
+                if not isinstance(enemy, Player) and self.is_enemy: continue #friendly fire
+                
                 hitbox = getattr(enemy, "hitbox", enemy.rect)
                 if hitbox.colliderect(next_rect) and getattr(enemy, "health", 1) > 0:
                     enemy.take_damage(self.damage)
@@ -85,4 +89,4 @@ class Pistol(Tools):
 
     def fire(self, position, target, tilemap):
         self.sound.play()
-        return Bullet(position, target, tilemap.collision_rects, self.damage)
+        return Bullet(position, target, tilemap.collision_rects, self.damage, is_enemy=self.is_enemy)

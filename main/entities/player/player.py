@@ -181,6 +181,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         move_dir = self._get_input_dir(keys)
         if move_dir.length_squared() > 0:
+            move_dir = move_dir.normalize()
             self.facing = move_dir
 
         self._try_start_slide(keys, move_dir)
