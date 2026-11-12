@@ -143,3 +143,7 @@ its center is used.
 **1. BottomOffset <br>**
 If there's an object where the actual bottom of the object is higher than the bottom of the tile, this will lead to issues with the player always being behind the object. To fix this,
 add the BottomOffset property as an `int` and set it to the amount of pixels that the bottom should be moved _up_ by.
+
+**2. CantMove <br>**
+On an `EnemySpawn`, set the `CantMove` property to `true` to keep that enemy
+stationary. It can still detect and shoot at the player.

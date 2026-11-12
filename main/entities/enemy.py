@@ -10,7 +10,10 @@ from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
 from world.tools.registry import tool_name_to_class_map
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos=(0,0), path: list = None, tool_manager=None, groupId=""):
+    def __init__(
+        self, pos=(0, 0), path: list | None = None, tool_manager=None, groupId="",
+        cant_move: bool = False,
+    ):
         super().__init__()
 
         self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
@@ -28,6 +31,7 @@ class Enemy(pygame.sprite.Sprite):
         
         self.groupId = groupId
         self.group = [self]
+        self.cant_move = cant_move
 
         self.path = path
         self.tool_manager = tool_manager
@@ -101,6 +105,9 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(pos)
 
     def move_towards(self, target: pygame.math.Vector2 | tuple[float, float], dt) -> bool:
+        if self.cant_move:
+            return False
+
         target = pygame.math.Vector2(target)
         offset = target - self.pos
         distance = offset.length()

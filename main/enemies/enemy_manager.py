@@ -24,7 +24,8 @@ class EnemyManager:
                 (spawn["rect"].left, spawn["rect"].top),
                 path,
                 tool_manager=self.tool_manager,
-                groupId=spawn["properties"].get("EnemyGroup", None)
+                groupId=spawn["properties"].get("EnemyGroup", None),
+                cant_move=spawn["properties"].get("CantMove", False),
             )
             self.enemies.append(enemy)
 
