@@ -27,6 +27,7 @@ class TileMap:
 
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
         self.collision_rects = self._load_collisions()
+        self._out_of_bounds_groups = self._load_out_of_bounds_groups()
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         display = pygame.display.get_surface()
@@ -87,6 +88,51 @@ class TileMap:
             if obj.name == object_name:
                 return obj
         return None
+
+    def _load_out_of_bounds_groups(self):
+        layer = self._get_object_layer("Killboxes")
+        if layer is None:
+            return []
+
+        named_objects = {}
+        for obj in layer:
+            if obj.name:
+                named_objects.setdefault(obj.name, []).append(obj)
+
+        groups = []
+        for name, members in named_objects.items():
+            boxes = [
+                pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                for obj in members
+                if obj.type == "OOBBox"
+            ]
+            back_parts = [
+                obj
+                for obj in members
+                if obj.type == "TPBackPart"
+            ]
+            if len(boxes) == 0 or len(back_parts) != 1:
+                raise ValueError(
+                    f"Killboxes group {name!r} must contain OOBBox objects "
+                    "and exactly one TPBackPart."
+                )
+
+            back_part = back_parts[0]
+            destination = (
+                (back_part.x + back_part.width / 2, back_part.y + back_part.height / 2)
+                if back_part.width > 0 and back_part.height > 0
+                else (back_part.x, back_part.y)
+            )
+            groups.append((boxes, destination))
+
+        return groups
+
+    def teleport_player_from_out_of_bounds(self, player):
+        for boxes, destination in self._out_of_bounds_groups:
+            if any(box.contains(player.hitbox) for box in boxes):
+                player.goto(destination)
+                return True
+        return False
 
     def get_tool_spawns(self):
         """Return named tool spawn points from the Toolspawn object layer."""

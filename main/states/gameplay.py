@@ -148,6 +148,7 @@ class Gameplay(GameState):
 
         self.enemy_manager.update(dt)
         self.player.update(dt, self.tilemap)
+        self.tilemap.teleport_player_from_out_of_bounds(self.player)
         self._update_tutorial_feedback()
         if self.tutorial_active or self.completion_started:
             return

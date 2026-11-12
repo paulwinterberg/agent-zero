@@ -128,7 +128,16 @@ Layers:
 -    Interactions (Object)
 -    Collisions (Object)
 -    Objects (Object)
+-    Killboxes (Object, optional)
 -    Any tile layers for the ground
+
+## Out-of-bounds boxes
+Add a `Killboxes` object layer. Give each set of related objects the same
+object name. Each set must contain one `TPBackPart` object and one or more
+rectangle objects whose class is `OOBBox`. When the player's hitbox is fully
+inside one of those rectangles, the player is teleported to the `TPBackPart`.
+For a point `TPBackPart`, its point position is used; for a rectangular one,
+its center is used.
 
 ## Custom Properties
 **1. BottomOffset <br>**
