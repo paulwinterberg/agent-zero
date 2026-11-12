@@ -642,7 +642,7 @@
   </object>
  </objectgroup>
  <objectgroup id="8" name="Spawns">
-  <object id="10" name="_PlayerSpawn" x="336.031" y="2216">
+  <object id="10" name="PlayerSpawn" x="336.031" y="2216">
    <point/>
   </object>
   <object id="18" name="Enemy1" type="EnemySpawn" x="768.333" y="2183.5">
@@ -708,7 +708,7 @@
    </properties>
    <point/>
   </object>
-  <object id="123" name="PlayerSpawn" x="1268.67" y="939.333">
+  <object id="123" name="_PlayerSpawn" x="1268.67" y="939.333">
    <point/>
   </object>
   <object id="199" name="Enemy12" type="EnemySpawn" x="883.667" y="749.333">
