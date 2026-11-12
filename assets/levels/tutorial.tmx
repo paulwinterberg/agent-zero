@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="178">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="202">
  <tileset firstgid="1" name="Outdoors" tilewidth="32" tileheight="32" tilecount="484" columns="44">
   <image source="../../tiled/tilesets/ws_tileset_free.png" width="1408" height="352"/>
   <tile id="279">
@@ -47,6 +47,7 @@
  <tileset firstgid="809" name="parkinglot" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="../../tiled/tilesets/parkinglot.png" width="640" height="640"/>
  </tileset>
+ <tileset firstgid="1209" source="../../tiled/tilesets/Outdoors.tsx"/>
  <layer id="12" name="Tile Layer 1" width="82" height="100">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -175,8 +176,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,585,585,585,585,585,585,585,585,585,585,585,585,585,585,585,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,585,585,585,585,585,585,585,585,585,585,585,585,585,585,585,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,607,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,607,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1276,0,0,0,0,0,0,607,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1276,1276,0,0,0,0,0,607,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,607,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -488,7 +489,7 @@
   <object id="81" gid="2147484133" x="448" y="2272" width="32" height="32"/>
   <object id="121" name="Door1" type="Interactable" gid="898" x="1248" y="896" width="32" height="32">
    <properties>
-    <property name="InteractibleClass" value="Door"/>
+    <property name="InteractibleClass" value="ContainerDoor"/>
     <property name="Locked" type="bool" value="true"/>
    </properties>
   </object>
@@ -545,6 +546,18 @@
   <object id="175" name="Wall1" gid="587" x="1120" y="832" width="32" height="32"/>
   <object id="176" name="Wall1" gid="587" x="1088" y="832" width="32" height="32"/>
   <object id="177" name="Wall1" gid="587" x="1056" y="832" width="32" height="32"/>
+  <object id="178" name="Tree1" gid="442" x="896" y="736" width="32" height="32"/>
+  <object id="179" name="Tree1" gid="398" x="896" y="704" width="32" height="32"/>
+  <object id="180" name="Tree1" gid="397" x="864" y="704" width="32" height="32"/>
+  <object id="181" name="Tree1" gid="353" x="864" y="672" width="32" height="32"/>
+  <object id="182" name="Tree1" gid="354" x="896" y="672" width="32" height="32"/>
+  <object id="183" name="Tree1" gid="355" x="928" y="672" width="32" height="32"/>
+  <object id="184" name="Tree1" gid="399" x="928" y="704" width="32" height="32"/>
+  <object id="185" name="Tree1" gid="443" x="928" y="736" width="32" height="32"/>
+  <object id="187" gid="403" x="800" y="832" width="32" height="32"/>
+  <object id="188" gid="359" x="800" y="800" width="32" height="32"/>
+  <object id="189" gid="360" x="832" y="800" width="32" height="32"/>
+  <object id="190" gid="404" x="832" y="832" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="7" name="Collisions">
   <object id="50" x="288" y="2306.67" width="1120" height="118.667"/>
@@ -580,6 +593,10 @@
   <object id="128" x="1499.5" y="691.5" width="4.5" height="196.5"/>
   <object id="129" x="1024.5" y="691.5" width="2.5" height="194.5"/>
   <object id="130" x="1027.5" y="693" width="470.5" height="8.5"/>
+  <object id="186" x="900.5" y="720" width="17.75" height="6.25"/>
+  <object id="191" x="810" y="814.333" width="43" height="4.66667"/>
+  <object id="200" x="800" y="704" width="32" height="64"/>
+  <object id="201" x="832" y="736" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="16" name="Killboxes">
   <object id="87" name="1" type="OOBBox" x="1056" y="1664" width="32" height="64"/>
@@ -608,9 +625,24 @@
   <object id="124" name="Key" x="961.333" y="657.333">
    <point/>
   </object>
+  <object id="192" name="Money" x="1060.67" y="732">
+   <point/>
+  </object>
+  <object id="193" name="Money" x="1074.67" y="742.667">
+   <point/>
+  </object>
+  <object id="194" name="Money" x="1044" y="738">
+   <point/>
+  </object>
+  <object id="195" name="Munition" x="1126.67" y="721.667">
+   <point/>
+  </object>
+  <object id="196" name="Taser" x="1201.33" y="722">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="8" name="Spawns">
-  <object id="10" name="_PlayerSpawn" x="336.031" y="2216">
+  <object id="10" name="PlayerSpawn" x="336.031" y="2216">
    <point/>
   </object>
   <object id="18" name="Enemy1" type="EnemySpawn" x="768.333" y="2183.5">
@@ -676,7 +708,10 @@
    </properties>
    <point/>
   </object>
-  <object id="123" name="PlayerSpawn" x="1268.67" y="939.333">
+  <object id="123" name="_PlayerSpawn" x="1268.67" y="939.333">
+   <point/>
+  </object>
+  <object id="199" name="Enemy12" type="EnemySpawn" x="883.667" y="749.333">
    <point/>
   </object>
  </objectgroup>
@@ -691,5 +726,6 @@
   <object id="97" name="6" x="1105" y="1769">
    <point/>
   </object>
+  <object id="198" name="7" x="1216.67" y="970.667" width="259.333" height="19.3333"/>
  </objectgroup>
 </map>
