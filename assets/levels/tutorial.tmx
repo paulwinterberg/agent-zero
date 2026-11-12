@@ -364,15 +364,27 @@
    <point/>
   </object>
   <object id="82" name="Enemy8" type="EnemySpawn" x="944" y="433">
+   <properties>
+    <property name="CantMove" type="bool" value="true"/>
+   </properties>
    <point/>
   </object>
   <object id="83" name="Enemy9" type="EnemySpawn" x="1234" y="432">
+   <properties>
+    <property name="CantMove" type="bool" value="true"/>
+   </properties>
    <point/>
   </object>
   <object id="84" name="Enemy10" type="EnemySpawn" x="944.5" y="238.5">
+   <properties>
+    <property name="CantMove" type="bool" value="true"/>
+   </properties>
    <point/>
   </object>
   <object id="85" name="Enemy11" type="EnemySpawn" x="1170.5" y="239">
+   <properties>
+    <property name="CantMove" type="bool" value="true"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

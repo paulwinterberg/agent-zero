@@ -162,7 +162,7 @@
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx"
     ],
     "project": "agent-zero.tiled-project",
-    "property.type": "int",
+    "property.type": "bool",
     "recentFiles": [
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
