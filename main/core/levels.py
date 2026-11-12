@@ -28,6 +28,9 @@ class TutorialIslandLevel(Level):
         ),
        "5": (
            "Sometimes it's better to not be spotted at all. Press CONTROL while sprinting to slide past the enemies."
+        ),
+        "6": (
+            "Looks like there's no other way. You'll need to get through here..."
         )
     }
 
