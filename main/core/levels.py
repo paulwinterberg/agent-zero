@@ -31,6 +31,9 @@ class TutorialIslandLevel(Level):
         ),
         "6": (
             "Looks like there's no other way. You'll need to get through here..."
+        ),
+        "7": (
+            "The house ahead looks promising. The door is locked, though. I need to find a key."
         )
     }
 
