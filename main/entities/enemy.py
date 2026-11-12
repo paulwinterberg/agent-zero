@@ -87,6 +87,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.dead = True
         self.image = pygame.Surface((0, 0), pygame.SRCALPHA)
+        if self.tool_manager is not None:
+            self.tool_manager.money += 50
         if self.tool is not None and self.tool_manager is not None:
             self.tool.drop(self.rect.center)
             self.tool_manager.add_tool(self.tool)

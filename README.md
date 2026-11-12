@@ -18,3 +18,12 @@ git merge origin/main <br>
 open new codespace in browser: <br>
 type "pip install -r requirements.txt" into terminal <br>
 run code by inputting "python main/main.py" into terminal <br>
+
+# In-game menus
+Press ESC to open the pause menu, where you can access the shop and volume settings.
+Enemy kills earn 50 coins. The shop sells ammunition for 300 coins, Pistol for
+400 coins, Pistol+ for 1,000 coins, Pistol+max for 5,000 coins, Healing for 150
+coins, Cocaine for 400 coins, Energy for 150 coins, and Smoke Bombs for 200
+coins. Healing, Cocaine, and Smoke Bombs stack up to five. Use them with
+right-click; Healing restores up to 50 health per use. Select Levels in the
+ESC menu to load another level.

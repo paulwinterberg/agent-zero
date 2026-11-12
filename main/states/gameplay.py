@@ -17,7 +17,25 @@ from world.tools.tools import MissionToolManager
 from world.interactibles.hint import Hint
 from enemies.enemy_manager import EnemyManager
 
+LEVEL_DISPLAY_NAMES = {
+    "tutorial": "Tutorial",
+    "containership": "Containership",
+    "hq_lobby": "HQ Lobby",
+    "testlevel": "Test Level",
+}
+
+
 class Gameplay(GameState):
+    LEVEL_OPTIONS = tuple(
+        (
+            level_name,
+            LEVEL_DISPLAY_NAMES.get(
+                level_name, level_name.replace("_", " ").title()
+            ),
+        )
+        for level_name in levels.LEVELS
+    )
+
     def __init__(self, initial_money=0, level="containership"):
         self.level_name = level
         self.player = Player()
@@ -78,8 +96,12 @@ class Gameplay(GameState):
         self.completion_elapsed = 0
         self.completion_rewarded = False
         self.pause_menu_active = False
+        self.pause_page = "main"
         self.pause_menu_selected_index = 0
         self.pause_buttons = []
+        self.shop_message = ""
+        self.death_screen_active = False
+        self.continue_button = pygame.Rect(0, 0, 0, 0)
         self.tutorial_points = {
             name: point
             for name in (*self.level_meta.MESSAGES, self.level_meta.COMPLETION_TUTORIAL_NAME)
@@ -96,10 +118,13 @@ class Gameplay(GameState):
     
     def update(self, dt, events):
         if self.player.dead:
-            from states.main_menu import MainMenu
-
-            state_manager.pop()
-            state_manager.push(MainMenu())
+            if not self.death_screen_active:
+                self.death_screen_active = True
+                self.pause_menu_active = False
+                self.stamina_bar.hide()
+                self.health_bar.hide()
+                self.ammo_label.hide()
+            self._update_death_screen(events)
             return
 
         if self.pause_menu_active:
@@ -107,8 +132,16 @@ class Gameplay(GameState):
             return
 
         if self.completion_started:
-            self._update_completion(dt)
+            self._update_completion(dt, events)
             return
+
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.pause_menu_active = True
+                self.pause_page = "main"
+                self.pause_menu_selected_index = 0
+                self._layout_pause_buttons(pygame.display.get_surface().get_size())
+                return
 
         if self.hint_active:
             if any(
@@ -132,13 +165,6 @@ class Gameplay(GameState):
                 self.interaction_feedback = ""
                 self.interaction_feedback_timer = 0
             return
-
-        for event in events:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                self.pause_menu_active = True
-                self.pause_menu_selected_index = 0
-                self._layout_pause_buttons(pygame.display.get_surface().get_size())
-                return
 
         self.interaction_feedback_timer = max(
             0, self.interaction_feedback_timer - dt
@@ -219,7 +245,7 @@ class Gameplay(GameState):
             self.tutorial_active = True
             self.interaction_feedback_timer = 0
 
-    def _update_completion(self, dt):
+    def _update_completion(self, dt, events):
         self.completion_elapsed += dt
         if (
             self.completion_elapsed >=self.level_meta.COMPLETION_FADE_DURATION
@@ -228,14 +254,19 @@ class Gameplay(GameState):
             self.tool_manager.money += self.level_meta.COMPLETION_REWARD
             self.completion_rewarded = True
 
-        if self.completion_elapsed >= self.level_meta.COMPLETION_FADE_DURATION + self.level_meta.COMPLETION_MESSAGE_DURATION:
-            from states.main_menu import MainMenu
-            from core import game
-
-            self.stamina_bar.hide()
-            self.ammo_label.hide()
-            game.state_manager.pop()
-            game.state_manager.push(MainMenu(money=self.tool_manager.money))
+        if (
+            self.completion_elapsed
+            >= self.level_meta.COMPLETION_FADE_DURATION
+            + self.level_meta.COMPLETION_MESSAGE_DURATION
+            and any(
+                event.type == pygame.KEYDOWN
+                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE)
+                for event in events
+            )
+        ):
+            state_manager.replace(
+                Gameplay(initial_money=self.tool_manager.money, level=self.level_name)
+            )
     
     def draw(self, screen, dt):
         render_world(
@@ -253,6 +284,8 @@ class Gameplay(GameState):
             self._draw_pause_menu(screen)
         if self.completion_started:
             self._draw_completion(screen)
+        if self.death_screen_active:
+            self._draw_death_screen(screen)
         if self.hint_active:
             self._draw_hint(screen)
         elif self._is_hint_nearby() and not self.tutorial_active:
@@ -261,14 +294,23 @@ class Gameplay(GameState):
     def _update_pause_menu(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_UP, pygame.K_w):
+                if self.pause_page == "settings" and event.key in (pygame.K_LEFT, pygame.K_a):
+                    audio.set_master_volume(audio.master_volume - 0.1)
+                elif self.pause_page == "settings" and event.key in (pygame.K_RIGHT, pygame.K_d):
+                    audio.set_master_volume(audio.master_volume + 0.1)
+                elif event.key in (pygame.K_UP, pygame.K_w):
                     self.pause_menu_selected_index = (self.pause_menu_selected_index - 1) % len(self.pause_buttons)
                 elif event.key in (pygame.K_DOWN, pygame.K_s):
                     self.pause_menu_selected_index = (self.pause_menu_selected_index + 1) % len(self.pause_buttons)
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     self._activate_pause_option(self.pause_menu_selected_index)
                 elif event.key == pygame.K_ESCAPE:
-                    self.pause_menu_active = False
+                    if self.pause_page == "main":
+                        self.pause_menu_active = False
+                    else:
+                        self.pause_page = "main"
+                        self.pause_menu_selected_index = 0
+                        self._layout_pause_buttons(pygame.display.get_surface().get_size())
             elif event.type == pygame.MOUSEMOTION:
                 for index, rect in enumerate(self.pause_buttons):
                     if rect.collidepoint(event.pos):
@@ -281,43 +323,236 @@ class Gameplay(GameState):
 
     def _layout_pause_buttons(self, screen_size):
         width, height = screen_size
-        button_width = min(330, width - 80)
-        button_height = 56
+        button_width = min(420, width - 80)
+        labels = self._pause_labels()
+        spacing = min(76, (height - 120) / max(1, len(labels) - 1))
+        button_height = min(56, spacing - 8)
         x = (width - button_width) // 2
-        start_y = max(180, height // 2 - 110)
+        start_y = max(30, (height - (len(labels) - 1) * spacing - button_height) / 2)
         self.pause_buttons = [
-            pygame.Rect(x, start_y + offset * 76, button_width, button_height)
-            for offset in range(3)
+            pygame.Rect(x, round(start_y + offset * spacing), button_width, button_height)
+            for offset in range(len(labels))
         ]
 
     def _activate_pause_option(self, index):
-        if index == 0:
-            self.pause_menu_active = False
+        if self.pause_page == "main":
+            if index == 0:
+                self.pause_menu_active = False
+            elif index == 1:
+                self.pause_page = "shop"
+                self.pause_menu_selected_index = 0
+            elif index == 2:
+                self.pause_page = "settings"
+                self.pause_menu_selected_index = 0
+            elif index == 3:
+                self.pause_page = "levels"
+                self.pause_menu_selected_index = 0
+            elif index == 4:
+                state_manager.replace(
+                    Gameplay(
+                        initial_money=self.tool_manager.money,
+                        level=self.level_name,
+                    )
+                )
+        elif self.pause_page == "shop":
+            if index == 0:
+                success = self.tool_manager.purchase_ammo()
+                self.shop_message = (
+                    "Munition gekauft." if success
+                    else "Nicht genug Coins oder kein Inventarplatz."
+                )
+            elif index in (1, 2, 3):
+                from world.tools.pistol import Pistol
+
+                if index == 1:
+                    weapon = Pistol(self.player.rect.center)
+                    cost = 400
+                elif index == 2:
+                    weapon = Pistol(
+                        self.player.rect.center,
+                        name="Pistol+",
+                        shot_cooldown=settings.PISTOL_COOLDOWN / 2,
+                    )
+                    cost = 1000
+                else:
+                    weapon = Pistol(
+                        self.player.rect.center,
+                        name="Pistol+max",
+                        max_ammo=25,
+                        shot_cooldown=settings.PISTOL_COOLDOWN / 2,
+                    )
+                    cost = 5000
+                success = self.tool_manager.purchase_weapon(self.player, weapon, cost)
+                self.shop_message = (
+                    f"{weapon.name} gekauft." if success
+                    else "Nicht genug Coins oder kein Inventarplatz."
+                )
+            elif index in (4, 5, 6, 7):
+                if index == 4:
+                    from world.tools.healing import Healing
+
+                    success = self.tool_manager.purchase_stackable_tool(
+                        Healing((0, 0)), 150
+                    )
+                    name = "Healing"
+                elif index == 5:
+                    from world.tools.cocaine import Cocaine
+
+                    success = self.tool_manager.purchase_stackable_tool(
+                        Cocaine((0, 0)), 400
+                    )
+                    name = "Cocaine"
+                elif index == 6:
+                    success = self.tool_manager.purchase_energy()
+                    name = "Energy"
+                else:
+                    from world.tools.smoke_bomb import SmokeBomb
+
+                    success = self.tool_manager.purchase_stackable_tool(
+                        SmokeBomb((0, 0)), 200
+                    )
+                    name = "Smoke Bomb"
+                self.shop_message = (
+                    f"{name} gekauft." if success
+                    else "Nicht genug Coins, Inventarplatz oder Stack-Platz."
+                )
+            else:
+                self.pause_page = "main"
+                self.pause_menu_selected_index = 0
+        elif self.pause_page == "levels":
+            if index < len(self.LEVEL_OPTIONS):
+                level_key, _ = self.LEVEL_OPTIONS[index]
+                state_manager.replace(
+                    Gameplay(
+                        initial_money=self.tool_manager.money,
+                        level=level_key,
+                    )
+                )
+            else:
+                self.pause_page = "main"
+                self.pause_menu_selected_index = 0
+        elif index == 0:
+            audio.set_master_volume(audio.master_volume - 0.1)
         elif index == 1:
-            state_manager.replace(Gameplay(initial_money=self.tool_manager.money, level=self.level_name))
-        elif index == 2:
-            from states.main_menu import MainMenu
-            state_manager.replace(MainMenu(money=self.tool_manager.money))
+            audio.set_master_volume(audio.master_volume + 0.1)
+        else:
+            self.pause_page = "main"
+            self.pause_menu_selected_index = 0
+
+        self._layout_pause_buttons(pygame.display.get_surface().get_size())
+
+    def _pause_labels(self):
+        if self.pause_page == "shop":
+            return (
+                "Munition - 300 Coins",
+                "Pistol - 400 Coins",
+                "Pistol+ - 1000 Coins",
+                "Pistol+max - 5000 Coins",
+                "Healing - 150 Coins",
+                "Cocaine - 400 Coins",
+                "Energy - 150 Coins",
+                "Smoke Bomb - 200 Coins",
+                "Back",
+            )
+        if self.pause_page == "levels":
+            return tuple(label for _, label in self.LEVEL_OPTIONS) + ("Back",)
+        if self.pause_page == "settings":
+            return ("Volume -", "Volume +", "Back")
+        return ("Resume", "Shop", "Settings", "Levels", "Restart Level")
 
     def _draw_pause_menu(self, screen):
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180))
         screen.blit(overlay, (0, 0))
 
-        title = self.interaction_feedback_font.render("Pause", True, (255, 255, 255))
+        title_text = {
+            "main": "Pause",
+            "shop": "Shop",
+            "settings": "Settings",
+            "levels": "Select Level",
+        }[
+            self.pause_page
+        ]
+        title = self.interaction_feedback_font.render(title_text, True, (255, 255, 255))
         screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 120)))
+
+        if self.pause_page == "shop":
+            money = self.money_font.render(
+                f"Coins: {self.tool_manager.money}", True, (255, 219, 88)
+            )
+            screen.blit(money, money.get_rect(center=(screen.get_width() // 2, 165)))
+        elif self.pause_page == "settings":
+            volume = self.money_font.render(
+                f"Volume: {round(audio.master_volume * 100)}%",
+                True,
+                (255, 219, 88),
+            )
+            screen.blit(volume, volume.get_rect(center=(screen.get_width() // 2, 165)))
 
         for index, rect in enumerate(self.pause_buttons):
             selected = index == self.pause_menu_selected_index
             color = (230, 181, 76) if selected else (235, 235, 235)
             pygame.draw.rect(screen, (35, 40, 48, 220) if selected else (18, 22, 28, 220), rect, border_radius=6)
             pygame.draw.rect(screen, color, rect, 3 if selected else 1, border_radius=6)
-            label = self.small_font.render(
-                ["Resume", "Restart Level", "Main Menu"][index],
-                True,
-                color,
-            )
+            label = self.small_font.render(self._pause_labels()[index], True, color)
             screen.blit(label, label.get_rect(center=rect.center))
+        if self.pause_page == "shop" and self.shop_message:
+            message = self.interaction_feedback_font.render(
+                self.shop_message, True, (255, 255, 255)
+            )
+            screen.blit(
+                message,
+                message.get_rect(
+                    center=(screen.get_width() // 2, screen.get_height() - 55)
+                ),
+            )
+
+    def _update_death_screen(self, events):
+        screen = pygame.display.get_surface()
+        self.continue_button = pygame.Rect(
+            (screen.get_width() - 320) // 2,
+            screen.get_height() // 2 + 60,
+            320,
+            60,
+        )
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key in (
+                pygame.K_RETURN,
+                pygame.K_KP_ENTER,
+                pygame.K_SPACE,
+            ):
+                self._continue_after_death()
+            elif (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == 1
+                and self.continue_button.collidepoint(event.pos)
+            ):
+                self._continue_after_death()
+
+    def _continue_after_death(self):
+        state_manager.replace(
+            Gameplay(initial_money=self.tool_manager.money, level=self.level_name)
+        )
+
+    def _draw_death_screen(self, screen):
+        overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 220))
+        screen.blit(overlay, (0, 0))
+        title = self.interaction_feedback_font.render(
+            "You are dead", True, (255, 255, 255)
+        )
+        screen.blit(
+            title,
+            title.get_rect(
+                center=(screen.get_width() // 2, screen.get_height() // 2 - 45)
+            ),
+        )
+        pygame.draw.rect(screen, (35, 40, 48), self.continue_button, border_radius=6)
+        pygame.draw.rect(
+            screen, (230, 181, 76), self.continue_button, 2, border_radius=6
+        )
+        label = self.small_font.render("Continue", True, (255, 255, 255))
+        screen.blit(label, label.get_rect(center=self.continue_button.center))
 
     def _draw_hint_prompt(self, screen):
         text = self.interaction_feedback_font.render(
@@ -389,6 +624,19 @@ class Gameplay(GameState):
                     center=(screen.get_width() // 2, screen.get_height() // 2 + 48)
                 ),
             )
+            if self.completion_elapsed >= (
+                self.level_meta.COMPLETION_FADE_DURATION
+                + self.level_meta.COMPLETION_MESSAGE_DURATION
+            ):
+                prompt = self.small_font.render(
+                    "Press ENTER to replay this level", True, (255, 255, 255)
+                )
+                screen.blit(
+                    prompt,
+                    prompt.get_rect(
+                        center=(screen.get_width() // 2, screen.get_height() // 2 + 100)
+                    ),
+                )
 
     def _draw_money_counter(self, screen):
         money_text = self.money_font.render(f"$ {self.tool_manager.money}", True, (255, 219, 88))
@@ -450,8 +698,8 @@ class Gameplay(GameState):
 
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
-        if held_tool and held_tool.name == "Pistol":
-            self.ammo_label.set_text(f"Pistol: {held_tool.amount} Schuss")
+        if held_tool and held_tool.name.startswith("Pistol"):
+            self.ammo_label.set_text(f"{held_tool.name}: {held_tool.amount} Schuss")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
             self.ammo_label.set_text(f"Taser: {held_tool.amount} Energy")

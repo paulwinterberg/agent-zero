@@ -14,7 +14,6 @@ class Cocaine(Tools):
         self.stackable = True
         self.secondary_use = True
         self.consumable = True
-        self.keep_when_empty = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("cocaine", size=(24, 20))

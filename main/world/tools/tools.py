@@ -159,6 +159,7 @@ class MissionToolManager:
         from world.tools.smoke_bomb import SmokeBomb
         from world.tools.munition import Munition
         from world.tools.energy import Energy
+        from world.tools.healing import Healing
         """Create mission tools at the named Toolspawn points from Tiled."""
 
         tool_types = {
@@ -168,6 +169,7 @@ class MissionToolManager:
             "smokebomb": SmokeBomb,
             "munition": Munition,
             "energy": Energy,
+            "healing": Healing,
             "kokain": Cocaine,
             "cocaine": Cocaine,
             "money": Money,
@@ -347,9 +349,12 @@ class MissionToolManager:
             )
             if stack:
                 room = stack.max_anzahl - stack.anzahl
-                if room <= 0 or not tool.on_interact():
+                count = getattr(tool, "anzahl", tool.amount)
+                added = min(room, count)
+                if added <= 0 or not tool.on_interact():
                     return False
-                stack.anzahl += min(room, tool.anzahl)
+                stack.anzahl += added
+                stack.amount += added
                 return True
         if len(self.inventory) >= self.max_inventory_slots:
             return False
@@ -377,6 +382,100 @@ class MissionToolManager:
     def collect_ammo_pickup(self, pickup):
         """Nimmt Munition als Reserve-Stack ins Inventar auf."""
         return self.collect_reload_pickup(pickup)
+
+    def purchase_ammo(self, cost=300):
+        """Kauft 50 Schuss und lädt die aktuelle Pistole zuerst nach."""
+        from world.tools.munition import Munition
+
+        if self.money < cost:
+            return False
+
+        pickup = Munition((0, 0))
+        reserve = next(
+            (tool for tool in self.inventory if tool.name == pickup.name),
+            None,
+        )
+        current = self.current_tool
+        if current and getattr(current, "reload_item_name", None) == pickup.name:
+            missing = current.max_amount - current.amount
+            loaded = min(missing, pickup.refill_amount)
+            remaining = pickup.refill_amount - loaded
+            if (
+                remaining
+                and reserve is None
+                and len(self.inventory) >= self.max_inventory_slots
+            ):
+                return False
+            pickup.on_interact()
+            current.amount += loaded
+            if remaining:
+                if reserve:
+                    reserve.amount += remaining
+                else:
+                    pickup.amount = remaining
+                    self.inventory.append(pickup)
+        elif reserve:
+            pickup.on_interact()
+            reserve.amount += pickup.refill_amount
+        elif len(self.inventory) < self.max_inventory_slots:
+            pickup.on_interact()
+            pickup.amount = pickup.refill_amount
+            self.inventory.append(pickup)
+        else:
+            return False
+
+        self.money -= cost
+        return True
+
+    def purchase_stackable_tool(self, tool, cost):
+        if self.money < cost:
+            return False
+
+        stack = next(
+            (
+                item for item in self.inventory
+                if item.stackable and item.name == tool.name
+            ),
+            None,
+        )
+        if stack:
+            room = stack.max_anzahl - stack.anzahl
+            if room <= 0:
+                return False
+            added = min(room, tool.anzahl)
+            stack.anzahl += added
+            stack.amount += added
+        elif len(self.inventory) < self.max_inventory_slots:
+            tool.on_interact()
+            self.inventory.append(tool)
+        else:
+            return False
+
+        self.money -= cost
+        return True
+
+    def purchase_energy(self, cost=150):
+        from world.tools.energy import Energy
+
+        if self.money < cost:
+            return False
+
+        if not self.collect_reload_pickup(Energy((0, 0))):
+            return False
+
+        self.money -= cost
+        return True
+
+    def purchase_weapon(self, player, weapon, cost):
+        """Kauft eine Pistole und rüstet sie sofort aus."""
+        if self.money < cost or len(self.inventory) >= self.max_inventory_slots:
+            return False
+
+        weapon.on_interact()
+        self.inventory.append(weapon)
+        self.money -= cost
+        self.set_active_slot(len(self.inventory) - 1, player)
+        return True
 
     def collect_reload_pickup(self, pickup):
         """Nimmt Munition oder Energy auf und lädt das passende Tool."""
@@ -579,20 +678,18 @@ class MissionToolManager:
         if action:
             if not action(player):
                 return False
-        else:
+        elif hasattr(tool, "fire"):
             projectile = tool.fire(player.rect.center, target, self.tilemap)
-            self.sprite_group.add(
-                projectile.sprite,
-                layer=self.tilemap.y_sort_layer(projectile.sprite.rect.bottom),
-            )
-        projectile = tool.fire(player.rect.center, target, self.tilemap)
-        self.add_projectile(projectile, player)
+            self.add_projectile(projectile, player)
+        else:
+            return False
+
         if tool.consumable:
             tool.consume()
+            if tool.stackable:
+                tool.anzahl = tool.amount
         if tool.amount <= 0 and not tool.keep_when_empty:
-            self.inventory.pop(self.active_slot)
-            self.active_slot = min(self.active_slot, max(0, len(self.inventory) - 1))
-            self.selected_slot = self.active_slot
+            self.remove_inventory_slot(self.active_slot)
         return True
 
     def update_projectiles(self, dt):

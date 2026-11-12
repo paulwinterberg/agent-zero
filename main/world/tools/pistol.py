@@ -61,17 +61,23 @@ class Bullet:
 class Pistol(Tools):
     """Mission-Tool, das per Linksklick schwarze Kugeln abfeuert."""
 
-    def __init__(self, position):
+    def __init__(self, position, name="Pistol", max_ammo=None, shot_cooldown=None):
         super().__init__()
-        self.name = "Pistol"
-        self.max_amount = settings.PISTOL_MAX_AMMO
+        self.name = name
+        self.max_amount = (
+            settings.PISTOL_MAX_AMMO if max_ammo is None else max_ammo
+        )
         self.amount = self.max_amount
         self.reload_item_name = "Munition"
         self.consumable = True
         self.can_fire = True
         self.keep_when_empty = True
         self.aim_held_sprite = True
-        self.shot_cooldown = settings.PISTOL_COOLDOWN
+        self.shot_cooldown = (
+            settings.PISTOL_COOLDOWN
+            if shot_cooldown is None
+            else shot_cooldown
+        )
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("pistol", size=(32, 20))

@@ -52,6 +52,7 @@ class Player(pygame.sprite.Sprite):
         self.facing = pygame.math.Vector2(0, 1)
 
         self.stun_time = 0.0
+        self.max_health = settings.PLAYER_HEALTH
         self.health = settings.PLAYER_HEALTH
         self.dead = False
 
