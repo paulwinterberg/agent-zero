@@ -77,13 +77,14 @@
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx": {
             "expandedObjectLayers": [
-                12
+                12,
+                5
             ],
-            "scale": 3,
-            "selectedLayer": 8,
+            "scale": 1.5,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 609.6666666666666,
-                "y": 41
+                "x": 525.3333333333333,
+                "y": 234.66666666666669
             }
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx#TX Tileset Wall": {
@@ -132,11 +133,11 @@
                 6,
                 9
             ],
-            "scale": 2,
-            "selectedLayer": 4,
+            "scale": 3,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 1261,
-                "y": 811
+                "x": 972.3333333333333,
+                "y": 714.6666666666666
             }
         },
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#Heli": {
@@ -177,6 +178,7 @@
     "project": "agent-zero.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx",
         "tilesets/containermap.tsx",
         "tilesets/Outdoors.tsx",
         "tilesets/container und co..tsx",
