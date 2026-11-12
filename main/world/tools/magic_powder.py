@@ -3,12 +3,12 @@ import pygame
 import settings
 from world.tools.tools import Tools, load_tool_texture
 
-class Cocaine(Tools):
-    """Stackbares Kokain-Pickup mit kurzem Geschwindigkeitsschub."""
+class MagicPowder(Tools):
+    """Stackbares Magic-Powder-Tool mit kurzem Geschwindigkeitsschub."""
 
     def __init__(self, position):
         super().__init__()
-        self.name = "Kokain"
+        self.name = "Magic Powder"
         self.anzahl = 1
         self.max_anzahl = 5
         self.stackable = True
@@ -16,7 +16,7 @@ class Cocaine(Tools):
         self.consumable = True
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
-        texture = load_tool_texture("cocaine", size=(24, 20))
+        texture = load_tool_texture("magic_powder", size=(24, 20))
         if texture is not None:
             self.sprite.image = texture
         else:
@@ -39,5 +39,7 @@ class Cocaine(Tools):
         if self.anzahl <= 0:
             return False
 
-        player.activate_cocaine_speed_boost(settings.COCAINE_SPEED_BOOST_DURATION)
+        player.activate_magic_powder_speed_boost(
+            settings.MAGIC_POWDER_SPEED_BOOST_DURATION
+        )
         return True

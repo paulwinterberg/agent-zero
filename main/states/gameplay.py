@@ -396,12 +396,12 @@ class Gameplay(GameState):
                     )
                     name = "Healing"
                 elif index == 5:
-                    from world.tools.cocaine import Cocaine
+                    from world.tools.magic_powder import MagicPowder
 
                     success = self.tool_manager.purchase_stackable_tool(
-                        Cocaine((0, 0)), 400
+                        MagicPowder((0, 0)), 400
                     )
-                    name = "Cocaine"
+                    name = "Magic Powder"
                 elif index == 6:
                     success = self.tool_manager.purchase_energy()
                     name = "Energy"
@@ -449,7 +449,7 @@ class Gameplay(GameState):
                 "Pistol+ - 1000 Coins",
                 "Pistol+max - 5000 Coins",
                 "Healing - 150 Coins",
-                "Cocaine - 400 Coins",
+                "Magic Powder - 400 Coins",
                 "Energy - 150 Coins",
                 "Smoke Bomb - 200 Coins",
                 "Back",

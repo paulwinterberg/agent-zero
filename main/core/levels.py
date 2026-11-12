@@ -36,7 +36,7 @@ class ContainershipLevel(Level):
 
     MESSAGES = {
         "ContainermapStart": (
-            "Willkommen auf dem Containerschiff. Suche das Kokain, das die "
+            "Willkommen auf dem Containerschiff. Suche das Magic Powder, das die "
             "Schmuggler hier schmuggeln, und fliehe mit den Beweismitteln. "
             "Gehe nun nach links zur ersten Kreuzung und suche den grünen "
             "Container dort am Rand."

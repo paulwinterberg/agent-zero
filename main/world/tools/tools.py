@@ -11,12 +11,11 @@ TOOL_TEXTURE_REGIONS = {
     "bullet": pygame.Rect(77, 13, 5, 3),
     "munition": pygame.Rect(8, 41, 17, 14),
     "smoke_bomb": pygame.Rect(75, 39, 10, 16),
-    "cocaine": pygame.Rect(43, 72, 10, 15),
+    "magic_powder": pygame.Rect(43, 72, 10, 15),
     "energy": pygame.Rect(8, 74, 17, 12),
 }
 TOOL_TEXTURE_ALIASES = {
     "pistole": "pistol",
-    "kokain": "cocaine",
     "energy": "energy",
     "smokebomb": "smoke_bomb",
 }
@@ -151,7 +150,7 @@ class MissionToolManager:
         )
 
     def spawn_tools_from_map(self):
-        from world.tools.cocaine import Cocaine
+        from world.tools.magic_powder import MagicPowder
         from world.tools.money import Money
         from world.tools.pistol import Pistol
         from world.tools.taser import Taser
@@ -170,8 +169,7 @@ class MissionToolManager:
             "munition": Munition,
             "energy": Energy,
             "healing": Healing,
-            "kokain": Cocaine,
-            "cocaine": Cocaine,
+            "magicpowder": MagicPowder,
             "money": Money,
         }
         for spawn in self.tilemap.get_tool_spawns():
@@ -206,7 +204,7 @@ class MissionToolManager:
         from world.tools.smoke_bomb import SmokeBomb
         from world.tools.munition import Munition
         from world.tools.energy import Energy
-        from world.tools.cocaine import Cocaine
+        from world.tools.magic_powder import MagicPowder
         from world.tools.money import Money
 
         tool_types = {
@@ -217,7 +215,7 @@ class MissionToolManager:
             "smokebomb": SmokeBomb,
             "munition": Munition,
             "energy": Energy,
-            "cocaine": Cocaine,
+            "magicpowder": MagicPowder,
             "money": Money,
         }
         for spawn in self.tilemap.get_tool_spawns():

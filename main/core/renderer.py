@@ -49,7 +49,7 @@ def render_world(dt, tilemap: TileMap, group: pyscroll.PyscrollGroup, player: Pl
     tilemap.update_occlusion(player, dt)
     group.change_layer(player, tilemap.y_sort_layer(player.rect.bottom))
     camera_center = pygame.Vector2(player.rect.center)
-    if player.cocaine_speed_boost_timer > 0:
+    if player.magic_powder_speed_boost_timer > 0:
         elapsed = pygame.time.get_ticks() / 1000
         camera_center += pygame.Vector2(
             math.sin(elapsed * 18), math.sin(elapsed * 14 + 1)
