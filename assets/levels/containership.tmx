@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="682">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="82" height="61" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="687">
  <tileset firstgid="1" source="../../tiled/tilesets/Outdoors.tsx"/>
  <tileset firstgid="485" source="../../tiled/tilesets/container und co..tsx"/>
  <tileset firstgid="585" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
@@ -317,6 +317,9 @@
    <point/>
   </object>
   <object id="642" name="Money" x="1432" y="94">
+   <point/>
+  </object>
+  <object id="686" name="Pistol" x="608" y="160">
    <point/>
   </object>
  </objectgroup>
@@ -1233,10 +1236,33 @@
     <property name="InteractibleClass" value="Hint"/>
    </properties>
   </object>
+<<<<<<< Updated upstream
   <object id="644" gid="572" x="733.667" y="716.667" width="32" height="32"/>
   <object id="645" gid="572" x="-110" y="598" width="32" height="32"/>
+=======
+  <object id="682" name="Hint1" type="Interactible" gid="559" x="1248" y="1120" width="32" height="32">
+   <properties>
+    <property name="InteractibleClass" value="Hint"/>
+   </properties>
+  </object>
+  <object id="683" name="Hint2" type="Interactible" gid="559" x="1216" y="1600" width="32" height="32">
+   <properties>
+    <property name="InteractibleClass" value="Hint"/>
+   </properties>
+  </object>
+  <object id="684" name="Hint3" type="Interactible" gid="559" x="1664" y="1792" width="32" height="32">
+   <properties>
+    <property name="InteractibleClass" value="Hint"/>
+   </properties>
+  </object>
+  <object id="685" name="Hint4" type="Interactible" gid="559" x="480" y="1888" width="32" height="32">
+   <properties>
+    <property name="InteractibleClass" value="Hint"/>
+   </properties>
+  </object>
+>>>>>>> Stashed changes
  </objectgroup>
- <objectgroup id="9" name="Collisions">
+ <objectgroup id="9" name="Collisions" visible="0">
   <object id="6" x="569.167" y="257.333" width="6.16667" height="157.75"/>
   <object id="7" x="512.083" y="356.833" width="63.5" height="9.5"/>
   <object id="9" x="569.667" y="1" width="5.33333" height="190.333"/>
