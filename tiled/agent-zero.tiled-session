@@ -93,11 +93,14 @@
             "scaleInDock": 1
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx": {
+            "expandedObjectLayers": [
+                13
+            ],
             "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 112,
-                "y": 240
+                "x": 175.99999999999994,
+                "y": 112
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {
@@ -126,17 +129,26 @@
         },
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx": {
             "expandedObjectLayers": [
-                8,
+                6,
                 9
             ],
-            "scale": 1.5,
-            "selectedLayer": 6,
+            "scale": 2,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1120.6666666666665,
-                "y": 385.33333333333326
+                "x": 1261,
+                "y": 811
             }
         },
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#Heli": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#InteriorTutorial": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#Outdoors": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#parkinglot": {
             "scaleInDock": 1
         },
         "tilesets/InteriorTutorial.tsx": {
