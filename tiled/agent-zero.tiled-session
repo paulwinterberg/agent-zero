@@ -3,12 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
+    "activeFile": "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
     "expandedProjectPaths": [
         "tilesets",
         "."
     ],
-    "file.lastUsedOpenFilter": "All Files (*)",
+    "file.lastUsedOpenFilter": "Alle Dateien (*)",
     "fileStates": {
         "": {
             "scaleInDock": 1
@@ -62,25 +62,29 @@
             "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx": {
-            "scale": 16,
+            "scale": 4,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 347.75,
-                "y": 1062.625
+                "x": 456,
+                "y": 1000.5
             }
+        },
+        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx#Heli": {
+            "scaleInDock": 1
         },
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx#Helicopter": {
             "scaleInDock": 1
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx": {
             "expandedObjectLayers": [
-                12
+                12,
+                5
             ],
-            "scale": 3,
-            "selectedLayer": 8,
+            "scale": 1.5,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 609.6666666666666,
-                "y": 41
+                "x": 525.3333333333333,
+                "y": 234.66666666666669
             }
         },
         "H:/GitHub/agent-zero/assets/levels/containership.tmx#TX Tileset Wall": {
@@ -90,11 +94,14 @@
             "scaleInDock": 1
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx": {
+            "expandedObjectLayers": [
+                13
+            ],
             "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 112,
-                "y": 240
+                "x": 175.99999999999994,
+                "y": 112
             }
         },
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx#StoneGround": {
@@ -107,11 +114,11 @@
             "scaleInDock": 1
         },
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx": {
-            "scale": 8,
+            "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 985,
-                "y": 977.375
+                "x": 893.3333333333333,
+                "y": 932
             }
         },
         "H:/GitHub/agent-zero/assets/levels/testlevel.tmx#TX Tileset Wall": {
@@ -123,15 +130,27 @@
         },
         "H:/GitHub/agent-zero/assets/levels/tutorial.tmx": {
             "expandedObjectLayers": [
-                8,
+                6,
                 9
             ],
-            "scale": 8,
-            "selectedLayer": 2,
+            "scale": 3,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 861,
-                "y": 1258
+                "x": 972.3333333333333,
+                "y": 714.6666666666666
             }
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#Heli": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#InteriorTutorial": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#Outdoors": {
+            "scaleInDock": 1
+        },
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx#parkinglot": {
+            "scaleInDock": 1
         },
         "tilesets/InteriorTutorial.tsx": {
             "scaleInDock": 1,
@@ -142,29 +161,33 @@
             "scaleInEditor": 4
         },
         "tilesets/container und co..tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "tilesets/containermap.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/Paul/Downloads",
+    "last.imagePath": "H:/GitHub/agent-zero/tiled/tilesets",
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx"
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx"
     ],
     "project": "agent-zero.tiled-project",
-    "property.type": "int",
+    "property.type": "bool",
     "recentFiles": [
+        "H:/GitHub/agent-zero/assets/levels/containership.tmx",
+        "tilesets/containermap.tsx",
+        "tilesets/Outdoors.tsx",
+        "tilesets/container und co..tsx",
+        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
+        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/tutorial.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/containership.tmx",
-        "tilesets/containermap.tsx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/testlevel.tmx",
-        "tilesets/Outdoors.tsx",
         "H:/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
-        "H:/GitHub/agent-zero/assets/levels/testlevel.tmx",
         "C:/Users/Paul/Documents/GitHub/agent-zero/assets/levels/hq_lobby.tmx",
         "tilesets/InteriorTutorial.tsx"
     ],

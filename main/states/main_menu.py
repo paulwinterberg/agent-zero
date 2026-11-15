@@ -8,6 +8,12 @@ CURRENT_LEVEL = "tutorial"
 
 class MainMenu(GameState):
     MENU_ITEMS = ("Play", "Settings")
+    LEVELS = (
+        ("tutorial", "Tutorial"),
+        ("containership", "Containership"),
+        ("hq_lobby", "HQ Lobby"),
+        ("testlevel", "Test Level"),
+    )
 
     def __init__(self, money=0):
         self.title_image = pygame.image.load("assets/ui/title_screen.png").convert()
@@ -18,8 +24,11 @@ class MainMenu(GameState):
         self.money_font = pygame.font.Font("assets/fonts/PixelifySans-Medium.ttf", 26)
         self.money = money
         self.selected_item = 0
+        self.selected_level = 0
         self.page = "main"
         self.button_rects = []
+        self.level_rects = []
+        self.level_path_points = []
         self.back_rect = pygame.Rect(0, 0, 0, 0)
         audio.play_music("intro_music.mp3")
 
@@ -31,23 +40,33 @@ class MainMenu(GameState):
         self._layout_buttons(screen.get_size())
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_UP, pygame.K_w):
-                    if self.page == "main":
+                if self.page == "main":
+                    if event.key in (pygame.K_UP, pygame.K_w):
                         self.selected_item = (self.selected_item - 1) % len(self.MENU_ITEMS)
-                elif event.key in (pygame.K_DOWN, pygame.K_s):
-                    if self.page == "main":
+                    elif event.key in (pygame.K_DOWN, pygame.K_s):
                         self.selected_item = (self.selected_item + 1) % len(self.MENU_ITEMS)
-                elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    if self.page == "main":
+                    elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                         self._activate_item(self.selected_item)
-                    else:
+                    elif event.key == pygame.K_ESCAPE:
                         self.page = "main"
-                elif event.key == pygame.K_ESCAPE:
-                    self.page = "main"
-            elif event.type == pygame.MOUSEMOTION and self.page == "main":
-                for index, rect in enumerate(self.button_rects):
-                    if rect.collidepoint(event.pos):
-                        self.selected_item = index
+                elif self.page == "levels":
+                    if event.key in (pygame.K_LEFT, pygame.K_a):
+                        self.selected_level = (self.selected_level - 1) % len(self.LEVELS)
+                    elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                        self.selected_level = (self.selected_level + 1) % len(self.LEVELS)
+                    elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                        self._start_selected_level()
+                    elif event.key == pygame.K_ESCAPE:
+                        self.page = "main"
+            elif event.type == pygame.MOUSEMOTION:
+                if self.page == "main":
+                    for index, rect in enumerate(self.button_rects):
+                        if rect.collidepoint(event.pos):
+                            self.selected_item = index
+                elif self.page == "levels":
+                    for index, rect in enumerate(self.level_rects):
+                        if rect.collidepoint(event.pos):
+                            self.selected_level = index
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.page == "main":
                     for index, rect in enumerate(self.button_rects):
@@ -55,8 +74,14 @@ class MainMenu(GameState):
                             self.selected_item = index
                             self._activate_item(index)
                             break
-                elif self.back_rect.collidepoint(event.pos):
-                    self.page = "main"
+                elif self.page == "levels":
+                    for index, rect in enumerate(self.level_rects):
+                        if rect.collidepoint(event.pos):
+                            self.selected_level = index
+                            self._start_selected_level()
+                            break
+                    if self.back_rect.collidepoint(event.pos):
+                        self.page = "main"
 
     def draw(self, screen: pygame.Surface, dt):
         if self.background_size != screen.get_size():
@@ -71,6 +96,8 @@ class MainMenu(GameState):
 
         if self.page == "main":
             self._draw_main_menu(screen)
+        elif self.page == "levels":
+            self._draw_level_select(screen)
         else:
             self._draw_placeholder(screen)
 
@@ -85,6 +112,25 @@ class MainMenu(GameState):
             for index in range(len(self.MENU_ITEMS))
         ]
         self.back_rect = pygame.Rect(x, height // 2 + 75, button_width, button_height)
+
+        self.level_rects = []
+        self.level_path_points = []
+        level_count = len(self.LEVELS)
+        left_margin = max(70, width * 0.12)
+        right_margin = max(70, width * 0.12)
+        path_top = max(180, height * 0.25)
+        path_height = max(180, height * 0.35)
+        node_spacing = max(110, (width - left_margin - right_margin) / max(level_count - 1, 1))
+        path_points = []
+
+        for index in range(level_count):
+            x_pos = left_margin + index * node_spacing
+            y_pos = path_top + (index % 2) * (path_height / 2.5)
+            rect = pygame.Rect(x_pos - 52, y_pos - 35, 104, 70)
+            self.level_rects.append(rect)
+            path_points.append((x_pos, y_pos + 6))
+
+        self.level_path_points = path_points
 
     def _draw_main_menu(self, screen):
         title = self.font.render("Agent Zero", True, (255, 255, 255))
@@ -108,6 +154,37 @@ class MainMenu(GameState):
             text = self.small_font.render(label, True, color)
             screen.blit(text, text.get_rect(center=rect.center))
 
+    def _draw_level_select(self, screen):
+        title = self.font.render("Select Level", True, (255, 255, 255))
+        screen.blit(title, (36, 60))
+
+        if self.level_path_points:
+            pygame.draw.lines(
+                screen,
+                (230, 181, 76),
+                False,
+                self.level_path_points,
+                4,
+            )
+
+        for index, rect in enumerate(self.level_rects):
+            selected = index == self.selected_level
+            fill_color = (230, 181, 76) if selected else (30, 34, 42)
+            border_color = (255, 255, 255) if selected else (200, 200, 200)
+            pygame.draw.circle(screen, fill_color, rect.center, 42 if selected else 38)
+            pygame.draw.circle(screen, border_color, rect.center, 42 if selected else 38, 3 if selected else 2)
+
+            level_name = self.LEVELS[index][1]
+            label = self.small_font.render(level_name, True, border_color)
+            label_rect = label.get_rect(center=rect.center)
+            screen.blit(label, label_rect)
+
+        self.back_rect = pygame.Rect(36, screen.get_height() - 92, 180, 52)
+        pygame.draw.rect(screen, (35, 40, 48), self.back_rect, border_radius=6)
+        pygame.draw.rect(screen, (230, 181, 76), self.back_rect, 2, border_radius=6)
+        back_text = self.small_font.render("Back", True, (255, 255, 255))
+        screen.blit(back_text, back_text.get_rect(center=self.back_rect.center))
+
     def _draw_placeholder(self, screen):
         label = "Coming soon."
         text = self.small_font.render(label, True, (255, 255, 255))
@@ -124,7 +201,11 @@ class MainMenu(GameState):
 
     def _activate_item(self, index):
         if index == 0:
-            audio.stop_music(fade_ms=500)
-            game.state_manager.replace(Gameplay(initial_money=self.money, level=CURRENT_LEVEL))
+            self.page = "levels"
         elif index == 1:
             self.page = "settings"
+
+    def _start_selected_level(self):
+        level_key, _ = self.LEVELS[self.selected_level]
+        audio.stop_music(fade_ms=500)
+        game.state_manager.replace(Gameplay(initial_money=self.money, level=level_key))

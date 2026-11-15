@@ -10,11 +10,11 @@ https://www.pixilart.com/draw #Assets erstellen
 
 
 # To merge main branch into current branch:
-git checkout <branchname>
-git fetch origin
-git merge origin/main
+git checkout <branchname> <br>
+git fetch origin <br>
+git merge origin/main <br>
 
 # To run the code
-open new codespace in browser
-type "pip install -r requirements.txt" into terminal
-run code by inputting "python main/main.py" into terminal
+open new codespace in browser: <br>
+type "pip install -r requirements.txt" into terminal <br>
+run code by inputting "python main/main.py" into terminal <br>

@@ -28,6 +28,12 @@ class TutorialIslandLevel(Level):
         ),
        "5": (
            "Sometimes it's better to not be spotted at all. Press CONTROL while sprinting to slide past the enemies."
+        ),
+        "6": (
+            "Looks like there's no other way. You'll need to get through here..."
+        ),
+        "7": (
+            "The house ahead looks promising. The door is locked, though. I need to find a key."
         )
     }
 
@@ -73,7 +79,15 @@ class ContainershipLevel(Level):
         ),
     }
 
+class HQLobbyLevel(Level):
+    MESSAGES = {}
+
+class TestLevel(Level):
+    MESSAGES = {}
+
 LEVELS = {
     "tutorial": TutorialIslandLevel,
-    "containership": ContainershipLevel
+    "containership": ContainershipLevel,
+    "hq_lobby": HQLobbyLevel,
+    "testlevel": TestLevel,
 }
