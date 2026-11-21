@@ -7,6 +7,7 @@ from world.interactibles.interactible import Interactible
 
 class Door(Interactible):
     PUZZLE_DOOR_NAMES = ("IronDoor2", "IronDoor3", "IronDoor4")
+    HITBOX_HEIGHT = 5
 
     def __init__(self):
         super().__init__()
@@ -19,10 +20,6 @@ class Door(Interactible):
         self.tilemap = tilemap
         self.collision_rects = []
         if self.bounds and self.tilemap:
-            self.collision_rects = [
-                rect for rect in self.tilemap.collision_rects
-                if self.bounds.colliderect(rect)
-            ]
             if self.sprites:
                 bottom = max(sprite.rect.bottom for sprite in self.sprites)
                 bottom_rects = [
@@ -30,8 +27,8 @@ class Door(Interactible):
                     if sprite.rect.bottom == bottom
                 ]
                 bottom_collision = bottom_rects[0].unionall(bottom_rects[1:])
-                if bottom_collision not in self.collision_rects:
-                    self.collision_rects.append(bottom_collision)
+                bottom_collision.top = bottom_collision.bottom - self.HITBOX_HEIGHT
+                self.collision_rects = [bottom_collision]
             self._sync_collision_state()
 
     def _sync_collision_state(self):

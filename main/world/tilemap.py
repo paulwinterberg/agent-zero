@@ -207,6 +207,15 @@ class TileMap:
 
         return None
 
+    def show_object_group(self, object_name):
+        """Make every object with the given name in the objects layer visible."""
+        group = self._object_groups.get(object_name)
+        if group is None:
+            raise ValueError(f"Object group {object_name!r} was not found")
+
+        for sprite in group["sprites"]:
+            sprite.set_visible(True)
+
 
     def find_path(self, start, goal, hitbox_size):
         """Find a collision-free route between hitbox midbottom positions."""
@@ -597,7 +606,9 @@ class TileMap:
             group_sprites = []
             for obj, image in members:
                 sprite_image = image.copy() if is_tall else image
-                group_sprites.append(Object(sprite_image, (obj.x, obj.y), sort_layer))
+                group_sprites.append(
+                    Object(sprite_image, (obj.x, obj.y), sort_layer, obj.visible)
+                )
 
             flat_sprites.extend(group_sprites)
 
@@ -639,11 +650,25 @@ class TileMap:
 
 
 class Object(pygame.sprite.Sprite):
-    def __init__(self, image, pos, layer=0):
+    def __init__(self, image, pos, layer=0, visible=True):
         super().__init__()
-        self.image = image
+        self._base_image = image
+        self._visible = visible
+        self._alpha = 255
+        self.image = image if visible else image.copy()
+        if not visible:
+            self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=pos)
         self._layer = layer
+
+    def set_visible(self, visible):
+        self._visible = visible
+        self.image = self._base_image if visible else self._base_image.copy()
+        self.set_alpha(self._alpha)
+
+    def set_alpha(self, alpha):
+        self._alpha = alpha
+        self.image.set_alpha(alpha if self._visible else 0)
 
 
 class YSortedObject:
@@ -670,4 +695,4 @@ class YSortedObject:
             self.alpha = max(self.alpha - step, self.target_alpha)
 
         for sprite in self.sprites:
-            sprite.image.set_alpha(int(self.alpha))
+            sprite.set_alpha(int(self.alpha))

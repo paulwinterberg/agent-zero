@@ -34,6 +34,9 @@ class TutorialIslandLevel(Level):
         ),
         "7": (
             "The house ahead looks promising. The door is locked, though. I need to find a key."
+        ),
+        "8": (
+            "I'll need to find a way to contact someone to escape. Maybe I'll find a radio tower somewhere up ahead?"
         )
     }
 
