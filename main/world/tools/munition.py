@@ -8,7 +8,7 @@ class Munition(Tools):
 
     def __init__(self, position):
         super().__init__()
-        self.name = "Munition"
+        self.name = "Ammo"
         self.refill_tool_name = "Pistol"
         self.refill_amount = 50
         self.state = "ready"

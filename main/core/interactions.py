@@ -91,15 +91,15 @@ class InteractionManager:
                     and interactible.locked
                     and not getattr(held_tool, "can_unlock", False)
                 ):
-                    self.feedback_message = "Tür ist verschlossen."
+                    self.feedback_message = "The door is locked."
                 elif interacted and interactible.state == "open":
-                    self.feedback_message = "Tür geöffnet."
+                    self.feedback_message = "Door opened."
             elif isinstance(interactible, Button) and interacted:
                 door = self.get_interactible_instance(interactible.opens_door)
                 if isinstance(door, Door) and door.state == "open":
-                    self.feedback_message = "Tür geöffnet."
+                    self.feedback_message = "Door opened."
                 else:
-                    self.feedback_message = "Knopf gedrückt. Finde den zweiten Knopf."
+                    self.feedback_message = "Button pressed. Find the second button."
         
         return True
     

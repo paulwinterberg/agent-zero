@@ -36,40 +36,32 @@ class ContainershipLevel(Level):
 
     MESSAGES = {
         "ContainermapStart": (
-            "Willkommen auf dem Containerschiff. Suche das Magic Powder, das die "
-            "Schmuggler hier schmuggeln, und fliehe mit den Beweismitteln. "
-            "Gehe nun nach links zur ersten Kreuzung und suche den grünen "
-            "Container dort am Rand."
+            "Welcome aboard the container ship. Find the Magic Powder the smugglers "
+            "are smuggling here and escape with the evidence. Head left to the first "
+            "intersection and look for the green container at the edge."
         ),
         "OpenContainer": (
-            "Mit F kannst du den Container öffnen, falls er nicht verschlossen "
-            "ist. Für die verschlossenen brauchst du einen Schlüssel, den du in "
-            "einem gelben Container findest. Insgesamt gibt es 8 Container, die "
-            "du öffnen kannst. Danach suchst du nach dem Knopf, der die "
-            "Eisentür zur Kommandostelle öffnet. Kleiner Tipp: Einen Hinweis "
-            "auf die Position der Container findest du bei den gelben Kränen."
-            "Die sind hier ganz in der Nähe. Viel Glück!"
+            "Press F to open a container if it isn't locked. Locked containers "
+            "require a key, which you can find in a yellow container. There are "
+            "8 containers you can open. Then look for the button that opens the "
+            "iron door to the command center. Hint: The nearby yellow cranes will "
+            "give you a clue about where the containers are. Good luck!"
         ),
         "PressTheButton": (
-            "Drücke den Knopf, damit die verschlossene Eisentür zur "
-            "Kommandostelle aufspringt."
+            "Press the button to unlock the iron door to the command center."
         ),
         "Komandostelle": (
-            "Finde die 2 verborgenen Knöpfe, um die vorletzte Ebene "
-            "freizuschalten. Viel Glück!"
+            "Find the 2 hidden buttons to unlock the penultimate area. Good luck!"
         ),
         "NextStep": (
-            "Fast geschafft! Du musst nur noch 2 Knöpfe finden und du bist "
-            "fertig. Probiere nicht, getötet zu werden."
+            "Almost there! You only need to find 2 more buttons. Try not to get killed."
         ),
         "Brücke": (
-            "Auf der Brücke wird das ganze Schiff gesteuert. Finde den Knopf, "
-            "der hier verborgen ist."
+            "The entire ship is controlled from the bridge. Find the button hidden here."
         ),
         "FindExit": (
-            "Nur noch ein letzter Schritt. Du bist schon ganz nah. Töte die "
-            "Wachen und steig in den Container, um als blinder Passagier das "
-            "Schiff zu verlassen."
+            "Just one last step. You're almost there. Take out the guards and climb "
+            "into the container to leave the ship as a stowaway."
         ),
     }
 

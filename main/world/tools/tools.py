@@ -334,7 +334,7 @@ class MissionToolManager:
                 return True
             return False
         if getattr(tool, "refill_tool_name", None):
-            if tool.name in ("Munition", "Energy"):
+            if tool.name in ("Ammo", "Energy"):
                 return self.collect_reload_pickup(tool)
             return self.collect_refill(tool)
         if tool.stackable:

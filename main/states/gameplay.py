@@ -190,7 +190,7 @@ class Gameplay(GameState):
             self.tool_manager.handle_event(event, self.player)
             if (
                 event.type == pygame.KEYDOWN
-                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+                and event.key == pygame.K_SPACE
                 and self._is_hint_nearby()
             ):
                 self.interaction_manager.try_interact()
@@ -358,8 +358,8 @@ class Gameplay(GameState):
             if index == 0:
                 success = self.tool_manager.purchase_ammo()
                 self.shop_message = (
-                    "Munition gekauft." if success
-                    else "Nicht genug Coins oder kein Inventarplatz."
+                    "Ammo purchased." if success
+                    else "Not enough coins or inventory space."
                 )
             elif index in (1, 2, 3):
                 from world.tools.pistol import Pistol
@@ -384,8 +384,8 @@ class Gameplay(GameState):
                     cost = 5000
                 success = self.tool_manager.purchase_weapon(self.player, weapon, cost)
                 self.shop_message = (
-                    f"{weapon.name} gekauft." if success
-                    else "Nicht genug Coins oder kein Inventarplatz."
+                    f"{weapon.name} purchased." if success
+                    else "Not enough coins or inventory space."
                 )
             elif index in (4, 5, 6, 7):
                 if index == 4:
@@ -413,8 +413,8 @@ class Gameplay(GameState):
                     )
                     name = "Smoke Bomb"
                 self.shop_message = (
-                    f"{name} gekauft." if success
-                    else "Nicht genug Coins, Inventarplatz oder Stack-Platz."
+                    f"{name} purchased." if success
+                    else "Not enough coins, inventory space, or stack space."
                 )
             else:
                 self.pause_page = "main"
@@ -444,7 +444,7 @@ class Gameplay(GameState):
     def _pause_labels(self):
         if self.pause_page == "shop":
             return (
-                "Munition - 300 Coins",
+                "Ammo - 300 Coins",
                 "Pistol - 400 Coins",
                 "Pistol+ - 1000 Coins",
                 "Pistol+max - 5000 Coins",
@@ -556,7 +556,7 @@ class Gameplay(GameState):
 
     def _draw_hint_prompt(self, screen):
         text = self.interaction_feedback_font.render(
-            "Durchsuchen Enter drücken.", True, (255, 255, 255)
+            "Press SPACE to read.", True, (255, 255, 255)
         )
         padding = 16
         panel = pygame.Surface(
@@ -688,7 +688,7 @@ class Gameplay(GameState):
         pygame.draw.rect(
             panel, (20, 25, 29, 225), panel.get_rect(), border_radius=5
         )
-        accent = (240, 180, 75) if "verschlossen" in self.interaction_feedback else (95, 205, 145)
+        accent = (240, 180, 75) if "locked" in self.interaction_feedback else (95, 205, 145)
         pygame.draw.rect(panel, accent, panel.get_rect(), 2, border_radius=5)
         panel_rect = panel.get_rect(
             midbottom=(screen.get_width() // 2, screen.get_height() - 32)
@@ -699,7 +699,7 @@ class Gameplay(GameState):
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
         if held_tool and held_tool.name.startswith("Pistol"):
-            self.ammo_label.set_text(f"{held_tool.name}: {held_tool.amount} Schuss")
+            self.ammo_label.set_text(f"{held_tool.name}: {held_tool.amount} rounds")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
             self.ammo_label.set_text(f"Taser: {held_tool.amount} Energy")

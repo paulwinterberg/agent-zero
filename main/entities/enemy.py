@@ -24,6 +24,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.hitbox = pygame.Rect(0, 0, 32, settings.ENEMY_HITBOX_HEIGHT)
         self.hitbox.midbottom = self.rect.midbottom
+        self.previous_hitbox = self.hitbox.copy()
         self.pos = pygame.math.Vector2(self.hitbox.midbottom)
         
         self.groupId = groupId
@@ -142,6 +143,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image.blit(marker, (11, 0))
 
     def update(self, dt):
+        self.previous_hitbox = self.hitbox.copy()
         if self.dead:
             return
 

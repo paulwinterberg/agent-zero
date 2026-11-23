@@ -19,7 +19,7 @@ class Bullet:
             pygame.draw.circle(base_image, (0, 0, 0), (4, 4), 4)
         self.sprite.projectile = self
         self.position = pygame.Vector2(position)
-        
+
         direction = pygame.Vector2(target) - self.position
         self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
         if self.velocity.length_squared():
@@ -35,20 +35,39 @@ class Bullet:
 
     def update(self, dt, enemies=()):
         movement = self.velocity * dt
-        steps = max(1, math.ceil(movement.length() / 4))
+        enemy_sweeps = []
+        max_enemy_movement = 0
+        for enemy in enemies:
+            hitbox = getattr(enemy, "hitbox", enemy.rect)
+            previous_hitbox = getattr(enemy, "previous_hitbox", hitbox)
+            previous_center = pygame.Vector2(previous_hitbox.center)
+            enemy_movement = pygame.Vector2(hitbox.center) - previous_center
+            max_enemy_movement = max(max_enemy_movement, enemy_movement.length())
+            enemy_sweeps.append((enemy, previous_hitbox, enemy_movement))
+
+        steps = max(1, math.ceil((movement.length() + max_enemy_movement) / 4))
         step = movement / steps
-        for _ in range(steps):
+        for step_index in range(1, steps + 1):
+            fraction = step_index / steps
             next_position = self.position + step
             next_rect = self.sprite.image.get_rect(
                 center=(round(next_position.x), round(next_position.y))
             )
             if any(next_rect.colliderect(rect) for rect in self.collision_rects):
                 return False
-            for enemy in enemies:
-                if not isinstance(enemy, Player) and self.is_enemy: continue #friendly fire
-                
-                hitbox = getattr(enemy, "hitbox", enemy.rect)
-                if hitbox.colliderect(next_rect) and getattr(enemy, "health", 1) > 0:
+
+            for enemy, previous_hitbox, enemy_movement in enemy_sweeps:
+                if not isinstance(enemy, Player) and self.is_enemy:
+                    continue
+                if getattr(enemy, "health", 1) <= 0:
+                    continue
+
+                hitbox_at_step = previous_hitbox.copy()
+                hitbox_at_step.center = (
+                    round(previous_hitbox.centerx + enemy_movement.x * fraction),
+                    round(previous_hitbox.centery + enemy_movement.y * fraction),
+                )
+                if hitbox_at_step.colliderect(next_rect):
                     enemy.take_damage(self.damage)
                     return False
             self.position = next_position
@@ -68,7 +87,7 @@ class Pistol(Tools):
             settings.PISTOL_MAX_AMMO if max_ammo is None else max_ammo
         )
         self.amount = self.max_amount
-        self.reload_item_name = "Munition"
+        self.reload_item_name = "Ammo"
         self.consumable = True
         self.can_fire = True
         self.keep_when_empty = True
