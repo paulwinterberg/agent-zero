@@ -100,6 +100,7 @@ class Tools:
         self.collected = False
         self.equipped = False
         self.state = "ready"
+        self.is_enemy = False
         if self.held_sprite:
             self.held_sprite.kill()
             self.held_sprite = None
