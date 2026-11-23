@@ -33,6 +33,33 @@ class Bullet:
         self.remaining_time = 2.0
         self.is_enemy = is_enemy
 
+    @staticmethod
+    def _swept_hit(start, end, target_start, target_end, target_size, bullet_size):
+        relative_start = start - target_start
+        relative_end = end - target_end
+        relative_movement = relative_end - relative_start
+        half_size = (pygame.Vector2(target_size) + pygame.Vector2(bullet_size)) / 2
+
+        entry_time = 0.0
+        exit_time = 1.0
+        for axis in ("x", "y"):
+            start_offset = getattr(relative_start, axis)
+            movement = getattr(relative_movement, axis)
+            extent = getattr(half_size, axis)
+            if movement == 0:
+                if abs(start_offset) > extent:
+                    return False
+                continue
+
+            first = (-extent - start_offset) / movement
+            second = (extent - start_offset) / movement
+            entry_time = max(entry_time, min(first, second))
+            exit_time = min(exit_time, max(first, second))
+            if entry_time > exit_time:
+                return False
+
+        return exit_time >= 0 and entry_time <= 1
+
     def update(self, dt, enemies=()):
         movement = self.velocity * dt
         enemy_sweeps = []
@@ -48,13 +75,13 @@ class Bullet:
         steps = max(1, math.ceil((movement.length() + max_enemy_movement) / 4))
         step = movement / steps
         for step_index in range(1, steps + 1):
+            previous_fraction = (step_index - 1) / steps
             fraction = step_index / steps
+            previous_position = self.position
             next_position = self.position + step
             next_rect = self.sprite.image.get_rect(
                 center=(round(next_position.x), round(next_position.y))
             )
-            if any(next_rect.colliderect(rect) for rect in self.collision_rects):
-                return False
 
             for enemy, previous_hitbox, enemy_movement in enemy_sweeps:
                 if not isinstance(enemy, Player) and self.is_enemy:
@@ -62,14 +89,25 @@ class Bullet:
                 if getattr(enemy, "health", 1) <= 0:
                     continue
 
-                hitbox_at_step = previous_hitbox.copy()
-                hitbox_at_step.center = (
-                    round(previous_hitbox.centerx + enemy_movement.x * fraction),
-                    round(previous_hitbox.centery + enemy_movement.y * fraction),
+                target_start = pygame.Vector2(previous_hitbox.center) + (
+                    enemy_movement * previous_fraction
                 )
-                if hitbox_at_step.colliderect(next_rect):
+                target_end = pygame.Vector2(previous_hitbox.center) + (
+                    enemy_movement * fraction
+                )
+                if self._swept_hit(
+                    previous_position,
+                    next_position,
+                    target_start,
+                    target_end,
+                    previous_hitbox.size,
+                    self.sprite.image.get_size(),
+                ):
                     enemy.take_damage(self.damage)
                     return False
+
+            if any(next_rect.colliderect(rect) for rect in self.collision_rects):
+                return False
             self.position = next_position
 
         self.sprite.rect.center = round(self.position.x), round(self.position.y)
