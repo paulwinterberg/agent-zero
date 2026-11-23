@@ -54,5 +54,12 @@ class Perception:
         for rect in self.tilemap.collision_rects:
             if rect.colliderect(ray_bounds) and rect.clipline(s, e):
                 return False
+
+        from world.tools.smoke_bomb import active_smoke_clouds
+
+        for cloud in list(active_smoke_clouds):
+            rect = cloud.sprite.rect
+            if rect.colliderect(ray_bounds) and rect.clipline(s, e):
+                return False
     
         return True

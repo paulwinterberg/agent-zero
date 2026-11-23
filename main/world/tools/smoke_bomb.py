@@ -5,6 +5,9 @@ import pygame
 from world.tools.tools import Tools, load_tool_texture
 
 
+active_smoke_clouds = []
+
+
 class SmokeCloud:
     """Kurzlebiger, wachsender Rauchbereich."""
 
@@ -25,6 +28,7 @@ class SmokeCloud:
         self.base_image = self.sprite.image.copy()
         self.elapsed = 0.0
         self.duration = 4.5
+        active_smoke_clouds.append(self)
 
     def update(self, dt):
         self.elapsed += dt
@@ -34,7 +38,10 @@ class SmokeCloud:
         self.sprite.image = pygame.transform.scale(self.base_image, (size, size))
         self.sprite.image.set_alpha(round(230 * (1.0 - progress)))
         self.sprite.rect = self.sprite.image.get_rect(center=self.sprite.rect.center)
-        return self.elapsed < self.duration
+        active = self.elapsed < self.duration
+        if not active and self in active_smoke_clouds:
+            active_smoke_clouds.remove(self)
+        return active
 
 
 class SmokeBombProjectile:
