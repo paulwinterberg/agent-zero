@@ -36,13 +36,6 @@
     <object id="2" x="0" y="27.4208" width="31.9088" height="4.53726"/>
    </objectgroup>
   </tile>
-  <tile id="91">
-   <objectgroup draworder="index" id="2">
-    <object id="1" x="0" y="-0.049318" width="4.9318" height="31.9581"/>
-    <object id="2" x="-0.049318" y="30.9717" width="4.58658" height="0.838406"/>
-    <object id="3" x="30.9717" y="0.049318" width="1.03568" height="31.9088"/>
-   </objectgroup>
-  </tile>
  </tileset>
  <tileset firstgid="1465" source="../../tiled/tilesets/containermap.tsx"/>
  <layer id="1" name="Tile Layer 1" width="82" height="62">
@@ -1007,22 +1000,22 @@
     <property name="Pushed" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="306" name="Door1" gid="1134" x="896" y="1376" width="32" height="32"/>
-  <object id="307" name="Door1" gid="1154" x="896" y="1408" width="32" height="32">
+  <object id="306" name="Door1_896" gid="1134" x="896" y="1376" width="32" height="32"/>
+  <object id="307" name="Door1_896" gid="1154" x="896" y="1408" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Door"/>
     <property name="Locked" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="308" name="Door1" gid="1134" x="736" y="1376" width="32" height="32"/>
-  <object id="309" name="Door1" gid="1154" x="736" y="1408" width="32" height="32">
+  <object id="308" name="Door1_736" gid="1134" x="736" y="1376" width="32" height="32"/>
+  <object id="309" name="Door1_736" gid="1154" x="736" y="1408" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Door"/>
     <property name="Locked" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="310" name="Door1" gid="1134" x="576" y="1376" width="32" height="32"/>
-  <object id="311" name="Door1" gid="1154" x="576" y="1408" width="32" height="32">
+  <object id="310" name="Door1_576" gid="1134" x="576" y="1376" width="32" height="32"/>
+  <object id="311" name="Door1_576" gid="1154" x="576" y="1408" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Door"/>
     <property name="Locked" type="bool" value="false"/>

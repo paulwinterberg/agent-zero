@@ -14,6 +14,7 @@ class Door(Interactible):
         self.locked = False
         self.lock_visible = False
         self.locked_images = []
+        self.upper_collision = None
 
     def set_tilemap(self, tilemap):
         self.tilemap = tilemap
@@ -27,16 +28,18 @@ class Door(Interactible):
                 ]
                 bottom_collision = bottom_rects[0].unionall(bottom_rects[1:])
                 self.collision_rects = [bottom_collision]
-                collision_cutout = (
-                    self.bounds
-                    if self.object_name and self.object_name.startswith("IronDoor1")
-                    else bottom_collision
+                upper_collision = pygame.Rect(
+                    self.bounds.left,
+                    self.bounds.top,
+                    self.bounds.width,
+                    bottom_collision.top - self.bounds.top,
                 )
                 self.tilemap.collision_rects = [
                     piece
                     for rect in self.tilemap.collision_rects
-                    for piece in self._subtract_rect(rect, collision_cutout)
+                    for piece in self._subtract_rect(rect, self.bounds)
                 ]
+                self.upper_collision = upper_collision
             self._sync_collision_state()
 
     @staticmethod
@@ -64,8 +67,22 @@ class Door(Interactible):
             self.tilemap.collision_rects = [
                 rect for rect in self.tilemap.collision_rects
                 if rect not in self.collision_rects
+                and not (
+                    self.upper_collision
+                    and rect.colliderect(self.upper_collision)
+                )
+            ]
+            self.tilemap.collision_rects = [
+                rect for rect in self.tilemap.collision_rects
+                if not rect.colliderect(self.bounds)
             ]
         else:
+            if self.upper_collision:
+                self.tilemap.collision_rects = [
+                    rect for rect in self.tilemap.collision_rects
+                    if rect not in (self.upper_collision,)
+                    and not rect.colliderect(self.upper_collision)
+                ]
             for rect in self.collision_rects:
                 if rect not in self.tilemap.collision_rects:
                     self.tilemap.collision_rects.append(rect)
