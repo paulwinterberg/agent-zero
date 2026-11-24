@@ -164,6 +164,17 @@ class MissionToolManager:
 
         tool_types = {
             "pistol": Pistol,
+            "pistol+": lambda position: Pistol(
+                position,
+                name="Pistol+",
+                shot_cooldown=settings.PISTOL_COOLDOWN / 2,
+            ),
+            "pistol+max": lambda position: Pistol(
+                position,
+                name="Pistol+max",
+                max_ammo=25,
+                shot_cooldown=settings.PISTOL_COOLDOWN / 2,
+            ),
             "taser": Taser,
             "key": Key,
             "smokebomb": SmokeBomb,

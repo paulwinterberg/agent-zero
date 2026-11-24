@@ -19,10 +19,6 @@ class Door(Interactible):
         self.tilemap = tilemap
         self.collision_rects = []
         if self.bounds and self.tilemap:
-            self.collision_rects = [
-                rect for rect in self.tilemap.collision_rects
-                if self.bounds.colliderect(rect)
-            ]
             if self.sprites:
                 bottom = max(sprite.rect.bottom for sprite in self.sprites)
                 bottom_rects = [
@@ -30,9 +26,30 @@ class Door(Interactible):
                     if sprite.rect.bottom == bottom
                 ]
                 bottom_collision = bottom_rects[0].unionall(bottom_rects[1:])
-                if bottom_collision not in self.collision_rects:
-                    self.collision_rects.append(bottom_collision)
+                self.collision_rects = [bottom_collision]
+                self.tilemap.collision_rects = [
+                    piece
+                    for rect in self.tilemap.collision_rects
+                    for piece in self._subtract_rect(rect, bottom_collision)
+                ]
             self._sync_collision_state()
+
+    @staticmethod
+    def _subtract_rect(rect, cutout):
+        overlap = rect.clip(cutout)
+        if overlap.width <= 0 or overlap.height <= 0:
+            return [rect]
+
+        return [
+            piece
+            for piece in (
+                pygame.Rect(rect.left, rect.top, rect.width, overlap.top - rect.top),
+                pygame.Rect(rect.left, overlap.bottom, rect.width, rect.bottom - overlap.bottom),
+                pygame.Rect(rect.left, overlap.top, overlap.left - rect.left, overlap.height),
+                pygame.Rect(overlap.right, overlap.top, rect.right - overlap.right, overlap.height),
+            )
+            if piece.width > 0 and piece.height > 0
+        ]
 
     def _sync_collision_state(self):
         if not self.tilemap or not self.collision_rects:

@@ -32,7 +32,7 @@ class TutorialIslandLevel(Level):
     }
 
 class ContainershipLevel(Level):
-    COMPLETION_TUTORIAL_NAME = "ContainermapEnd"
+    COMPLETION_TUTORIAL_NAME = "End"
 
     MESSAGES = {
         "ContainermapStart": (
