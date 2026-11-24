@@ -497,8 +497,8 @@ class MissionToolManager:
         current = self.current_tool
         if current and getattr(current, "reload_item_name", None) == pickup.name:
             missing = current.max_amount - current.amount
-            loaded = min(missing, pickup.refill_amount)
-            remaining = pickup.refill_amount - loaded
+            loaded = min(missing, pickup.amount)
+            remaining = pickup.amount - loaded
             if remaining and not reserve and len(self.inventory) >= self.max_inventory_slots:
                 return False
             if not pickup.on_interact():
@@ -514,7 +514,7 @@ class MissionToolManager:
             return True
 
         if reserve:
-            reserve.amount += pickup.refill_amount
+            reserve.amount += pickup.amount
             pickup.on_interact()
             return True
 
@@ -523,7 +523,6 @@ class MissionToolManager:
         if not pickup.on_interact():
             return False
 
-        pickup.amount = pickup.refill_amount
         self.inventory.append(pickup)
         return True
 

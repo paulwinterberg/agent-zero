@@ -27,10 +27,15 @@ class Door(Interactible):
                 ]
                 bottom_collision = bottom_rects[0].unionall(bottom_rects[1:])
                 self.collision_rects = [bottom_collision]
+                collision_cutout = (
+                    self.bounds
+                    if self.object_name and self.object_name.startswith("IronDoor1")
+                    else bottom_collision
+                )
                 self.tilemap.collision_rects = [
                     piece
                     for rect in self.tilemap.collision_rects
-                    for piece in self._subtract_rect(rect, bottom_collision)
+                    for piece in self._subtract_rect(rect, collision_cutout)
                 ]
             self._sync_collision_state()
 

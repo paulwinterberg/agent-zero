@@ -11,6 +11,7 @@ class Munition(Tools):
         self.name = "Ammo"
         self.refill_tool_name = "Pistol"
         self.refill_amount = 50
+        self.amount = self.refill_amount
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("munition", size=(30, 22))

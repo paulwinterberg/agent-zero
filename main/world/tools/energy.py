@@ -11,6 +11,7 @@ class Energy(Tools):
         self.name = "Energy"
         self.refill_tool_name = "Taser"
         self.refill_amount = 20
+        self.amount = self.refill_amount
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("energy", size=(28, 28))
