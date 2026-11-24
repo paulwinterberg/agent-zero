@@ -1591,7 +1591,7 @@
   <object id="560" name="Enemy_101" type="EnemySpawn" x="704.667" y="1136">
    <point/>
   </object>
-  <object id="562" name="Enemy22" type="EnemySpawn" x="1049.33" y="1343.33">
+  <object id="562" name="Enemy22" type="EnemySpawn" x="1042" y="1328">
    <point/>
   </object>
   <object id="563" name="Enemy23" type="EnemySpawn" x="870.667" y="1475.33">
@@ -1698,7 +1698,7 @@
   </object>
  </objectgroup>
  <objectgroup id="13" name="Paths">
-  <object id="646" name="Enemy22_1" type="EnemySpawn" x="544" y="1349.33">
+  <object id="646" name="Enemy22_1" type="EnemySpawn" x="542" y="1329.33">
    <point/>
   </object>
   <object id="647" name="Enemy39_2" type="EnemySpawn" x="2001.67" y="1621.67">
@@ -1755,7 +1755,7 @@
   <object id="664" name="Enemy10_4" type="EnemySpawn" x="1490" y="906">
    <point/>
   </object>
-  <object id="665" name="Enemy22_2" type="EnemySpawn" x="1557.33" y="1354.67">
+  <object id="665" name="Enemy22_2" type="EnemySpawn" x="1554" y="1331.34">
    <point/>
   </object>
   <object id="667" name="Enemy36_2" type="EnemySpawn" x="1493.33" y="1528.67">
