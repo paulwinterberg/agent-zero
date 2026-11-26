@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="424">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="425">
  <tileset firstgid="1" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
  <tileset firstgid="225" name="StoneGround" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Tileset Stone Ground.png" width="256" height="256"/>
@@ -184,6 +184,9 @@
    <point/>
   </object>
   <object id="288" name="Munition" x="491.333" y="970">
+   <point/>
+  </object>
+  <object id="424" name="Taser" x="1268.67" y="1393.33">
    <point/>
   </object>
  </objectgroup>
