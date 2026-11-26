@@ -10,11 +10,15 @@ class Interactible:
         self.object_name = None
         self.interaction_manager = None
         self.state = None
+        self.enabled = True
         self.tilemap = None
         self.closed_images = []
         self.open_images = []
         self.bounds = None
         self.collision_rects = []  # Collision-Rects die zu diesem Objekt gehören
+
+    def set_enabled(self, enabled: bool) -> None:
+        self.enabled = enabled
 
     def set_object_name(self, name):
         self.object_name = name

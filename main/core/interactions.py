@@ -47,6 +47,9 @@ class InteractionManager:
         interactible_objects = tilemap.get_interactible_objects()
         
         for obj in interactible_objects:
+            if not self._is_interaction_enabled(obj):
+                continue
+
             distance = self._distance_to_object(player, obj)
             if distance <= self.interaction_range:
                 nearby.append({
@@ -64,25 +67,37 @@ class InteractionManager:
         dx = player_center[0] - obj_center[0]
         dy = player_center[1] - obj_center[1]
         return (dx**2 + dy**2) ** 0.5
+
+    def _is_interaction_enabled(self, interaction_obj):
+        interactible = self.interactible_instances.get(interaction_obj.get("name"))
+        return interactible is None or interactible.enabled
     
     def try_interact(self, held_tool=None):
         """Versucht mit dem nächsten Objekt in Reichweite zu interagieren."""
         self.feedback_message = None
-        if not self.active_interactions or self.interaction_cooldown > 0:
+        active_interactions = [
+            interaction
+            for interaction in self.active_interactions
+            if self._is_interaction_enabled(interaction)
+        ]
+        if not active_interactions or self.interaction_cooldown > 0:
             return False
         
         closest = min(
-            self.active_interactions,
+            active_interactions,
             key=lambda interaction: (
                 interaction.get("sort_layer", 0),
                 interaction["distance"],
             ),
         )
+        interactible = self._load_interactible(closest)
+        if interactible is not None and not interactible.enabled:
+            return False
+
         self.interaction_cooldown = self.interaction_cooldown_time
         self.last_interaction_target = closest
         
         # Lade Interactible und rufe on_interact auf
-        interactible = self._load_interactible(closest)
         if interactible:
             interacted = interactible.on_interact(held_tool)
             if isinstance(interactible, Door):
@@ -141,7 +156,14 @@ class InteractionManager:
     
     def get_nearest_interaction(self):
         """Gibt das nächste interaktive Objekt zurück oder None."""
-        return self.active_interactions[0] if self.active_interactions else None
+        return next(
+            (
+                interaction
+                for interaction in self.active_interactions
+                if self._is_interaction_enabled(interaction)
+            ),
+            None,
+        )
 
     def get_interactible_instance(self, object_name):
         """Return the cached instance for a named interactible object."""

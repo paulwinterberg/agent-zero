@@ -135,6 +135,20 @@ Türfläche ausgespart; außerhalb bleibt die Ebene aktiv.
 - ✓ Schaue in der Konsole ob der Name ausgegeben wird
 - ✓ Überprüfe den Abstand mit `self.interaction_manager.interaction_range`
 
+## Interactible zur Laufzeit deaktivieren
+
+Eine Interactible-Instanz lässt sich zur Laufzeit deaktivieren und wieder
+aktivieren. Deaktivierte Objekte können nicht ausgelöst werden und zeigen
+keinen Interaktionshinweis:
+
+```python
+interactible = self.interaction_manager.get_interactible_instance("Chest_Gold")
+if interactible:
+    interactible.set_enabled(False)
+    # Später bei Bedarf wieder aktivieren:
+    interactible.set_enabled(True)
+```
+
 ### Mehrere Objekte gruppieren
 Objekte mit dem **gleichen Namen** werden als ein Objekt behandelt - perfekt für:
 - Türen mit mehreren Teilen
