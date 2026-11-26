@@ -1,7 +1,7 @@
 import core.state_manager as state_manager
 import core.game_data as game_data
 
-from core import renderer, audio
+from core import renderer, audio, hints
 from states.gameplay import Gameplay
 from states.main_menu import MainMenu
 from states.intro_video import IntroVideo
@@ -19,5 +19,6 @@ def start():
     renderer.start_loop(tick)
 
 def tick(dt, events):
-    state_manager.update(dt, events)
+    if not hints._update(dt, events):
+        state_manager.update(dt, events)
     state_manager.draw(renderer.screen, dt)

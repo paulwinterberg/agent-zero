@@ -1,5 +1,6 @@
 import pygame
 import core.renderer as renderer
+from core import hints
 
 from states.game_state import GameState
 
@@ -27,5 +28,6 @@ def get_state():
 def draw(screen, dt):
     for state in stack:
         state.draw(screen, dt)
+    hints._draw(screen)
     renderer.render_ui()
     pygame.display.flip()
