@@ -9,7 +9,15 @@ from core import audio
 
 class Bullet:
 
-    def __init__(self, position, target, collision_rects, damage, is_enemy=False):
+    def __init__(
+        self,
+        position,
+        target,
+        collision_rects,
+        damage,
+        is_enemy=False,
+        speed=settings.PISTOL_BULLET_SPEED,
+    ):
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("bullet", size=(8, 8))
         if texture is not None:
@@ -21,7 +29,11 @@ class Bullet:
         self.position = pygame.Vector2(position)
 
         direction = pygame.Vector2(target) - self.position
-        self.velocity = direction.normalize() * 600 if direction.length() else pygame.Vector2()
+        self.velocity = (
+            direction.normalize() * speed
+            if direction.length()
+            else pygame.Vector2()
+        )
         if self.velocity.length_squared():
             angle = 180 - math.degrees(math.atan2(self.velocity.y, self.velocity.x))
             self.sprite.image = pygame.transform.rotate(base_image, angle)
@@ -118,7 +130,14 @@ class Bullet:
 class Pistol(Tools):
     """Mission-Tool, das per Linksklick schwarze Kugeln abfeuert."""
 
-    def __init__(self, position, name="Pistol", max_ammo=None, shot_cooldown=None):
+    def __init__(
+        self,
+        position,
+        name="Pistol",
+        max_ammo=None,
+        shot_cooldown=None,
+        projectile_speed=None,
+    ):
         super().__init__()
         self.name = name
         self.max_amount = (
@@ -134,6 +153,11 @@ class Pistol(Tools):
             settings.PISTOL_COOLDOWN
             if shot_cooldown is None
             else shot_cooldown
+        )
+        self.projectile_speed = (
+            settings.PISTOL_BULLET_SPEED
+            if projectile_speed is None
+            else projectile_speed
         )
         self.state = "ready"
         self.sprite = pygame.sprite.Sprite()
@@ -152,4 +176,11 @@ class Pistol(Tools):
 
     def fire(self, position, target, tilemap):
         self.sound.play()
-        return Bullet(position, target, tilemap.collision_rects, self.damage, is_enemy=self.is_enemy)
+        return Bullet(
+            position,
+            target,
+            tilemap.collision_rects,
+            self.damage,
+            is_enemy=self.is_enemy,
+            speed=self.projectile_speed,
+        )

@@ -14,12 +14,14 @@ class BossEnemy(Enemy):
 
     def __init__(self, pos, tool_manager=None, spawn_minions=None):
         super().__init__(pos, tool_manager=tool_manager)
-        self.image = load_character_frame("AgentX.png", (128, 128), (48, 56))
+        self.image = load_character_frame("AgentX.png", (48, 72), (48, 56))
         self.base_image = self.image.copy()
         self.rect = self.image.get_rect(midbottom=self.hitbox.midbottom)
         self.phase = 1
         self.spawn_minions = spawn_minions
         self.phase_spawn_elapsed = 0.0
+        if self.tool is not None:
+            self.tool.projectile_speed = settings.PISTOL_BULLET_SPEED / 2
         self._set_phase(1)
 
     def _set_phase(self, phase):
@@ -30,7 +32,7 @@ class BossEnemy(Enemy):
             self.tool.shot_cooldown = self.fire_cooldown
 
     def take_damage(self, dmg):
-        if self.dead:
+        if self.dead or not self.perception.can_see_player():
             return
 
         self.health = max(0, self.health - dmg)

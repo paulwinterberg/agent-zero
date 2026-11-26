@@ -1170,7 +1170,7 @@
   <object id="399" name="EnemyA1" x="1278.5" y="1464">
    <point/>
   </object>
-  <object id="400" name="Siencentist" x="1374" y="1428.5">
+  <object id="400" name="Siencentist" type="ScientistSpawn" x="1374" y="1428.5">
    <point/>
   </object>
  </objectgroup>
