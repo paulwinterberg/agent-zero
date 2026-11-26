@@ -15,9 +15,12 @@ class Enemy(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(center=pos)
 
         self.health = settings.ENEMY_DEFAULT_HEALTH
+        self.max_health = self.health
+        self.fire_cooldown = settings.ENEMY_DEFAULT_FIRE_COOLDOWN
         self.dead = False
         self.stun_time = 0.0
         self.see_player_timer = 0.0
@@ -150,6 +153,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.stun_time > 0:
             self.stun_time = max(0, self.stun_time - dt)
 
+        self.image = self.base_image.copy()
         if self.see_player_timer > settings.ENEMY_PLAYER_SPOT_TIME and self.state.__class__ != ChaseState:
             for enemy in self.group:
                 enemy.change_state(ChaseState())
@@ -157,14 +161,9 @@ class Enemy(pygame.sprite.Sprite):
         sees_player = self.perception.can_see_player()
         if sees_player and not self.is_stunned():
             self._draw_exclamation_mark()
-
-            if sees_player:
-                self.see_player_timer += dt
-            else:
-                self.see_player_timer = max(0, self.see_player_timer - dt)
-    
+            self.see_player_timer += dt
         else:
-            self.image.fill((0, 0, 0))
+            self.see_player_timer = max(0, self.see_player_timer - dt)
 
         self.state.update(self, dt)
         self._update_held_tool()

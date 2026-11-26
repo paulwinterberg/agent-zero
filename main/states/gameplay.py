@@ -22,6 +22,8 @@ LEVEL_DISPLAY_NAMES = {
     "containership": "Containership",
     "hq_lobby": "HQ Lobby",
     "testlevel": "Test Level",
+    "antarctica": "Antarctica",
+    "bossbattle": "Boss Battle",
 }
 
 
@@ -74,6 +76,23 @@ class Gameplay(GameState):
             relative_rect=pygame.Rect((20, screen.get_screen_size()[1] - 45), (200 , 25)),
             manager=get_ui_manager(),
         )
+        self.boss_health_bar = None
+        self.boss_health_label = None
+        if self.enemy_manager.boss is not None:
+            screen_width = screen.get_screen_size()[0]
+            self.boss_health_label = pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect(
+                    (screen_width - 360) // 2, 18, 360, 28
+                ),
+                text="",
+                manager=get_ui_manager(),
+            )
+            self.boss_health_bar = pygame_gui.elements.UIProgressBar(
+                relative_rect=pygame.Rect(
+                    (screen_width - 400) // 2, 48, 400, 24
+                ),
+                manager=get_ui_manager(),
+            )
         self.ammo_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((20, 50), (220, 30)),
             text="",
@@ -110,11 +129,16 @@ class Gameplay(GameState):
         self.interaction_feedback_font = pygame.font.Font(
             "assets/fonts/PixelifySans-Medium.ttf", 22
         )
+        self._update_boss_hud()
 
     def exit(self):
         self.stamina_bar.kill()
         self.health_bar.kill()
         self.ammo_label.kill()
+        if self.boss_health_bar is not None:
+            self.boss_health_bar.kill()
+        if self.boss_health_label is not None:
+            self.boss_health_label.kill()
     
     def update(self, dt, events):
         if self.player.dead:
@@ -124,6 +148,10 @@ class Gameplay(GameState):
                 self.stamina_bar.hide()
                 self.health_bar.hide()
                 self.ammo_label.hide()
+                if self.boss_health_bar is not None:
+                    self.boss_health_bar.hide()
+                if self.boss_health_label is not None:
+                    self.boss_health_label.hide()
             self._update_death_screen(events)
             return
 
@@ -185,6 +213,7 @@ class Gameplay(GameState):
         
         self.tool_manager.update(dt, self.player)
         self._update_ammo_label()
+        self._update_boss_hud()
         
         for event in events:
             self.tool_manager.handle_event(event, self.player)
@@ -208,6 +237,30 @@ class Gameplay(GameState):
                         self.interaction_manager.feedback_message
                     )
                     self.interaction_feedback_timer = 2
+
+    def _update_boss_hud(self):
+        boss = self.enemy_manager.boss
+        if (
+            boss is None
+            or self.boss_health_bar is None
+            or self.boss_health_label is None
+        ):
+            return
+
+        if boss.dead:
+            self.boss_health_bar.hide()
+            self.boss_health_label.hide()
+            return
+
+        self.boss_health_bar.show()
+        self.boss_health_label.show()
+        self.boss_health_bar.set_current_progress(
+            boss.health / boss.max_health * 100.0
+        )
+        self.boss_health_label.set_text(
+            f"Agent X - Phase {boss.phase} - "
+            f"{int(boss.health)} / {int(boss.max_health)}"
+        )
 
     def _is_hint_nearby(self):
         nearest = self.interaction_manager.get_nearest_interaction()

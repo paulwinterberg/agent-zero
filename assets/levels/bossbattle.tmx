@@ -153,16 +153,7 @@
   <object id="442" name="Pistol+max" x="607.5" y="503">
    <point/>
   </object>
-  <object id="443" name="Amo" x="581.5" y="504.5">
-   <point/>
-  </object>
-  <object id="444" name="Enemy4" x="690.5" y="654.5">
-   <point/>
-  </object>
-  <object id="445" name="Enemy6" x="714" y="654.5">
-   <point/>
-  </object>
-  <object id="446" name="Enemy7" x="664" y="654">
+  <object id="443" name="Munition" x="581.5" y="504.5">
    <point/>
   </object>
   <object id="447" name="SmokeBomb" x="597" y="506.5">
@@ -413,13 +404,22 @@
   <object id="421" name="Enemy2" type="EnemySpawn" x="821.5" y="988.167">
    <point/>
   </object>
-  <object id="436" name="AgentX" x="690" y="634">
+  <object id="436" name="AgentX" type="BossSpawn" x="690" y="634">
    <point/>
   </object>
-  <object id="440" name="Enemy3" x="714.5" y="633.5">
+  <object id="440" name="Enemy3" type="EnemySpawn" x="714.5" y="633.5">
    <point/>
   </object>
-  <object id="441" name="Enemy5" x="664.5" y="633">
+  <object id="441" name="Enemy5" type="EnemySpawn" x="664.5" y="633">
+   <point/>
+  </object>
+  <object id="444" name="Enemy4" type="EnemySpawn" x="690.5" y="654.5">
+   <point/>
+  </object>
+  <object id="445" name="Enemy6" type="EnemySpawn" x="714" y="654.5">
+   <point/>
+  </object>
+  <object id="446" name="Enemy7" type="EnemySpawn" x="664" y="654">
    <point/>
   </object>
  </objectgroup>

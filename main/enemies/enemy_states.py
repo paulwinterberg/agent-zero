@@ -54,7 +54,7 @@ class ChaseState(EntityState):
             enemy.player_lost_timer = 0
             self.last_known_plr_position = pygame.Vector2(player.pos)
             
-            if self.accumulated - self.last_fire_time > settings.ENEMY_DEFAULT_FIRE_COOLDOWN and enemy.tool.can_fire:
+            if self.accumulated - self.last_fire_time > enemy.fire_cooldown and enemy.tool.can_fire:
                 enemy.fire_tool()
                 self.last_fire_time = self.accumulated
             

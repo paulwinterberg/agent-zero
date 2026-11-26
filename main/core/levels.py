@@ -71,9 +71,17 @@ class HQLobbyLevel(Level):
 class TestLevel(Level):
     MESSAGES = {}
 
+class AntarcticaLevel(Level):
+    MESSAGES = {}
+
+class BossBattleLevel(Level):
+    MESSAGES = {}
+
 LEVELS = {
     "tutorial": TutorialIslandLevel,
     "containership": ContainershipLevel,
     "hq_lobby": HQLobbyLevel,
     "testlevel": TestLevel,
+    "antarctica": AntarcticaLevel,
+    "bossbattle": BossBattleLevel,
 }

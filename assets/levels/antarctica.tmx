@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="187">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="188">
  <tileset firstgid="1" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
  <tileset firstgid="225" name="StoneGround" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Tileset Stone Ground.png" width="256" height="256"/>
@@ -10,7 +10,7 @@
  <tileset firstgid="545" name="Structs" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Struct.png" width="512" height="512"/>
  </tileset>
- <tileset firstgid="801" source="antarctica.tsx"/>
+ <tileset firstgid="801" source="../../tiled/tilesets/antarctica.tsx"/>
  <layer id="19" name="Tile Layer 1" width="50" height="50">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -516,6 +516,9 @@
  </objectgroup>
  <objectgroup id="11" name="Spawns">
   <object id="22" name="PlayerSpawn" x="710" y="1585">
+   <point/>
+  </object>
+  <object id="187" name="Scientist" type="ScientistSpawn" x="760" y="1585">
    <point/>
   </object>
  </objectgroup>
