@@ -10,7 +10,7 @@
  <tileset firstgid="545" name="Structs" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Struct.png" width="512" height="512"/>
  </tileset>
- <tileset firstgid="801" source="antarctica.tsx"/>
+ <tileset firstgid="801" source="../../tiled/tilesets/antarctica.tsx"/>
  <layer id="19" name="Tile Layer 1" width="50" height="50">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
