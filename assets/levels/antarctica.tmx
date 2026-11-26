@@ -1080,94 +1080,94 @@
   <object id="22" name="PlayerSpawn" x="710" y="1585">
    <point/>
   </object>
-  <object id="370" name="Enemy30" x="788" y="1043.5">
+  <object id="370" name="EnemyA30" x="788" y="1043.5">
    <point/>
   </object>
-  <object id="371" name="Enemy29" x="753" y="982">
+  <object id="371" name="EnemyA29" x="753" y="982">
    <point/>
   </object>
-  <object id="372" name="Enemy28" x="627" y="1013">
+  <object id="372" name="EnemyA28" x="627" y="1013">
    <point/>
   </object>
-  <object id="373" name="Enemy27" x="558" y="983">
+  <object id="373" name="EnemyA27" x="558" y="983">
    <point/>
   </object>
-  <object id="374" name="Enemy26" x="253" y="1020.5">
+  <object id="374" name="EnemyA26" x="253" y="1020.5">
    <point/>
   </object>
-  <object id="375" name="Enemy25" x="306" y="977.5">
+  <object id="375" name="EnemyA25" x="306" y="977.5">
    <point/>
   </object>
-  <object id="376" name="Enemy24" x="465" y="912">
+  <object id="376" name="EnemyA24" x="465" y="912">
    <point/>
   </object>
-  <object id="377" name="Enemy23" x="394" y="849">
+  <object id="377" name="EnemyA23" x="394" y="849">
    <point/>
   </object>
-  <object id="378" name="Enemy22" x="308" y="754.5">
+  <object id="378" name="EnemyA22" x="308" y="754.5">
    <point/>
   </object>
-  <object id="379" name="Enemy21" x="466" y="789.5">
+  <object id="379" name="EnemyA21" x="466" y="789.5">
    <point/>
   </object>
-  <object id="380" name="Enemy20" x="528" y="786">
+  <object id="380" name="EnemyA20" x="528" y="786">
    <point/>
   </object>
-  <object id="381" name="Enemy19" x="663.5" y="802.5">
+  <object id="381" name="EnemyA19" x="663.5" y="802.5">
    <point/>
   </object>
-  <object id="382" name="Enemy18" x="731" y="864.5">
+  <object id="382" name="EnemyA18" x="731" y="864.5">
    <point/>
   </object>
-  <object id="383" name="Enemy17" x="717" y="724">
+  <object id="383" name="EnemyA17" x="717" y="724">
    <point/>
   </object>
-  <object id="384" name="Enemy16" x="791" y="727.5">
+  <object id="384" name="EnemyA16" x="791" y="727.5">
    <point/>
   </object>
-  <object id="385" name="Enemy15" x="887.5" y="726">
+  <object id="385" name="EnemyA15" x="887.5" y="726">
    <point/>
   </object>
-  <object id="386" name="Enemy14" x="1051" y="689">
+  <object id="386" name="EnemyA14" x="1051" y="689">
    <point/>
   </object>
-  <object id="387" name="Enemy13" x="1137" y="661.5">
+  <object id="387" name="EnemyA13" x="1137" y="661.5">
    <point/>
   </object>
-  <object id="388" name="Enemy12" x="1357" y="664.5">
+  <object id="388" name="EnemyA12" x="1357" y="664.5">
    <point/>
   </object>
-  <object id="389" name="Enemy11" x="1427" y="919">
+  <object id="389" name="EnemyA11" x="1427" y="919">
    <point/>
   </object>
-  <object id="390" name="Enemy10" x="1454" y="811.5">
+  <object id="390" name="EnemyA10" x="1454" y="811.5">
    <point/>
   </object>
-  <object id="391" name="Enemy9" x="1415.5" y="1117">
+  <object id="391" name="EnemyA9" x="1415.5" y="1117">
    <point/>
   </object>
-  <object id="392" name="Enemy8" x="1262" y="1057">
+  <object id="392" name="EnemyA8" x="1262" y="1057">
    <point/>
   </object>
-  <object id="393" name="Enemy7" x="1093.5" y="1145">
+  <object id="393" name="EnemyA7" x="1093.5" y="1145">
    <point/>
   </object>
-  <object id="394" name="Enemy6" x="1164" y="1241.5">
+  <object id="394" name="EnemyA6" x="1164" y="1241.5">
    <point/>
   </object>
-  <object id="395" name="Enemy5" x="1104" y="1240">
+  <object id="395" name="EnemyA5" x="1104" y="1240">
    <point/>
   </object>
-  <object id="396" name="Enemy4" x="1204" y="1426.5">
+  <object id="396" name="EnemyA4" x="1204" y="1426.5">
    <point/>
   </object>
-  <object id="397" name="Enemy3" x="1199" y="1457">
+  <object id="397" name="EnemyA3" x="1199" y="1457">
    <point/>
   </object>
-  <object id="398" name="Enemy2" x="1258.5" y="1427">
+  <object id="398" name="EnemyA2" x="1258.5" y="1427">
    <point/>
   </object>
-  <object id="399" name="Enemy1" x="1278.5" y="1464">
+  <object id="399" name="EnemyA1" x="1278.5" y="1464">
    <point/>
   </object>
   <object id="400" name="Siencentist" x="1374" y="1428.5">
