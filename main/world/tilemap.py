@@ -215,6 +215,15 @@ class TileMap:
 
         for sprite in group["sprites"]:
             sprite.set_visible(True)
+            
+    def hide_object_group(self, object_name):
+            """Make every object with the given name in the objects layer visible."""
+            group = self._object_groups.get(object_name)
+            if group is None:
+                raise ValueError(f"Object group {object_name!r} was not found")
+    
+            for sprite in group["sprites"]:
+                sprite.set_visible(False)
 
 
     def find_path(self, start, goal, hitbox_size):

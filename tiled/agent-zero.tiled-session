@@ -3,12 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "H:/GitHub/agent-zero/assets/levels/tutorial.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
         "tilesets",
         "."
     ],
-    "file.lastUsedOpenFilter": "Alle Dateien (*)",
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
             "scaleInDock": 1
@@ -173,7 +173,6 @@
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "H:/GitHub/agent-zero/assets/levels/tutorial.tmx"
     ],
     "project": "agent-zero.tiled-project",
     "property.type": "bool",
