@@ -9,6 +9,7 @@ from core import screen
 
 from globals import globs
 from core import levels
+from core import hints
 from entities.player.player import Player
 from states.game_state import GameState
 from core.renderer import load_tilemap, render_world, get_ui_manager, get_ui_manager
@@ -65,7 +66,6 @@ class Gameplay(GameState):
         self.ammo_label.hide()
         self.interaction_feedback = ""
         self.interaction_feedback_timer = 0
-        self.tutorial_active = False
         self.hint_active = False
         self.hint_image = pygame.image.load(
             "tiled/tilesets/Hint.png"
@@ -122,17 +122,6 @@ class Gameplay(GameState):
                 self.hint_active = False
             return
 
-        if self.tutorial_active:
-            if any(
-                event.type == pygame.KEYDOWN
-                and event.key == pygame.K_SPACE
-                for event in events
-            ):
-                self.tutorial_active = False
-                self.interaction_feedback = ""
-                self.interaction_feedback_timer = 0
-            return
-
         for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.pause_menu_active = True
@@ -148,9 +137,7 @@ class Gameplay(GameState):
 
         self.enemy_manager.update(dt)
         self.player.update(dt, self.tilemap)
-        self.tilemap.teleport_player_from_out_of_bounds(self.player)
-        self._update_tutorial_feedback()
-        if self.tutorial_active or self.completion_started:
+        if self._update_tutorial_feedback() or self.completion_started:
             return
 
         self.interaction_manager.update(dt, self.player, self.tilemap)
@@ -215,10 +202,12 @@ class Gameplay(GameState):
             if name == self.level_meta.COMPLETION_TUTORIAL_NAME:
                 self.completion_started = True
                 self.interaction_feedback_timer = 0
-                return
-            self.interaction_feedback = self.level_meta.MESSAGES[name]
-            self.tutorial_active = True
+                return True
+            self.interaction_feedback = ""
             self.interaction_feedback_timer = 0
+            hints.display(self.level_meta.MESSAGES[name], should_pause_game=True)
+            return True
+        return False
 
     def _update_completion(self, dt):
         self.completion_elapsed += dt
@@ -248,7 +237,7 @@ class Gameplay(GameState):
         self._draw_money_counter(screen)
         if self.tool_manager.weapon_wheel_open:
             self._draw_weapon_wheel(screen)
-        if self.interaction_feedback_timer > 0 or self.tutorial_active:
+        if self.interaction_feedback_timer > 0:
             self._draw_interaction_feedback(screen)
         if self.pause_menu_active:
             self._draw_pause_menu(screen)
@@ -257,7 +246,7 @@ class Gameplay(GameState):
         if self.hint_active:
             self._draw_hint(screen)
         elif (
-            not self.tutorial_active
+            not hints._is_active()
             and not self.pause_menu_active
             and not self.completion_started
         ):
@@ -447,9 +436,6 @@ class Gameplay(GameState):
                 current_line = candidate
         if current_line:
             lines.append(current_line)
-        if self.tutorial_active:
-            lines.append("Press SPACE to continue.")
-
         line_height = self.interaction_feedback_font.get_linesize()
         text = pygame.Surface(
             (
