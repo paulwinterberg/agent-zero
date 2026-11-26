@@ -255,8 +255,12 @@ class Gameplay(GameState):
             self._draw_completion(screen)
         if self.hint_active:
             self._draw_hint(screen)
-        elif self._is_hint_nearby() and not self.tutorial_active:
-            self._draw_hint_prompt(screen)
+        elif (
+            not self.tutorial_active
+            and not self.pause_menu_active
+            and not self.completion_started
+        ):
+            self._draw_interaction_prompt(screen)
 
     def _update_pause_menu(self, events):
         for event in events:
@@ -319,10 +323,37 @@ class Gameplay(GameState):
             )
             screen.blit(label, label.get_rect(center=rect.center))
 
-    def _draw_hint_prompt(self, screen):
-        text = self.interaction_feedback_font.render(
-            "Durchsuchen Enter drücken.", True, (255, 255, 255)
+    def _draw_interaction_prompt(self, screen):
+        prompts = []
+        interaction = self.interaction_manager.get_nearest_interaction()
+        if interaction is not None:
+            is_hint = interaction["properties"].get("InteractibleClass") == "Hint"
+            key = "ENTER" if is_hint else pygame.key.name(settings.INTERACT).upper()
+            action = "to read" if is_hint else "to interact"
+            prompts.append(f"Press [{key}] {action}")
+
+        if self.tool_manager.nearby_tools and not self.tool_manager.weapon_wheel_open:
+            tool = self.tool_manager.nearby_tools[0]
+            key = pygame.key.name(settings.TOOL_PICKUP).upper()
+            prompts.append(f"Press [{key}] to pick up {tool.name or 'item'}")
+
+        if not prompts:
+            return
+
+        line_height = self.interaction_feedback_font.get_linesize()
+        text = pygame.Surface(
+            (
+                max(self.interaction_feedback_font.size(prompt)[0] for prompt in prompts),
+                line_height * len(prompts),
+            ),
+            pygame.SRCALPHA,
         )
+        for index, prompt in enumerate(prompts):
+            rendered_prompt = self.interaction_feedback_font.render(
+                prompt, True, (255, 255, 255)
+            )
+            text.blit(rendered_prompt, (0, index * line_height))
+
         padding = 16
         panel = pygame.Surface(
             (text.get_width() + padding * 2, text.get_height() + 16),

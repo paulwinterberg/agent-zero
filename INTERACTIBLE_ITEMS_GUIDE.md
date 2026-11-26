@@ -93,13 +93,14 @@ class InteractionManager:
         self.interaction_range = 50  # In Pixeln - hier ändern!
 ```
 
-## Visuelles Feedback (optional)
+## Visuelles Feedback
 
-Um dem Spieler zu zeigen, welche Objekte interaktiv sind:
-
-1. In der `render_world` Funktion kannst du den nächsten Interaktionsziele anzeigen
-2. Ein UI-Element "Press F to interact" rendern
-3. Eine Highlight-Box um interaktive Objekte zeichnen
+Das Spiel zeigt automatisch am unteren Bildschirmrand einen Hinweis, sobald ein
+interaktives Objekt in Reichweite ist. Für die meisten Objekte erscheint
+**Press [F] to interact**. Hinweise verwenden **Press [ENTER] to read**, da sie
+mit Enter geöffnet werden. Der Hinweis verschwindet, sobald kein interaktives
+Objekt mehr in Reichweite ist. Liegt zusätzlich ein aufnehmbares Item in
+Reichweite, wird auch **Press [E] to pick up [Item]** angezeigt.
 
 ## IronDoor-Schalterrätsel
 
