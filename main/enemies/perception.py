@@ -17,33 +17,47 @@ class Perception:
         return globs["tilemap"]
 
     def can_see_player(self) -> bool:
-        enemy, player = self.enemy, self.player
-        if enemy is None or player is None:
+        return self.can_see_target(self.player)
+
+    def targets(self):
+        targets = []
+        player = self.player
+        if player is not None:
+            targets.append(player)
+
+        ally = globs.get("agent_x")
+        if ally is not None and ally.allied and not ally.dead:
+            targets.append(ally)
+        return targets
+
+    def visible_targets(self):
+        return [target for target in self.targets() if self.can_see_target(target)]
+
+    def can_see_target(self, target) -> bool:
+        enemy = self.enemy
+        if enemy is None or target is None:
             return False
 
-    
         if not enemy.rect.colliderect(self.tilemap.map_layer.view_rect):
             return False
 
         start = pygame.Vector2(enemy.rect.center)
-        end = pygame.Vector2(player.rect.center)
-
-        # 2. Radius
+        end = pygame.Vector2(target.rect.center)
         if start.distance_squared_to(end) > ENEMY_VISION_RADIUS ** 2:
             return False
 
-        if not self.has_line_of_sight_to_player():
-            return False
-
-        return True
+        return self.has_line_of_sight(target)
 
     def has_line_of_sight_to_player(self) -> bool:
-        enemy, player = self.enemy, self.player
-        if enemy is None or player is None:
+        return self.has_line_of_sight(self.player)
+
+    def has_line_of_sight(self, target) -> bool:
+        enemy = self.enemy
+        if enemy is None or target is None:
             return False
 
         start = pygame.Vector2(enemy.rect.center)
-        end = pygame.Vector2(player.rect.center)
+        end = pygame.Vector2(target.rect.center)
 
         s = (int(start.x), int(start.y))
         e = (int(end.x), int(end.y))

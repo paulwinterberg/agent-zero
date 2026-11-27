@@ -4,6 +4,9 @@ from world.interactibles.door import Door
 class ContainerDoor(Door):
     """Container doors become invisible while open, but can be closed again."""
 
+    def _sync_collision_state(self):
+        self._sync_container_collision_state()
+
     def on_interact(self, held_tool=None):
         if not super().on_interact(held_tool):
             return False

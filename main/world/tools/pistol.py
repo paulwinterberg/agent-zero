@@ -17,6 +17,7 @@ class Bullet:
         damage,
         is_enemy=False,
         speed=settings.PISTOL_BULLET_SPEED,
+        target_enemies_only=False,
     ):
         self.sprite = pygame.sprite.Sprite()
         texture = load_tool_texture("bullet", size=(8, 8))
@@ -44,6 +45,7 @@ class Bullet:
         self.damage = damage
         self.remaining_time = 2.0
         self.is_enemy = is_enemy
+        self.target_enemies_only = target_enemies_only
 
     @staticmethod
     def _swept_hit(start, end, target_start, target_end, target_size, bullet_size):
@@ -96,7 +98,13 @@ class Bullet:
             )
 
             for enemy, previous_hitbox, enemy_movement in enemy_sweeps:
-                if not isinstance(enemy, Player) and self.is_enemy:
+                if self.is_enemy and not (
+                    isinstance(enemy, Player) or getattr(enemy, "allied", False)
+                ):
+                    continue
+                if self.target_enemies_only and (
+                    isinstance(enemy, Player) or getattr(enemy, "allied", False)
+                ):
                     continue
                 if getattr(enemy, "health", 1) <= 0:
                     continue
@@ -174,7 +182,7 @@ class Pistol(Tools):
         
         self.sound = audio.load_sfx("pistol_shot.mp3")
 
-    def fire(self, position, target, tilemap):
+    def fire(self, position, target, tilemap, target_enemies_only=False):
         self.sound.play()
         return Bullet(
             position,
@@ -183,4 +191,5 @@ class Pistol(Tools):
             self.damage,
             is_enemy=self.is_enemy,
             speed=self.projectile_speed,
+            target_enemies_only=target_enemies_only,
         )

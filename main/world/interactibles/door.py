@@ -66,6 +66,20 @@ class Door(Interactible):
         if self.state == "open":
             self.tilemap.collision_rects = [
                 rect for rect in self.tilemap.collision_rects
+                if all(rect is not door_rect for door_rect in self.collision_rects)
+            ]
+        else:
+            for rect in self.collision_rects:
+                if all(rect is not existing for existing in self.tilemap.collision_rects):
+                    self.tilemap.collision_rects.append(rect)
+
+    def _sync_container_collision_state(self):
+        if not self.tilemap or not self.collision_rects:
+            return
+
+        if self.state == "open":
+            self.tilemap.collision_rects = [
+                rect for rect in self.tilemap.collision_rects
                 if rect not in self.collision_rects
                 and not (
                     self.upper_collision

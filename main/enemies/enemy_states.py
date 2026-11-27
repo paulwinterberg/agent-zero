@@ -30,15 +30,14 @@ class PatrolState(EntityState):
 class ChaseState(EntityState):
     def enter(self, enemy):
         enemy.player_lost_timer = 0
-        
         self.last_fire_time = -10000
         self.accumulated = 0
-        
-        self.last_known_plr_position = None
+        self.target = None
+        self.last_known_target_position = None
         self.path = []
         self.path_index = 0
         self.repath_timer = 0
-        self.planned_player_position = None
+        self.planned_target_position = None
 
     def update(self, enemy: "Enemy", dt):
         self.accumulated += dt
@@ -46,18 +45,25 @@ class ChaseState(EntityState):
         if enemy.is_stunned():
             return
 
-        player = globs.get("player")
-        if player is None:
-            return
-
-        if enemy.perception.has_line_of_sight_to_player():
+        targets = enemy.perception.visible_targets()
+        if targets:
+            target = min(
+                targets,
+                key=lambda candidate: pygame.Vector2(enemy.rect.center).distance_squared_to(
+                    candidate.rect.center
+                ),
+            )
             enemy.player_lost_timer = 0
-            self.last_known_plr_position = pygame.Vector2(player.pos)
-            
-            if self.accumulated - self.last_fire_time > enemy.fire_cooldown and enemy.tool.can_fire:
-                enemy.fire_tool()
+            self.target = target
+            self.last_known_target_position = pygame.Vector2(target.pos)
+
+            if (
+                enemy.tool is not None
+                and self.accumulated - self.last_fire_time > enemy.fire_cooldown
+                and enemy.tool.can_fire
+            ):
+                enemy.fire_tool(target)
                 self.last_fire_time = self.accumulated
-            
         else:
             enemy.player_lost_timer += dt
 
@@ -65,22 +71,24 @@ class ChaseState(EntityState):
                 enemy.change_state(PatrolState() if enemy.path else IdleState())
                 return
 
-        if self.last_known_plr_position is None:
+        if self.last_known_target_position is None:
             return
 
         self.repath_timer -= dt
-        player_moved = (
-            self.planned_player_position is None
-            or self.planned_player_position.distance_squared_to(self.last_known_plr_position) >= 16 ** 2
+        target_moved = (
+            self.planned_target_position is None
+            or self.planned_target_position.distance_squared_to(
+                self.last_known_target_position
+            ) >= 16 ** 2
         )
-        if self.repath_timer <= 0 or player_moved:
+        if self.repath_timer <= 0 or target_moved:
             self.path = enemy.perception.tilemap.find_path(
                 enemy.pos,
-                self.last_known_plr_position,
+                self.last_known_target_position,
                 enemy.hitbox.size,
             )
             self.path_index = 0
-            self.planned_player_position = self.last_known_plr_position.copy()
+            self.planned_target_position = self.last_known_target_position.copy()
             self.repath_timer = 0.35
 
         if self.path and self.path_index < len(self.path):

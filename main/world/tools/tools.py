@@ -101,6 +101,10 @@ class Tools:
         self.equipped = False
         self.state = "ready"
         self.is_enemy = False
+        if self.stackable:
+            count = getattr(self, "anzahl", getattr(self, "amount", 1))
+            self.anzahl = count
+            self.amount = count
         if self.held_sprite:
             self.held_sprite.kill()
             self.held_sprite = None
@@ -357,25 +361,50 @@ class MissionToolManager:
                 ),
                 None,
             )
+            count = getattr(tool, "anzahl", getattr(tool, "amount", 1))
+            tool.anzahl = count
+            tool.amount = count
             if stack:
                 room = stack.max_anzahl - stack.anzahl
-                count = getattr(tool, "anzahl", tool.amount)
                 added = min(room, count)
-                if added <= 0 or not tool.on_interact():
+                if added <= 0:
                     return False
                 stack.anzahl += added
                 stack.amount += added
+                count -= added
+                tool.anzahl = count
+                tool.amount = count
+                if count <= 0:
+                    tool.collected = True
+                    tool.equipped = False
+                    tool.state = "collected"
+                    if tool.held_sprite:
+                        tool.held_sprite.kill()
+                        tool.held_sprite = None
+                    tool.sprite.kill()
                 return True
         if len(self.inventory) >= self.max_inventory_slots:
             return False
 
-        if tool.on_interact():
+        if tool.stackable:
+            count = getattr(tool, "anzahl", getattr(tool, "amount", 1))
+            count = min(count, tool.max_anzahl)
+            tool.anzahl = count
+            tool.amount = count
+            if not tool.on_interact():
+                return False
+        elif tool.on_interact():
             slot = len(self.inventory)
             self.inventory.append(tool)
-
             self.set_active_slot(slot, player)
             return True
-        return False
+        else:
+            return False
+
+        slot = len(self.inventory)
+        self.inventory.append(tool)
+        self.set_active_slot(slot, player)
+        return True
 
     def collect_refill(self, refill):
         """Nimmt ein Munitions- oder Energy-Pickup auf."""

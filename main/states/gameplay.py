@@ -129,6 +129,17 @@ class Gameplay(GameState):
         self.interaction_feedback_font = pygame.font.Font(
             "assets/fonts/PixelifySans-Medium.ttf", 22
         )
+        self.dialogue_font = pygame.font.SysFont("serif", 25, italic=True)
+        self.dialogue_speaker_font = pygame.font.SysFont("serif", 18, bold=True)
+        self.dialogue_lines = self.level_meta.DIALOGUE
+        self.dialogue_index = 0
+        self.dialogue_active = bool(self.dialogue_lines)
+        self.dialogue_phase = 1 if self.dialogue_active else None
+        self.observed_boss_phase = (
+            self.enemy_manager.boss.phase
+            if self.enemy_manager.boss is not None
+            else None
+        )
         self._update_boss_hud()
 
     def exit(self):
@@ -141,6 +152,10 @@ class Gameplay(GameState):
             self.boss_health_label.kill()
     
     def update(self, dt, events):
+        if self.dialogue_active:
+            self._update_dialogue(events)
+            return
+
         if self.player.dead:
             if not self.death_screen_active:
                 self.death_screen_active = True
@@ -212,6 +227,8 @@ class Gameplay(GameState):
         self.health_bar.set_current_progress(self.player.get_health_percent() * 100.0)
         
         self.tool_manager.update(dt, self.player)
+        if self._check_boss_phase_dialogue():
+            return
         if self.level_name == "antarctica" and any(
             scientist.tased for scientist in self.enemy_manager.characters
         ):
@@ -252,7 +269,7 @@ class Gameplay(GameState):
         ):
             return
 
-        if boss.dead:
+        if boss.dead or getattr(boss, "allied", False):
             self.boss_health_bar.hide()
             self.boss_health_label.hide()
             return
@@ -355,6 +372,112 @@ class Gameplay(GameState):
             self._draw_hint(screen)
         elif self._is_hint_nearby() and not self.tutorial_active:
             self._draw_hint_prompt(screen)
+        if self.dialogue_active:
+            self._draw_dialogue(screen)
+
+    def _update_dialogue(self, events):
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key in (
+                pygame.K_SPACE,
+                pygame.K_RETURN,
+                pygame.K_KP_ENTER,
+            ):
+                if self.dialogue_index + 1 < len(self.dialogue_lines):
+                    self.dialogue_index += 1
+                else:
+                    self.dialogue_active = False
+                    completed_phase = self.dialogue_phase
+                    self.dialogue_phase = None
+                    if completed_phase == 4:
+                        self.enemy_manager.respawn_map_enemies()
+                return
+
+    def _check_boss_phase_dialogue(self):
+        boss = self.enemy_manager.boss
+        if boss is None or boss.phase == self.observed_boss_phase:
+            return False
+
+        self.observed_boss_phase = boss.phase
+        dialogue = self.level_meta.PHASE_DIALOGUES.get(boss.phase, ())
+        if not dialogue:
+            return False
+
+        self.dialogue_lines = dialogue
+        self.dialogue_index = 0
+        self.dialogue_active = True
+        self.dialogue_phase = boss.phase
+        self._update_boss_hud()
+        return True
+
+    def _draw_dialogue(self, screen):
+        speaker, message = self.dialogue_lines[self.dialogue_index]
+        panel_height = min(190, max(130, screen.get_height() // 3))
+        panel_top = screen.get_height() - panel_height
+        panel = pygame.Surface((screen.get_width(), panel_height), pygame.SRCALPHA)
+        panel.fill((5, 7, 11, 225))
+        screen.blit(panel, (0, panel_top))
+
+        portrait = None
+        if speaker == "AGENT X" and self.enemy_manager.boss is not None:
+            portrait = self.enemy_manager.boss.image
+        portrait_width = 0
+        if portrait is not None:
+            portrait_height = panel_height + 36
+            portrait_width = round(
+                portrait.get_width() * portrait_height / portrait.get_height()
+            )
+            portrait = pygame.transform.scale(
+                portrait, (portrait_width, portrait_height)
+            )
+            screen.blit(
+                portrait,
+                portrait.get_rect(bottomright=(screen.get_width() - 24, screen.get_height())),
+            )
+
+        left = 48
+        right = screen.get_width() - 48 - portrait_width
+        speaker_text = self.dialogue_speaker_font.render(
+            speaker, True, (190, 195, 205)
+        )
+        screen.blit(speaker_text, (left, panel_top + 15))
+
+        max_text_width = max(1, right - left)
+        lines = []
+        current_line = ""
+        for word in message.split():
+            candidate = f"{current_line} {word}".strip()
+            if (
+                current_line
+                and self.dialogue_font.size(candidate)[0] > max_text_width
+            ):
+                lines.append(current_line)
+                current_line = word
+            else:
+                current_line = candidate
+        if current_line:
+            lines.append(current_line)
+
+        line_height = self.dialogue_font.get_linesize()
+        for index, line in enumerate(lines):
+            rendered_line = self.dialogue_font.render(
+                line, True, (248, 246, 244)
+            )
+            screen.blit(rendered_line, (left, panel_top + 43 + index * line_height))
+
+        rule_y = screen.get_height() - 26
+        pygame.draw.line(screen, (205, 205, 205), (42, rule_y), (screen.get_width() - 42, rule_y), 2)
+        for x in (42, screen.get_width() - 42):
+            pygame.draw.polygon(
+                screen,
+                (220, 220, 220),
+                ((x, rule_y - 8), (x + 8, rule_y), (x, rule_y + 8), (x - 8, rule_y)),
+            )
+        center = screen.get_width() // 2
+        pygame.draw.polygon(
+            screen,
+            (220, 220, 220),
+            ((center - 8, rule_y - 4), (center + 8, rule_y - 4), (center, rule_y + 6)),
+        )
 
     def _update_pause_menu(self, events):
         for event in events:

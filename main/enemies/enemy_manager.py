@@ -2,6 +2,7 @@ from world.tilemap import TileMap
 from entities.enemy import Enemy
 from entities.boss import BossEnemy
 from entities.scientist import Scientist
+from globals import globs
 
 class EnemyManager:
     def __init__(self, tilemap: TileMap, group=None, tool_manager=None):
@@ -41,19 +42,67 @@ class EnemyManager:
                 )
             self._add_enemy(enemy)
 
+        self._assign_enemy_groups()
+        if self.boss is not None:
+            self.boss.enemy_manager = self
+        globs["agent_x"] = self.boss
+
+    def _assign_enemy_groups(self):
         groups = {}
         for enemy in self.enemies:
-            groupId = enemy.groupId
-            if not groupId: continue
+            group_id = enemy.groupId
+            if not group_id:
+                continue
 
-            if groupId in groups:
-                groups[groupId].append(enemy)
-            else:
-                groups[groupId] = [enemy]
+            groups.setdefault(group_id, []).append(enemy)
 
         for group in groups.values():
             for enemy in group:
                 enemy.set_group(group)
+
+    def respawn_map_enemies(self):
+        for enemy in tuple(self.enemies):
+            if enemy is self.boss:
+                continue
+            self._remove_enemy(enemy)
+
+        self.enemies = [self.boss] if self.boss is not None else []
+        for spawn in self.enemy_spawns:
+            if spawn["type"] != "EnemySpawn":
+                continue
+            enemy = Enemy(
+                (spawn["rect"].left, spawn["rect"].top),
+                self.get_enemy_path(spawn["name"]),
+                tool_manager=self.tool_manager,
+                groupId=spawn["properties"].get("EnemyGroup"),
+            )
+            self._add_enemy(enemy)
+
+        map_enemies = [enemy for enemy in self.enemies if enemy is not self.boss]
+        for index, enemy in enumerate(map_enemies):
+            offset = 36 if index % 2 == 0 else -36
+            extra_enemy = Enemy(
+                (enemy.rect.centerx + offset, enemy.rect.centery),
+                tool_manager=self.tool_manager,
+            )
+            self._add_enemy(extra_enemy)
+
+        self._assign_enemy_groups()
+
+    def _remove_enemy(self, enemy):
+        enemy.kill()
+        tool = enemy.tool
+        if tool is not None and tool not in self.tool_manager.inventory:
+            if tool.held_sprite is not None:
+                tool.held_sprite.kill()
+            tool.sprite.kill()
+            if tool in self.tool_manager.tools:
+                self.tool_manager.tools.remove(tool)
+
+        for sprite in self.tool_manager.sprite_group.sprites():
+            projectile = getattr(sprite, "projectile", None)
+            if getattr(projectile, "owner", None) is enemy:
+                sprite.kill()
 
     def _add_enemy(self, enemy):
         self.enemies.append(enemy)

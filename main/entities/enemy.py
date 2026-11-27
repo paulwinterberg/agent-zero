@@ -60,12 +60,17 @@ class Enemy(pygame.sprite.Sprite):
             layer=self.tool_manager.tilemap.y_sort_layer(self.rect.bottom),
         )
         
-    def fire_tool(self):
-        if not self.tool.can_fire: return
+    def fire_tool(self, target=None):
+        if self.tool is None or not self.tool.can_fire:
+            return
+
+        target = target or globs.get("player")
+        if target is None:
+            return
         
         projectile = self.tool.fire(
             self.rect.center,
-            globs.get("player").hitbox.center,
+            target.rect.center,
             globs.get("tilemap"),
         )
         self.tool_manager.add_projectile(projectile, self)
@@ -154,12 +159,16 @@ class Enemy(pygame.sprite.Sprite):
             self.stun_time = max(0, self.stun_time - dt)
 
         self.image = self.base_image.copy()
-        if self.see_player_timer > settings.ENEMY_PLAYER_SPOT_TIME and self.state.__class__ != ChaseState:
+        visible_targets = self.perception.visible_targets()
+        if (
+            visible_targets
+            and self.see_player_timer > settings.ENEMY_PLAYER_SPOT_TIME
+            and self.state.__class__ != ChaseState
+        ):
             for enemy in self.group:
                 enemy.change_state(ChaseState())
 
-        sees_player = self.perception.can_see_player()
-        if sees_player and not self.is_stunned():
+        if visible_targets and not self.is_stunned():
             self._draw_exclamation_mark()
             self.see_player_timer += dt
         else:
@@ -176,10 +185,12 @@ class Enemy(pygame.sprite.Sprite):
         ):
             return
 
-        player = self.perception.player
+        target = getattr(self.state, "target", None)
+        if target is None:
+            target = self.perception.player
         direction = pygame.Vector2(1, 0)
-        if player is not None:
-            direction = pygame.Vector2(player.rect.center) - self.rect.center
+        if target is not None:
+            direction = pygame.Vector2(target.rect.center) - self.rect.center
             if direction.length_squared() > 0:
                 direction = direction.normalize()
             else:

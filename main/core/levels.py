@@ -7,6 +7,7 @@ class Level:
     AMBIENCE = None
 
     MESSAGES = {}
+    DIALOGUE = ()
 
 class TutorialIslandLevel(Level):
     COMPLETION_TUTORIAL_NAME = "TutorialEnd"
@@ -76,6 +77,89 @@ class AntarcticaLevel(Level):
 
 class BossBattleLevel(Level):
     MESSAGES = {}
+    PHASE_DIALOGUES = {
+        2: (
+            ("AGENT X", "I need to know if I can trust you."),
+            ("AGENT 0", "You called me here. Start talking."),
+            (
+                "AGENT X",
+                "Not so fast. You've been working for MI6 for a long time. I need to see what you're capable of.",
+            ),
+            ("AGENT 0", "You want to continue the fight?"),
+            ("AGENT X", "Consider it a test."),
+        ),
+        3: (
+            ("AGENT 0", "Enough! What is this all about?"),
+            ("AGENT X", "Your mission in Antarctica. Dr. Edward Frost."),
+            (
+                "AGENT 0",
+                "I was ordered to capture him and destroy his research. That's all I know.",
+            ),
+            ("AGENT X", "That's exactly what they wanted you to believe."),
+            ("AGENT 0", "What are you talking about?"),
+            (
+                "AGENT X",
+                "Frost wasn't developing a weapon. His discovery, the Magic Powder, could have changed medicine forever. It had the potential to help cure diseases and save thousands of lives.",
+            ),
+            ("AGENT 0", "Then why did MI6 want it destroyed?"),
+            (
+                "AGENT X",
+                "Because they couldn't control it. Their partners in the pharmaceutical industry stood to lose billions if a treatment like this became widely available.",
+            ),
+            ("AGENT 0", "So they made me destroy it?"),
+            (
+                "AGENT X",
+                "They used you. They wanted Frost captured, his research erased, and the truth buried.",
+            ),
+            ("AGENT 0", "I don't believe you. Why should I trust a traitor?"),
+            ("AGENT X", "Because I'm the only one telling you the truth."),
+            ("AGENT 0", "Then prove it!"),
+            ("AGENT X", "I was hoping you'd say that."),
+        ),
+        4: (
+            (
+                "MI6 RADIO",
+                "Attention. Agent X has been located. All units, move in. Eliminate both targets.",
+            ),
+            ("AGENT 0", "Both targets? They're coming for me too?"),
+            ("AGENT X", "Now do you believe me?"),
+            ("AGENT 0", "I guess we have a common enemy."),
+            (
+                "AGENT X",
+                "For now, we fight together. We can settle things between us later.",
+            ),
+            ("AGENT 0", "Deal."),
+            ("AGENT X", "This contains the evidence. Everything MI6 tried to hide."),
+            ("AGENT 0", "Then let's make sure they don't get it."),
+            ("AGENT X", "Stay close. There are more of them coming."),
+        ),
+    }
+    DIALOGUE = (
+        ("AGENT 0", "What's this?"),
+        (
+            "MI6 RADIO",
+            "Attention. All available agents. We have reason to believe that Agent X is somewhere in the area. Keep your eyes open. Do not approach without authorization.",
+        ),
+        ("AGENT 0", "Agent X?"),
+        ("AGENT X", "I see you found my equipment."),
+        ("AGENT 0", "Who is this?"),
+        ("AGENT X", "Someone who has been trying to warn you."),
+        ("AGENT 0", "Where are you?"),
+        ("AGENT X", "Look around. I'm closer than you think."),
+        (
+            "AGENT X",
+            "Before we talk, there's something you need to remember. Your mission in Antarctica. Dr. Edward Frost.",
+        ),
+        ("AGENT 0", "What about him?"),
+        (
+            "AGENT X",
+            "You were told he was dangerous. But did you ever ask yourself why MI6 wanted him captured?",
+        ),
+        (
+            "AGENT X",
+            "We need to talk. But first, I need to know if I can trust you.",
+        ),
+    )
 
 LEVELS = {
     "tutorial": TutorialIslandLevel,
