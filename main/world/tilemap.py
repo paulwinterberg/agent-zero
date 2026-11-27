@@ -27,6 +27,12 @@ class TileMap:
 
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
         self.collision_rects = self._load_collisions()
+        self._path_collision_signature = None
+        self._path_collision_buckets = {}
+        self._path_collision_bucket_size = max(
+            1, min(tmx_data.tilewidth, tmx_data.tileheight) // 2
+        )
+        self._path_grid_cache = {}
 
         map_data = pyscroll.data.TiledMapData(tmx_data)
         display = pygame.display.get_surface()
@@ -162,14 +168,58 @@ class TileMap:
         return None
 
 
+    def _refresh_path_collision_cache(self):
+        signature = tuple(
+            (rect.left, rect.top, rect.width, rect.height)
+            for rect in self.collision_rects
+        )
+        if signature == self._path_collision_signature:
+            return
+
+        bucket_size = self._path_collision_bucket_size
+        buckets = {}
+        for index, rect in enumerate(self.collision_rects):
+            if rect.width <= 0 or rect.height <= 0:
+                continue
+            min_x = rect.left // bucket_size
+            max_x = (rect.right - 1) // bucket_size
+            min_y = rect.top // bucket_size
+            max_y = (rect.bottom - 1) // bucket_size
+            for bucket_y in range(min_y, max_y + 1):
+                for bucket_x in range(min_x, max_x + 1):
+                    buckets.setdefault((bucket_x, bucket_y), []).append(index)
+
+        self._path_collision_signature = signature
+        self._path_collision_buckets = buckets
+        self._path_grid_cache.clear()
+
+    def _path_collision_candidates(self, bounds):
+        bucket_size = self._path_collision_bucket_size
+        min_x = bounds.left // bucket_size
+        max_x = (bounds.right - 1) // bucket_size
+        min_y = bounds.top // bucket_size
+        max_y = (bounds.bottom - 1) // bucket_size
+        indexes = set()
+        for bucket_y in range(min_y, max_y + 1):
+            for bucket_x in range(min_x, max_x + 1):
+                indexes.update(
+                    self._path_collision_buckets.get((bucket_x, bucket_y), ())
+                )
+        return [
+            self.collision_rects[index]
+            for index in indexes
+            if self.collision_rects[index].colliderect(bounds)
+        ]
+
     def find_path(self, start, goal, hitbox_size):
-        """Find a collision-free route between hitbox midbottom positions."""
+        """Find a collision-free route toward the goal with bounded search work."""
         start = pygame.Vector2(start)
         goal = pygame.Vector2(goal)
         hitbox_width, hitbox_height = hitbox_size
         if hitbox_width <= 0 or hitbox_height <= 0:
             return []
 
+        self._refresh_path_collision_cache()
         cell_size = max(1, min(self.tmx_data.tilewidth, self.tmx_data.tileheight) // 2)
         first_x = hitbox_width // 2
         last_x = self.width - (hitbox_width - first_x)
@@ -177,32 +227,37 @@ class TileMap:
         if first_x > last_x or first_y > self.height:
             return []
 
-        columns = (last_x - first_x) // cell_size + 1
-        rows = (self.height - first_y) // cell_size + 1
-        points = [
-            (first_x + column * cell_size, first_y + row * cell_size)
-            for row in range(rows)
-            for column in range(columns)
-        ]
-        blocked = [False] * len(points)
+        grid = self._path_grid_cache.get((hitbox_width, hitbox_height))
+        if grid is None:
+            columns = (last_x - first_x) // cell_size + 1
+            rows = (self.height - first_y) // cell_size + 1
+            points = [
+                (first_x + column * cell_size, first_y + row * cell_size)
+                for row in range(rows)
+                for column in range(columns)
+            ]
+            blocked = [False] * len(points)
 
-        # Expand each collider into the equivalent forbidden area for the
-        # enemy's midbottom anchor, then mark only grid cells it overlaps.
-        for collider in self.collision_rects:
-            left = collider.left - (hitbox_width - hitbox_width // 2) + 1
-            right = collider.right + hitbox_width // 2
-            top = collider.top + 1
-            bottom = collider.bottom + hitbox_height
-            min_column = max(0, math.ceil((left - first_x) / cell_size))
-            max_column = min(columns, math.ceil((right - first_x) / cell_size))
-            min_row = max(0, math.ceil((top - first_y) / cell_size))
-            max_row = min(rows, math.ceil((bottom - first_y) / cell_size))
-            for row in range(min_row, max_row):
-                y = first_y + row * cell_size
-                for column in range(min_column, max_column):
-                    x = first_x + column * cell_size
-                    if left <= x < right and top <= y < bottom:
-                        blocked[row * columns + column] = True
+            # Expand each collider into forbidden anchor positions.
+            for collider in self.collision_rects:
+                left = collider.left - (hitbox_width - hitbox_width // 2) + 1
+                right = collider.right + hitbox_width // 2
+                top = collider.top + 1
+                bottom = collider.bottom + hitbox_height
+                min_column = max(0, math.ceil((left - first_x) / cell_size))
+                max_column = min(columns, math.ceil((right - first_x) / cell_size))
+                min_row = max(0, math.ceil((top - first_y) / cell_size))
+                max_row = min(rows, math.ceil((bottom - first_y) / cell_size))
+                for row in range(min_row, max_row):
+                    y = first_y + row * cell_size
+                    for column in range(min_column, max_column):
+                        x = first_x + column * cell_size
+                        if left <= x < right and top <= y < bottom:
+                            blocked[row * columns + column] = True
+
+            grid = (columns, rows, points, blocked)
+            self._path_grid_cache[(hitbox_width, hitbox_height)] = grid
+        columns, rows, points, blocked = grid
 
         sample_spacing = max(1, cell_size // 4)
         probe = pygame.Rect(0, 0, hitbox_width, hitbox_height)
@@ -214,10 +269,7 @@ class TileMap:
             start_rect = probe.copy()
             probe.midbottom = (round(end.x), round(end.y))
             swept_rect = start_rect.union(probe)
-            nearby_colliders = [
-                rect for rect in self.collision_rects
-                if rect.colliderect(swept_rect)
-            ]
+            nearby_colliders = self._path_collision_candidates(swept_rect)
             for index in range(steps + 1):
                 point = begin.lerp(end, index / steps)
                 probe.midbottom = (round(point.x), round(point.y))
@@ -264,10 +316,14 @@ class TileMap:
         reached_node = None
         closest_node = None
         closest_distance = math.inf
-        while open_nodes:
+        expanded_nodes = 0
+        # Return the closest partial route when the per-call search budget is used up.
+        max_expansions = 1200
+        while open_nodes and expanded_nodes < max_expansions:
             _, current_cost, current = heapq.heappop(open_nodes)
             if current_cost != costs.get(current):
                 continue
+            expanded_nodes += 1
             current_point = point_for(current)
             distance_to_goal = current_point.distance_to(goal)
             if distance_to_goal < closest_distance:
@@ -290,14 +346,13 @@ class TileMap:
                     next_index = next_row * columns + next_column
                     if blocked[next_index]:
                         continue
+                    # Do not let diagonal steps cut across blocked corners.
                     if row_offset and column_offset:
                         if (blocked[row * columns + next_column]
                                 or blocked[next_row * columns + column]):
                             continue
 
                     next_point = point_for(next_node)
-                    if not segment_is_clear(current_point, next_point):
-                        continue
                     step_cost = cell_size * (math.sqrt(2) if row_offset and column_offset else 1)
                     new_cost = current_cost + step_cost
                     if new_cost >= costs.get(next_node, math.inf):

@@ -71,9 +71,16 @@ class ChaseState(EntityState):
         self.repath_timer -= dt
         player_moved = (
             self.planned_player_position is None
-            or self.planned_player_position.distance_squared_to(self.last_known_plr_position) >= 16 ** 2
+            or self.planned_player_position.distance_squared_to(self.last_known_plr_position) >= 32 ** 2
         )
-        if self.repath_timer <= 0 or player_moved:
+        path_finished_early = (
+            self.path_index >= len(self.path)
+            and self.planned_player_position is not None
+            and enemy.pos.distance_squared_to(self.planned_player_position) >= 32 ** 2
+        )
+        if self.repath_timer <= 0 and (
+            player_moved or not self.path or path_finished_early
+        ):
             self.path = enemy.perception.tilemap.find_path(
                 enemy.pos,
                 self.last_known_plr_position,
