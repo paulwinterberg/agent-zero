@@ -1422,7 +1422,7 @@
    </properties>
    <point/>
   </object>
-  <object id="123" name="PlayerSpawn" x="1046.84" y="3431.66">
+  <object id="123" name="PlayerSpawn" x="352.173" y="3825.66">
    <point/>
   </object>
   <object id="199" name="Enemy12" type="EnemySpawn" x="883.667" y="2349.33">
