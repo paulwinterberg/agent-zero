@@ -355,6 +355,7 @@ class MissionToolManager:
             return False
 
         if tool.on_interact():
+            tool.is_enemy = False
             slot = len(self.inventory)
             self.inventory.append(tool)
 

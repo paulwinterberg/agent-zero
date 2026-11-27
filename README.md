@@ -10,9 +10,9 @@ https://www.pixilart.com/draw #Assets erstellen
 
 
 # To merge main branch into current branch:
-git checkout <branchname> <br>
-git fetch origin <br>
-git merge origin/main <br>
+Run `python tools/merge_main.py` to merge `origin/main` into the current branch.
+Optionally pass a branch name to check it out first: `python tools/merge_main.py <branchname>`.
+On Linux, use `python3` if `python` does not point to Python 3.
 
 # To run the code
 open new codespace in browser: <br>
