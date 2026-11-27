@@ -42,6 +42,8 @@ class BossEnemy(Enemy):
         if self.phase < len(self.PHASES):
             self._set_phase(self.phase + 1)
             self.phase_spawn_elapsed = 0.0
+            if self.spawn_minions is not None:
+                self.spawn_minions(self)
         else:
             self.die()
 
