@@ -27,6 +27,7 @@ class TileMap:
 
         self.objects, self.tall_objects, self._object_groups = self._load_y_sorted_objects()
         self.collision_rects = self._load_collisions()
+        self._out_of_bounds_groups = self._load_out_of_bounds_groups()
         self._path_collision_signature = None
         self._path_collision_buckets = {}
         self._path_collision_bucket_size = max(
@@ -93,6 +94,51 @@ class TileMap:
             if obj.name == object_name:
                 return obj
         return None
+
+    def _load_out_of_bounds_groups(self):
+        layer = self._get_object_layer("Killboxes")
+        if layer is None:
+            return []
+
+        named_objects = {}
+        for obj in layer:
+            if obj.name:
+                named_objects.setdefault(obj.name, []).append(obj)
+
+        groups = []
+        for name, members in named_objects.items():
+            boxes = [
+                pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                for obj in members
+                if obj.type == "OOBBox"
+            ]
+            back_parts = [
+                obj
+                for obj in members
+                if obj.type == "TPBackPart"
+            ]
+            if len(boxes) == 0 or len(back_parts) != 1:
+                raise ValueError(
+                    f"Killboxes group {name!r} must contain OOBBox objects "
+                    "and exactly one TPBackPart."
+                )
+
+            back_part = back_parts[0]
+            destination = (
+                (back_part.x + back_part.width / 2, back_part.y + back_part.height / 2)
+                if back_part.width > 0 and back_part.height > 0
+                else (back_part.x, back_part.y)
+            )
+            groups.append((boxes, destination))
+
+        return groups
+
+    def teleport_player_from_out_of_bounds(self, player):
+        for boxes, destination in self._out_of_bounds_groups:
+            if any(box.contains(player.hitbox) for box in boxes):
+                player.goto(destination)
+                return True
+        return False
 
     def get_tool_spawns(self):
         """Return named tool spawn points from the Toolspawn object layer."""
@@ -166,6 +212,24 @@ class TileMap:
                 return obj
 
         return None
+
+    def show_object_group(self, object_name):
+        """Make every object with the given name in the objects layer visible."""
+        group = self._object_groups.get(object_name)
+        if group is None:
+            raise ValueError(f"Object group {object_name!r} was not found")
+
+        for sprite in group["sprites"]:
+            sprite.set_visible(True)
+            
+    def hide_object_group(self, object_name):
+            """Make every object with the given name in the objects layer visible."""
+            group = self._object_groups.get(object_name)
+            if group is None:
+                raise ValueError(f"Object group {object_name!r} was not found")
+    
+            for sprite in group["sprites"]:
+                sprite.set_visible(False)
 
 
     def _refresh_path_collision_cache(self):
@@ -606,7 +670,9 @@ class TileMap:
             group_sprites = []
             for obj, image in members:
                 sprite_image = image.copy() if is_tall else image
-                group_sprites.append(Object(sprite_image, (obj.x, obj.y), sort_layer))
+                group_sprites.append(
+                    Object(sprite_image, (obj.x, obj.y), sort_layer, obj.visible)
+                )
 
             flat_sprites.extend(group_sprites)
 
@@ -648,11 +714,25 @@ class TileMap:
 
 
 class Object(pygame.sprite.Sprite):
-    def __init__(self, image, pos, layer=0):
+    def __init__(self, image, pos, layer=0, visible=True):
         super().__init__()
-        self.image = image
+        self._base_image = image
+        self._visible = visible
+        self._alpha = 255
+        self.image = image if visible else image.copy()
+        if not visible:
+            self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=pos)
         self._layer = layer
+
+    def set_visible(self, visible):
+        self._visible = visible
+        self.image = self._base_image if visible else self._base_image.copy()
+        self.set_alpha(self._alpha)
+
+    def set_alpha(self, alpha):
+        self._alpha = alpha
+        self.image.set_alpha(alpha if self._visible else 0)
 
 
 class YSortedObject:
@@ -679,4 +759,4 @@ class YSortedObject:
             self.alpha = max(self.alpha - step, self.target_alpha)
 
         for sprite in self.sprites:
-            sprite.image.set_alpha(int(self.alpha))
+            sprite.set_alpha(int(self.alpha))

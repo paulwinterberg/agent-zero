@@ -28,6 +28,15 @@ class TutorialIslandLevel(Level):
         ),
        "5": (
            "Sometimes it's better to not be spotted at all. Press CONTROL while sprinting to slide past the enemies."
+        ),
+        "6": (
+            "Looks like there's no other way. You'll need to get through here..."
+        ),
+        "7": (
+            "The house ahead looks promising. The door is locked, though. I need to find a key."
+        ),
+        "8": (
+            "I'll need to find a way to contact someone to escape. Maybe I'll find a radio tower somewhere up ahead?"
         )
     }
 

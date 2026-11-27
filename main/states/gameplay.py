@@ -155,6 +155,8 @@ class Gameplay(GameState):
         self.tool_manager.update(dt, self.player)
         self._update_ammo_label()
         
+        self.tilemap.teleport_player_from_out_of_bounds(self.player)
+        
         for event in events:
             self.tool_manager.handle_event(event, self.player)
             if (
