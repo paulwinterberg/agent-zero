@@ -50,6 +50,18 @@ def play_music(name: str, loops: int = 0, fade_ms: int = 0, volume: float = 1.0)
 
 def stop_music(fade_ms: int = 0):
     pygame.mixer.music.fadeout(fade_ms)
+    
+def stop_all(fade_ms: int = 0):
+    """Stop all currently playing audio (sound effects and music)."""
+    if not _mixer_ready:
+        return
+
+    if fade_ms > 0:
+        pygame.mixer.fadeout(fade_ms)        # fades out all sound channels
+        pygame.mixer.music.fadeout(fade_ms)  # fades out streamed music
+    else:
+        pygame.mixer.stop()                  # stops all sound channels immediately
+        pygame.mixer.music.stop()            # stops streamed music immediately
 
 def load_sfx(name: str):
     return load_sound(SFX_PATH + "/" + name)

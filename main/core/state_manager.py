@@ -15,8 +15,8 @@ def pop():
         state.exit()
 
 def replace(state):
-    if stack:
-        stack.pop()
+    if stack[-1]:
+        pop()
     stack.append(state)
 
 def update(dt, events):
