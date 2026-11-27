@@ -38,8 +38,9 @@ class Gameplay(GameState):
         self.level_meta = levels.LEVELS[level]
         
         #load ambience sound if existing
+        self.ambience_sound = None
         if self.level_meta.AMBIENCE:
-            audio.play_sfx(self.level_meta.AMBIENCE, loops=-1, fade_ms=1000)
+            self.ambience_sound = audio.play_sfx(self.level_meta.AMBIENCE, loops=-1, fade_ms=1000)
         
         self.tilemap.zoom_to(4)
         
@@ -93,6 +94,10 @@ class Gameplay(GameState):
         self.stamina_bar.kill()
         self.health_bar.kill()
         self.ammo_label.kill()
+        
+        if self.ambience_sound:
+            self.ambience_sound.stop()
+            self.ambience_sound = None
     
     def update(self, dt, events):
         if self.player.dead:
