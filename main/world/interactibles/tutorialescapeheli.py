@@ -13,4 +13,4 @@ class TutorialEscapeHeli(Interactible):
         data["completed_levels"]["tutorial"] = True
         game_data.save_game_data(data)
         
-        state_manager.push(ReceptionIntroVideo())
+        state_manager.replace(ReceptionIntroVideo())
