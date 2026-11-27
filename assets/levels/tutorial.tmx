@@ -1357,7 +1357,8 @@
   </object>
   <object id="18" name="Enemy1" type="EnemySpawn" x="765.833" y="3791.25">
    <properties>
-    <property name="CantMove" type="bool" value="true"/>
+    <property name="CantMove" type="bool" value="false"/>
+    <property name="EnemyGroup" value="MyGroup"/>
    </properties>
    <point/>
   </object>

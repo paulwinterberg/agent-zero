@@ -175,7 +175,7 @@
     "openFiles": [
     ],
     "project": "agent-zero.tiled-project",
-    "property.type": "bool",
+    "property.type": "string",
     "recentFiles": [
         "H:/GitHub/agent-zero/assets/levels/containership.tmx",
         "tilesets/containermap.tsx",
