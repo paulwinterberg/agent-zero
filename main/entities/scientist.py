@@ -32,6 +32,9 @@ class Scientist(pygame.sprite.Sprite):
         if self.health == 0:
             self.tased = True
 
+    def can_be_hit_by(self, projectile):
+        return getattr(projectile, "is_taser", False)
+
     def stun(self, duration):
         self.tased = True
 

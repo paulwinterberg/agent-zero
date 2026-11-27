@@ -40,6 +40,6 @@ F = Interact with a nearby door, container, or button
 Left mouse button = Fire or use the equipped tool
 Right mouse button = Use the equipped tool's secondary action, if available (Healing, Magic Powder)
 Shift = Sprint
-C = Slide while sprinting
+Strg = Slide while sprinting
 R = Reload your pistol if you have ammunition in your inventory
 Esc = Open the pause menu

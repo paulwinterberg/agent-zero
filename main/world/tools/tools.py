@@ -714,7 +714,15 @@ class MissionToolManager:
                 continue
             if getattr(projectile, "damage", None) is not None:
                 owner = getattr(projectile, "owner", None)
-                targets = [enemy for enemy in enemies if enemy is not owner]
+                targets = [
+                    enemy
+                    for enemy in enemies
+                    if enemy is not owner
+                    and (
+                        not callable(getattr(enemy, "can_be_hit_by", None))
+                        or enemy.can_be_hit_by(projectile)
+                    )
+                ]
                 active = projectile.update(dt, targets)
             else:
                 active = projectile.update(dt)

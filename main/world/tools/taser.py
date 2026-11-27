@@ -7,6 +7,8 @@ from world.tools.tools import Tools, load_tool_texture
 class TaserSpark:
     """Kurz sichtbarer blauer Blitz in Richtung des Mauszeigers."""
 
+    is_taser = True
+
     def __init__(self, position, target):
         self.sprite = pygame.sprite.Sprite()
         self.sprite.image = pygame.Surface((180, 180), pygame.SRCALPHA)
