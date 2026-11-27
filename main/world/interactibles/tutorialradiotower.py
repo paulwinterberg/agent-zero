@@ -6,7 +6,6 @@ class TutorialRadioTower(Interactible):
     
     def __init__(self):
         super().__init__()
-        self.can_interact = True
         
         self.send_sound = audio.load_sfx("radio_tower_send.mp3")
         self.send_sound.set_volume(0.2)
