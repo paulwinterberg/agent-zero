@@ -15,6 +15,9 @@ class TutorialRadioTower(Interactible):
         self.set_enabled(False)
         self.tilemap.show_object_group("RadioTowerSending")
         self.send_sound.play(loops=3)
+        
+        audio.play_music("on_her_majesties_secret_service.mp3", volume=0.4, fade_ms=100)
+        
         time.delay(self.send_sound.get_length() * 4, self._stop_sending_image)
         
     def _stop_sending_image(self):

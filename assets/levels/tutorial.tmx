@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="150" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="1178">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="150" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="1216">
  <tileset firstgid="1" name="Outdoors" tilewidth="32" tileheight="32" tilecount="484" columns="44">
   <image source="../../tiled/tilesets/ws_tileset_free.png" width="1408" height="352"/>
   <tile id="279">
@@ -693,13 +693,13 @@
   <object id="121" name="Door1" type="Interactable" gid="898" x="1248" y="2496" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="ContainerDoor"/>
-    <property name="Locked" type="bool" value="false"/>
+    <property name="Locked" type="bool" value="true"/>
    </properties>
   </object>
   <object id="122" name="Door1" type="Interactable" gid="878" x="1248" y="2464" width="32" height="32">
    <properties>
     <property name="InteractibleClass" value="Door"/>
-    <property name="Locked" type="bool" value="false"/>
+    <property name="Locked" type="bool" value="true"/>
    </properties>
   </object>
   <object id="131" name="Wall1" gid="585" x="1344" y="2464" width="32" height="32"/>
@@ -1057,13 +1057,6 @@
   <object id="322" name="RadioTowerSending" gid="1702" x="1952" y="1728" width="32" height="32" visible="0"/>
   <object id="325" name="RadioTowerSending" gid="1694" x="1952" y="1696" width="32" height="32" visible="0"/>
   <object id="326" name="RadioTowerSending" gid="1693" x="1920" y="1696" width="32" height="32" visible="0"/>
-  <object id="343" x="736" y="2176" width="32" height="32"/>
-  <object id="344" x="768" y="2144" width="32" height="32"/>
-  <object id="345" x="800" y="2112" width="32" height="32"/>
-  <object id="346" x="832" y="2080" width="32" height="32"/>
-  <object id="347" x="864" y="2112" width="128" height="32"/>
-  <object id="348" x="992" y="2080" width="32" height="32"/>
-  <object id="350" x="1408" y="1857.5" width="33" height="286"/>
   <object id="501" gid="1489" x="1926.67" y="1994.67" width="32" height="32"/>
   <object id="506" gid="1489" x="2024" y="1952" width="32" height="32"/>
   <object id="510" gid="1489" x="1980" y="1957.33" width="32" height="32"/>
@@ -1779,6 +1772,41 @@
   <object id="699" x="2112" y="1792" width="32" height="64"/>
   <object id="700" x="2144" y="1792" width="128" height="32"/>
   <object id="710" x="2744" y="2506" width="72" height="22.5"/>
+  <object id="1178" x="2208" y="1632" width="352" height="32"/>
+  <object id="1179" x="2560" y="1664" width="256" height="32"/>
+  <object id="1181" x="2816" y="1664" width="32" height="256"/>
+  <object id="1182" x="2848" y="1920" width="64" height="32"/>
+  <object id="1183" x="2880" y="1952" width="32" height="256"/>
+  <object id="1184" x="2912" y="2176" width="288" height="32"/>
+  <object id="1185" x="3072" y="2208" width="32" height="128"/>
+  <object id="1186" x="2272" y="1824" width="64" height="32"/>
+  <object id="1188" x="2304" y="1856" width="32" height="128"/>
+  <object id="1189" x="2336" y="1952" width="128" height="32"/>
+  <object id="1190" x="2464" y="1952" width="32" height="128"/>
+  <object id="1191" x="2496" y="2080" width="64" height="32"/>
+  <object id="1192" x="2560" y="2112" width="32" height="128"/>
+  <object id="1193" x="2528" y="2208" width="32" height="32"/>
+  <object id="1194" x="2496" y="2240" width="32" height="96"/>
+  <object id="1195" x="2496" y="2336" width="32" height="32"/>
+  <object id="1196" x="2528" y="2368" width="32" height="32"/>
+  <object id="1197" x="2560" y="2400" width="64" height="32"/>
+  <object id="1198" x="2624" y="2432" width="32" height="32"/>
+  <object id="1199" x="2624" y="2464" width="32" height="128"/>
+  <object id="1200" x="2656" y="2592" width="64" height="32"/>
+  <object id="1201" x="2720" y="2624" width="64" height="32"/>
+  <object id="1202" x="2784" y="2592" width="96" height="32"/>
+  <object id="1203" x="2880" y="2528" width="64" height="64"/>
+  <object id="1204" x="2944" y="2496" width="64" height="32"/>
+  <object id="1205" x="3008" y="2368" width="32" height="128"/>
+  <object id="1206" x="3040" y="2368" width="64" height="32"/>
+  <object id="1207" x="3104" y="2336" width="32" height="32"/>
+  <object id="1209" x="736" y="2176" width="32" height="32"/>
+  <object id="1210" x="768" y="2144" width="32" height="32"/>
+  <object id="1211" x="800" y="2112" width="32" height="32"/>
+  <object id="1212" x="832" y="2080" width="32" height="32"/>
+  <object id="1213" x="864" y="2112" width="128" height="32"/>
+  <object id="1214" x="992" y="2080" width="32" height="32"/>
+  <object id="1215" x="1408" y="1857.5" width="33" height="286"/>
  </objectgroup>
  <objectgroup id="16" name="Killboxes">
   <object id="87" name="1" type="OOBBox" x="1056" y="3264" width="32" height="64"/>
@@ -1895,7 +1923,7 @@
    </properties>
    <point/>
   </object>
-  <object id="123" name="PlayerSpawn" x="2258.17" y="1736.66">
+  <object id="123" name="PlayerSpawn" x="336.594" y="3827.99">
    <point/>
   </object>
   <object id="199" name="Enemy12" type="EnemySpawn" x="883.667" y="2349.33">
@@ -1917,6 +1945,9 @@
    <point/>
   </object>
   <object id="1176" name="Enemy17" type="EnemySpawn" x="2856" y="2352">
+   <point/>
+  </object>
+  <object id="1208" name="Enemy21" type="EnemySpawn" x="1267.67" y="1849.67">
    <point/>
   </object>
  </objectgroup>
