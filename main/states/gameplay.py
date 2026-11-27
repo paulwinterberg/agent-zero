@@ -98,6 +98,8 @@ class Gameplay(GameState):
         if self.ambience_sound:
             self.ambience_sound.stop()
             self.ambience_sound = None
+            
+        audio.stop_all()
     
     def update(self, dt, events):
         if self.player.dead:
