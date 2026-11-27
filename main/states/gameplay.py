@@ -58,10 +58,20 @@ class Gameplay(GameState):
             relative_rect=pygame.Rect((20, screen.get_screen_size()[1] - 45), (200 , 25)),
             manager=get_ui_manager(),
         )
+        screen_size = screen.get_screen_size()
+        ammo_label_size = (300, 42)
+        ammo_label_margin = 24
         self.ammo_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((20, 50), (220, 30)),
+            relative_rect=pygame.Rect(
+                (
+                    max(0, round(screen_size.x) - ammo_label_size[0] - ammo_label_margin),
+                    max(0, round(screen_size.y) - ammo_label_size[1] - ammo_label_margin),
+                ),
+                ammo_label_size,
+            ),
             text="",
             manager=get_ui_manager(),
+            object_id=pygame_gui.core.ObjectID(class_id="@ammo_label")
         )
 
         self.ammo_label.hide()
@@ -88,6 +98,9 @@ class Gameplay(GameState):
         }
         self.interaction_feedback_font = pygame.font.Font(
             "assets/fonts/PixelifySans-Medium.ttf", 22
+        )
+        self.reload_hint_font = pygame.font.Font(
+            "assets/fonts/PixelifySans-Medium.ttf", 20
         )
 
     def exit(self):
@@ -158,7 +171,19 @@ class Gameplay(GameState):
         self.tilemap.teleport_player_from_out_of_bounds(self.player)
         
         for event in events:
-            self.tool_manager.handle_event(event, self.player)
+            held_tool = self.tool_manager.current_tool
+            handled = self.tool_manager.handle_event(event, self.player)
+            if (
+                event.type == pygame.KEYDOWN
+                and event.key == settings.TOOL_RELOAD
+                and held_tool
+                and getattr(held_tool, "reload_item_name", None)
+                and getattr(held_tool, "amount", 0)
+                < getattr(held_tool, "max_amount", getattr(held_tool, "amount", 0))
+                and not handled
+            ):
+                self.interaction_feedback = "No ammo"
+                self.interaction_feedback_timer = 2
             if (
                 event.type == pygame.KEYDOWN
                 and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
@@ -244,6 +269,7 @@ class Gameplay(GameState):
             self.player,
         )
         self._draw_money_counter(screen)
+        self._draw_reload_hint(screen)
         if self.tool_manager.weapon_wheel_open:
             self._draw_weapon_wheel(screen)
         if self.interaction_feedback_timer > 0:
@@ -467,7 +493,12 @@ class Gameplay(GameState):
         pygame.draw.rect(
             panel, (20, 25, 29, 225), panel.get_rect(), border_radius=5
         )
-        accent = (240, 180, 75) if "verschlossen" in self.interaction_feedback else (95, 205, 145)
+        if "verschlossen" in self.interaction_feedback:
+            accent = (240, 180, 75)
+        elif self.interaction_feedback == "No ammo":
+            accent = (220, 85, 85)
+        else:
+            accent = (95, 205, 145)
         pygame.draw.rect(panel, accent, panel.get_rect(), 2, border_radius=5)
         panel_rect = panel.get_rect(
             midbottom=(screen.get_width() // 2, screen.get_height() - 32)
@@ -475,13 +506,39 @@ class Gameplay(GameState):
         screen.blit(panel, panel_rect)
         screen.blit(text, text.get_rect(center=panel_rect.center))
 
+    def _draw_reload_hint(self, screen):
+        held_tool = self.tool_manager.current_tool
+        if not held_tool or not getattr(held_tool, "reload_item_name", None):
+            return
+
+        key = pygame.key.name(settings.TOOL_RELOAD).upper()
+        text = self.reload_hint_font.render(
+            f"{key} to reload", True, (255, 255, 255)
+        )
+        padding = 10
+        panel = pygame.Surface(
+            (text.get_width() + padding * 2, text.get_height() + padding),
+            pygame.SRCALPHA,
+        )
+        pygame.draw.rect(
+            panel, (20, 25, 29, 225), panel.get_rect(), border_radius=5
+        )
+        pygame.draw.rect(
+            panel, (95, 205, 145), panel.get_rect(), 2, border_radius=5
+        )
+        panel_rect = panel.get_rect(
+            bottomright=(screen.get_width() - 24, screen.get_height() - 72)
+        )
+        screen.blit(panel, panel_rect)
+        screen.blit(text, text.get_rect(center=panel_rect.center))
+
     def _update_ammo_label(self):
         held_tool = self.tool_manager.current_tool
         if held_tool and held_tool.name == "Pistol":
-            self.ammo_label.set_text(f"Pistol: {held_tool.amount} Schuss")
+            self.ammo_label.set_text(f"{held_tool.amount} Bullets")
             self.ammo_label.show()
         elif held_tool and held_tool.name == "Taser":
-            self.ammo_label.set_text(f"Taser: {held_tool.amount} Energy")
+            self.ammo_label.set_text(f"{held_tool.amount} Energy")
             self.ammo_label.show()
         else:
             self.ammo_label.hide()

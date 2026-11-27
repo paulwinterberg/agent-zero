@@ -22,5 +22,14 @@
             "filled_bar": "#f5ea76,#fae60c,180",
             "unfilled_bar": "#CCCCCC"
         }
+    },
+    "@ammo_label": {
+        "colours": {
+            "normal_text": "#000000",
+            "text_shadow": "#777777"
+        },
+        "font": {
+            "size": "1"
+        }
     }
 }
