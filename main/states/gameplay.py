@@ -212,6 +212,11 @@ class Gameplay(GameState):
         self.health_bar.set_current_progress(self.player.get_health_percent() * 100.0)
         
         self.tool_manager.update(dt, self.player)
+        if self.level_name == "antarctica" and any(
+            scientist.tased for scientist in self.enemy_manager.characters
+        ):
+            self._start_completion()
+            return
         self._update_ammo_label()
         self._update_boss_hud()
         
@@ -291,12 +296,19 @@ class Gameplay(GameState):
 
             self.shown_tutorials.add(name)
             if name == self.level_meta.COMPLETION_TUTORIAL_NAME:
-                self.completion_started = True
-                self.interaction_feedback_timer = 0
+                self._start_completion()
                 return
             self.interaction_feedback = self.level_meta.MESSAGES[name]
             self.tutorial_active = True
             self.interaction_feedback_timer = 0
+
+    def _start_completion(self):
+        if self.completion_started:
+            return
+        self.completion_started = True
+        self.completion_elapsed = 0
+        self.completion_rewarded = False
+        self.interaction_feedback_timer = 0
 
     def _update_completion(self, dt, events):
         self.completion_elapsed += dt

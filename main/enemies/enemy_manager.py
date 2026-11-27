@@ -73,7 +73,7 @@ class EnemyManager:
         for spawn in self.tilemap.get_spawns():
             if spawn["type"] != "ScientistSpawn":
                 continue
-            scientist = Scientist(spawn["rect"].center)
+            scientist = Scientist(spawn["rect"].center, self.tilemap)
             self.characters.append(scientist)
             if self.group is not None:
                 self.group.add(
@@ -101,3 +101,10 @@ class EnemyManager:
             enemy.update(dt)
             if self.group is not None:
                 self.group.change_layer(enemy, self.tilemap.y_sort_layer(enemy.rect.bottom))
+        for scientist in self.characters:
+            scientist.update(dt)
+            if self.group is not None:
+                self.group.change_layer(
+                    scientist,
+                    self.tilemap.y_sort_layer(scientist.rect.bottom),
+                )

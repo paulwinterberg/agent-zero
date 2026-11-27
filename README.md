@@ -27,3 +27,19 @@ coins, Magic Powder for 400 coins, Energy for 150 coins, and Smoke Bombs for 200
 coins. Healing, Magic Powder, and Smoke Bombs stack up to five. Use them with
 right-click; Healing restores up to 50 health per use. Select Levels in the
 ESC menu to load another level.
+
+# How to Move and Interact
+W = Move forward
+A = Move left
+S = Move backward
+D = Move right
+Q = Drop the current item
+Hold Tab = Open the weapon wheel and select an item
+E = Pick up a nearby item
+F = Interact with a nearby door, container, or button
+Left mouse button = Fire or use the equipped tool
+Right mouse button = Use the equipped tool's secondary action, if available (Healing, Magic Powder)
+Shift = Sprint
+C = Slide while sprinting
+R = Reload your pistol if you have ammunition in your inventory
+Esc = Open the pause menu
