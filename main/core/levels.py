@@ -77,6 +77,7 @@ class AntarcticaLevel(Level):
 
 class BossBattleLevel(Level):
     MESSAGES = {}
+    AMBIENCE = "city_sounds.mp3"
     PHASE_DIALOGUES = {
         2: (
             ("AGENT X", "I need to know if I can trust you."),

@@ -55,10 +55,14 @@ class Gameplay(GameState):
         )
         
         self.level_meta = levels.LEVELS[level]
+        self.ambience_sound = None
+        self.boss_ending_started = False
         
         #load ambience sound if existing
         if self.level_meta.AMBIENCE:
-            audio.play_sfx(self.level_meta.AMBIENCE, loops=-1, fade_ms=1000)
+            self.ambience_sound = audio.play_sfx(
+                self.level_meta.AMBIENCE, loops=-1, fade_ms=1000
+            )
         
         self.tilemap.zoom_to(4)
         
@@ -143,6 +147,8 @@ class Gameplay(GameState):
         self._update_boss_hud()
 
     def exit(self):
+        if self.ambience_sound is not None:
+            self.ambience_sound.stop()
         self.stamina_bar.kill()
         self.health_bar.kill()
         self.ammo_label.kill()
@@ -229,6 +235,9 @@ class Gameplay(GameState):
         self.tool_manager.update(dt, self.player)
         if self._check_boss_phase_dialogue():
             return
+        if self._check_bossfight_cleared():
+            self._start_bossfight_ending()
+            return
         if self.level_name == "antarctica" and any(
             scientist.tased for scientist in self.enemy_manager.characters
         ):
@@ -283,6 +292,36 @@ class Gameplay(GameState):
             f"Agent X - Phase {boss.phase} - "
             f"{int(boss.health)} / {int(boss.max_health)}"
         )
+
+    def _check_bossfight_cleared(self):
+        boss = self.enemy_manager.boss
+        return (
+            self.level_name == "bossbattle"
+            and boss is not None
+            and boss.allied
+            and not self.boss_ending_started
+            and all(
+                enemy is boss or enemy.dead
+                for enemy in self.enemy_manager.enemies
+            )
+        )
+
+    def _start_bossfight_ending(self):
+        self.boss_ending_started = True
+        if self.ambience_sound is not None:
+            self.ambience_sound.stop()
+
+        from states.intro_video import IntroVideo
+
+        state_manager.push(
+            IntroVideo(
+                "assets/videos/bossfight_ending.mp4",
+                on_complete=self._complete_bossfight_mission,
+            )
+        )
+
+    def _complete_bossfight_mission(self):
+        self._start_completion()
 
     def _is_hint_nearby(self):
         nearest = self.interaction_manager.get_nearest_interaction()

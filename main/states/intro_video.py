@@ -6,21 +6,34 @@ from states.gameplay import Gameplay
 from states.game_state import GameState
 
 class IntroVideo(GameState):
-    def __init__(self):
-        self.clip = VideoFileClip("assets/videos/intro.mp4")
+    def __init__(self, video_path="assets/videos/intro.mp4", on_complete=None):
+        self.clip = VideoFileClip(video_path)
+        self.on_complete = on_complete
         if self.clip.audio:
             self.clip.audio.write_audiofile("temp_audio.wav")  # wav = no decode lag at startup
             pygame.mixer.music.load("temp_audio.wav")
             pygame.mixer.music.play()
             
         self.elapsed = 0
-        self.close_time = self.clip.duration + 10
+        self.close_time = self.clip.duration + (10 if on_complete is None else 0)
 
     def update(self, dt, events):
         self.elapsed += dt
         if self.elapsed >= self.close_time:
             self.clip.close()
-            state_manager.replace(Gameplay(level="tutorial"))
+            self.clip = None
+            if self.on_complete is not None:
+                on_complete = self.on_complete
+                state_manager.pop()
+                on_complete()
+            else:
+                state_manager.replace(Gameplay(level="tutorial"))
+
+    def exit(self):
+        if self.clip is not None:
+            self.clip.close()
+            self.clip = None
+        pygame.mixer.music.stop()
 
     def draw(self, screen: pygame.Surface, dt):
         if self.elapsed > self.clip.duration:
