@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="425">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="430">
  <tileset firstgid="1" source="../../tiled/tilesets/InteriorTutorial.tsx"/>
  <tileset firstgid="225" name="StoneGround" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../tiled/tilesets/basic_pixel_art_topdown/TX Tileset Stone Ground.png" width="256" height="256"/>
@@ -173,7 +173,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="16" name="Toolspawn">
+ <objectgroup id="16" name="Toolspawn" visible="0">
   <object id="285" name="Key" x="330.667" y="844">
    <point/>
   </object>
@@ -994,7 +994,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="6" name="Collisions">
+ <objectgroup id="6" name="Collisions" visible="0">
   <object id="69" x="640.5" y="1344" width="31.5" height="190.5"/>
   <object id="70" x="608" y="1536" width="31.5" height="62.5"/>
   <object id="71" x="768.5" y="1535" width="32" height="63.5"/>
@@ -1079,7 +1079,7 @@
   <object id="421" x="673.333" y="673.333" width="44" height="27.3333" rotation="-90"/>
   <object id="423" x="639.5" y="1600" width="142" height="19.25"/>
  </objectgroup>
- <objectgroup id="11" name="Spawns">
+ <objectgroup id="11" name="Spawns" visible="0">
   <object id="22" name="PlayerSpawn" x="710" y="1585">
    <point/>
   </object>
@@ -1178,6 +1178,16 @@
   </object>
  </objectgroup>
  <objectgroup id="15" name="Paths"/>
- <objectgroup id="14" name="Tutorial"/>
+ <objectgroup id="14" name="Tutorial">
+  <object id="426" name="Siencentist" x="1274" y="1435.33">
+   <point/>
+  </object>
+  <object id="427" name="AntarcticaStart" x="718.333" y="1524">
+   <point/>
+  </object>
+  <object id="428" name="AgentXhint" x="1135.67" y="1285.67">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="7" name="Interactions"/>
 </map>
