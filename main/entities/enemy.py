@@ -5,6 +5,7 @@ import core.state_manager as state_manager
 
 from globals import globs
 from settings import ENEMY_DEFAULT_SPEED #pixels/sec
+from entities.character_sprite import load_character_frame
 from enemies.perception import Perception
 from enemies.enemy_states import EntityState, IdleState, PatrolState, ChaseState
 from world.tools.registry import tool_name_to_class_map
@@ -13,10 +14,21 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos=(0,0), path: list = None, tool_manager=None, groupId=""):
         super().__init__()
 
-        self.image = pygame.Surface((32, 32), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0))
+        spawn_rect = pygame.Rect(0, 0, 32, 32)
+        spawn_rect.center = pos
+        self.hitbox = pygame.Rect(0, 0, 32, settings.ENEMY_HITBOX_HEIGHT)
+        self.hitbox.midbottom = spawn_rect.midbottom
+        self.previous_hitbox = self.hitbox.copy()
+        self.pos = pygame.math.Vector2(self.hitbox.midbottom)
+
+        self.image = load_character_frame(
+            "enemys.png",
+            (48, 80),
+            (48, 64),
+            frame_origin=(104, 0),
+        )
         self.base_image = self.image.copy()
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(midbottom=self.hitbox.midbottom)
 
         self.health = settings.ENEMY_DEFAULT_HEALTH
         self.max_health = self.health
@@ -25,11 +37,6 @@ class Enemy(pygame.sprite.Sprite):
         self.stun_time = 0.0
         self.see_player_timer = 0.0
 
-        self.hitbox = pygame.Rect(0, 0, 32, settings.ENEMY_HITBOX_HEIGHT)
-        self.hitbox.midbottom = self.rect.midbottom
-        self.previous_hitbox = self.hitbox.copy()
-        self.pos = pygame.math.Vector2(self.hitbox.midbottom)
-        
         self.groupId = groupId
         self.group = [self]
 
@@ -50,14 +57,16 @@ class Enemy(pygame.sprite.Sprite):
         if self.tool_manager is None or settings.ENEMY_DEFAULT_TOOL is None:
             return
 
-        self.tool = tool_name_to_class_map.get(settings.ENEMY_DEFAULT_TOOL)(self.rect.center)
+        self.tool = tool_name_to_class_map.get(settings.ENEMY_DEFAULT_TOOL)(
+            self.hitbox.center
+        )
         self.tool.is_enemy = True
         self.tool_manager.add_tool(self.tool)
         self.tool.on_interact()
         held_sprite = self.tool.create_held_sprite()
         self.tool_manager.sprite_group.add(
             held_sprite,
-            layer=self.tool_manager.tilemap.y_sort_layer(self.rect.bottom),
+            layer=self.tool_manager.tilemap.y_sort_layer(self.hitbox.bottom),
         )
         
     def fire_tool(self, target=None):
@@ -69,8 +78,8 @@ class Enemy(pygame.sprite.Sprite):
             return
         
         projectile = self.tool.fire(
-            self.rect.center,
-            target.rect.center,
+            self.perception.center_of(self),
+            self.perception.center_of(target),
             globs.get("tilemap"),
         )
         self.tool_manager.add_projectile(projectile, self)
@@ -99,7 +108,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.tool_manager is not None:
             self.tool_manager.money += 50
         if self.tool is not None and self.tool_manager is not None:
-            self.tool.drop(self.rect.center)
+            self.tool.drop(self.perception.center_of(self))
             self.tool_manager.add_tool(self.tool)
 
     def stun(self, amount_time: float = 2.0):
@@ -190,16 +199,19 @@ class Enemy(pygame.sprite.Sprite):
             target = self.perception.player
         direction = pygame.Vector2(1, 0)
         if target is not None:
-            direction = pygame.Vector2(target.rect.center) - self.rect.center
+            direction = (
+                self.perception.center_of(target)
+                - self.perception.center_of(self)
+            )
             if direction.length_squared() > 0:
                 direction = direction.normalize()
             else:
                 direction = pygame.Vector2(1, 0)
 
         self.tool.held_sprite.rect.center = (
-            pygame.Vector2(self.rect.center) + direction * 18
+            self.perception.center_of(self) + direction * 18
         )
         self.tool_manager.sprite_group.change_layer(
             self.tool.held_sprite,
-            self.tool_manager.tilemap.y_sort_layer(self.rect.bottom),
+            self.tool_manager.tilemap.y_sort_layer(self.hitbox.bottom),
         )

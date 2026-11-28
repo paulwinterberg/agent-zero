@@ -82,7 +82,7 @@ class EnemyManager:
         for index, enemy in enumerate(map_enemies):
             offset = 36 if index % 2 == 0 else -36
             extra_enemy = Enemy(
-                (enemy.rect.centerx + offset, enemy.rect.centery),
+                (enemy.hitbox.centerx + offset, enemy.hitbox.centery),
                 tool_manager=self.tool_manager,
             )
             self._add_enemy(extra_enemy)

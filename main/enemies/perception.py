@@ -33,16 +33,21 @@ class Perception:
     def visible_targets(self):
         return [target for target in self.targets() if self.can_see_target(target)]
 
+    def center_of(self, target):
+        if target is self.player:
+            return pygame.Vector2(target.rect.center)
+        return pygame.Vector2(getattr(target, "hitbox", target.rect).center)
+
     def can_see_target(self, target) -> bool:
         enemy = self.enemy
         if enemy is None or target is None:
             return False
 
-        if not enemy.rect.colliderect(self.tilemap.map_layer.view_rect):
+        if not enemy.hitbox.colliderect(self.tilemap.map_layer.view_rect):
             return False
 
-        start = pygame.Vector2(enemy.rect.center)
-        end = pygame.Vector2(target.rect.center)
+        start = self.center_of(enemy)
+        end = self.center_of(target)
         if start.distance_squared_to(end) > ENEMY_VISION_RADIUS ** 2:
             return False
 
@@ -56,8 +61,8 @@ class Perception:
         if enemy is None or target is None:
             return False
 
-        start = pygame.Vector2(enemy.rect.center)
-        end = pygame.Vector2(target.rect.center)
+        start = self.center_of(enemy)
+        end = self.center_of(target)
 
         s = (int(start.x), int(start.y))
         e = (int(end.x), int(end.y))

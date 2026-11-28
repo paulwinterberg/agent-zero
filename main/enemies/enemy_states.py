@@ -49,8 +49,10 @@ class ChaseState(EntityState):
         if targets:
             target = min(
                 targets,
-                key=lambda candidate: pygame.Vector2(enemy.rect.center).distance_squared_to(
-                    candidate.rect.center
+                key=lambda candidate: enemy.perception.center_of(
+                    enemy
+                ).distance_squared_to(
+                    enemy.perception.center_of(candidate)
                 ),
             )
             enemy.player_lost_timer = 0

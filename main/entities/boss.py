@@ -128,7 +128,9 @@ class BossEnemy(Enemy):
         for enemy in self.enemy_manager.enemies:
             if enemy is self or enemy.dead or getattr(enemy, "allied", False):
                 continue
-            distance = pygame.Vector2(self.rect.center).distance_to(enemy.rect.center)
+            distance = pygame.Vector2(self.rect.center).distance_to(
+                self.perception.center_of(enemy)
+            )
             if (
                 distance <= ENEMY_VISION_RADIUS
                 and self.perception.has_line_of_sight(enemy)
